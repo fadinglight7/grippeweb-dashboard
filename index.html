@@ -269,15 +269,22 @@ console.log(
 // INSPECT GEOJSON
 // ------------------------------------------------------------
 
-    console.log(
-        "GeoJSON features:",
-        geojson.features.length
-    );
+    console.log("TopoJSON object names:", Object.keys(geojson.objects));
 
-    console.log(
-        "First GeoJSON feature:",
-        geojson.features[0]
-    );
+const geojsonData = topojson.feature(
+    geojson,
+    geojson.objects.DEUADM1gbOpen
+);
+
+console.log(
+    "Converted GeoJSON feature count:",
+    geojsonData.features.length
+);
+
+console.log(
+    "First converted feature:",
+    geojsonData.features[0]
+);
 
 
 // ------------------------------------------------------------
