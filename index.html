@@ -305,12 +305,7 @@ const mapLayer = L.geoJSON(geojsonData, {
                     properties
                 );
 
-                const region =
-                    properties.Region ||
-                    properties.region ||
-                    properties.NAME ||
-                    properties.name ||
-                    properties.Name;
+                const region = properties.id;
 
                 const incidence =
                     regionValues[region] ?? 0;
