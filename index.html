@@ -325,34 +325,30 @@ const mapLayer = L.geoJSON(geojsonData, {
 
 
             onEachFeature:
-                function(feature, layer) {
+    function(feature, layer) {
 
-                const properties =
-                    feature.properties || {};
+    const properties =
+        feature.properties || {};
 
-                const region =
-                    properties.Region ||
-                    properties.region ||
-                    properties.NAME ||
-                    properties.name ||
-                    properties.Name;
+    const region =
+        properties.id;
 
-                const incidence =
-                    regionValues[region] ?? 0;
+    const incidence =
+        regionValues[region] ?? 0;
 
-                console.log("Tooltip:", region, incidence);   
-                    
-                layer.bindTooltip(
+    console.log("Tooltip:", region, incidence);
 
-                    `<strong>
-                        ${region ?? "Unknown region"}
-                     </strong><br>
-                     Inzidenz: ${incidence.toFixed(1)}`,
+    layer.bindTooltip(
 
-                    {
-                        sticky: true
-                    }
-                );
+        `<strong>
+            ${region ?? "Unknown region"}
+         </strong><br>
+         Inzidenz: ${incidence.toFixed(1)}`,
+
+        {
+            sticky: true
+        }
+    );
 
 
                 layer.on({
