@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>GrippeWeb Dashboard</title>
+
+    <!-- Leaflet -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #ffffff;
+        }
+
+        h1 {
+            margin: 20px 30px 5px;
+            font-size: 24px;
+        }
+
+        #subtitle {
+            margin: 0 30px 15px;
+            color: #555;
+        }
+
+        #map {
+            width: 100%;
+            height: 650px;
+        }
+
+        .legend {
+            background: white;
+            padding: 10px;
+            line-height: 18px;
+            border-radius: 4px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.15);
+        }
+
+        .legend-row {
+            display: flex;
+            align-items: center;
+            margin: 2px 0;
+        }
+
+        .legend-color {
+            width: 22px;
+            height: 16px;
+            margin-right: 7px;
+            border: 1px solid #999;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>GrippeWeb – Inzidenz</h1>
+
+    <div id="subtitle">
+        Saison: 2025/26 &nbsp; | &nbsp;
+        Kalenderwoche: 36 &nbsp; | &nbsp;
+        Erkrankung: ARE &nbsp; | &nbsp;
+        Altersgruppe: 00+
+    </div>
+
+    <div id="map"></div>
+
+    <!-- Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- PapaParse: TSV parser -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.3/papaparse.min.js"></script>
+
+    <script>
+
+        // ------------------------------------------------------------
+        // DATA SOURCES
+        // ------------------------------------------------------------
+
+        const TSV_URL =
+            "https://raw.githubusercontent.com/fadinglight7/grippeweb-dashboard/main/GrippeWeb_Daten_des_Wochenberichts.tsv";
+
+        const GEOJSON_URL =
+            "https://raw.githubusercontent.com/fadinglight7/grippeweb-dashboard/main/germany4regionmap.json";
+
+
+        // ------------------------------------------------------------
+        // DEFAULT FILTERS
+        // ------------------------------------------------------------
+
+        const DEFAULT_SEASON = "2025/26";
+        const DEFAULT_WEEK = "2025-W36";
+        const DEFAULT_ERKRANKUNG = "ARE";
+        const DEFAULT_ALTERSGRUPPE = "00+";
+
+
+        // ------------------------------------------------------------
+        // THRESHOLD COLORS FROM YOUR POWER BI TABLE
+        // ------------------------------------------------------------
+
+        const thresholds = [
+            { min: 0,     max: 0,     color: "#D3D3D3" },
+            { min: 1,     max: 1500,  color: "#FFDFAD" },
+            { min: 1500,  max: 3000,  color: "#FDD291" },
+            { min: 3000,  max: 4500,  color: "#FFBB63" },
+            { min: 4500,  max: 6000,  color: "#FFA037" },
+            { min: 6000,  max: 7500,  color: "#F68511" },
+            { min: 7500,  max: 9000,  color: "#E46F00" },
+            { min: 9000,  max: 10500, color: "#CB5D00" },
+            { min: 10500, max: 12000, color: "#B14C00" },
+            { min: 12000, max: 13500, color: "#953D00" },
+            { min: 13500, max: 15000, color: "#7A2F00" },
+            { min: 15000, max: Infinity, color: "#612300" }
+        ];
+
+
+        // ------------------------------------------------------------
+        // GET COLOR FOR INCIDENCE
+        // ------------------------------------------------------------
+
+        function getColor(value) {
+
+            if (value === 0) {
+                return "#D3D3D3";
+            }
+
+            for (const threshold of thresholds) {
+
+                if (
+                    value >= threshold.min &&
+                    value < threshold.max
+                ) {
+                    return threshold.color;
+                }
+            }
+
+            return "#D3D3D3";
+        }
+
+
+        // ------------------------------------------------------------
+        // MAP
+        // ------------------------------------------------------------
+
+        const map = L.map("map", {
+            zoomControl: true
+        });
+
+        map.setView([51.2, 10.4], 5.5);
+
+
+        // ------------------------------------------------------------
+        // LOAD DATA
+        // ------------------------------------------------------------
+
+        Promise.all([
+
+            fetch(TSV_URL)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Could not load TSV");
+                    }
+                    return response.text();
+                }),
+
+            fetch(GEOJSON_URL)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Could not load GeoJSON");
+                    }
+                    return response.json();
+                })
+
+        ])
+
+        .then(([tsvText, geojson]) => {
+
+            console.log("TSV loaded");
+            console.log("GeoJSON loaded");
+
+            // Parse TSV
+            const parsed = Papa.parse(tsvText, {
+                header: true,
+                delimiter: "\t",
+                skipEmptyLines: true
+            });
+
+            const rows = parsed.data;
+
+            console.log("Number of TSV rows:", rows.length);
+
+
+            // --------------------------------------------------------
+            // FILTER DATA
+            // --------------------------------------------------------
+
+            const filtered = rows.filter(row =>
+
+                row.Saison === DEFAULT_SEASON &&
+                row.Kalenderwoche === DEFAULT_WEEK &&
+                row.Erkrankung === DEFAULT_ERKRANKUNG &&
+                row.Altersgruppe === DEFAULT_ALTERSGRUPPE
+
+            );
+
+
+            console.log("Filtered rows:", filtered);
+
+
+            // --------------------------------------------------------
+            // CALCULATE TOTAL INCIDENCE PER REGION
+            // Equivalent to:
+            //
+            // SUM(GrippeWeb_Daten_des_Wochenberichts[Inzidenz])
+            // --------------------------------------------------------
+
+            const regionValues = {};
+
+            filtered.forEach(row => {
+
+                const region = row.Region;
+
+                const incidence = Number(
+                    String(row.Inzidenz).replace(",", ".")
+                );
+
+                if (!regionValues[region]) {
+                    regionValues[region] = 0;
+                }
+
+                regionValues[region] +=
+                    Number.isFinite(incidence) ? incidence : 0;
+            });
+
+
+            console.log("Region incidence:", regionValues);
+
+
+            // --------------------------------------------------------
+            // GEOJSON PROPERTY INSPECTION
+            // --------------------------------------------------------
+
+            console.log(
+                "First GeoJSON feature:",
+                geojson.features[0]
+            );
+
+
+            // --------------------------------------------------------
+            // DRAW MAP
+            // --------------------------------------------------------
+
+            const mapLayer = L.geoJSON(geojson, {
+
+                style: function(feature) {
+
+                    const properties = feature.properties;
+
+                    console.log(
+                        "GeoJSON properties:",
+                        properties
+                    );
+
+                    /*
+                     * We don't know the exact property name inside
+                     * your GeoJSON yet.
+                     *
+                     * These are the likely possibilities.
+                     */
+
+                    const region =
+                        properties.Region ||
+                        properties.region ||
+                        properties.NAME ||
+                        properties.name ||
+                        properties.Name;
+
+                    const incidence =
+                        regionValues[region] ?? 0;
+
+                    return {
+                        fillColor: getColor(incidence),
+                        weight: 1,
+                        color: "#555",
+                        fillOpacity: 0.85
+                    };
+                },
+
+
+                onEachFeature: function(feature, layer) {
+
+                    const properties = feature.properties;
+
+                    const region =
+                        properties.Region ||
+                        properties.region ||
+                        properties.NAME ||
+                        properties.name ||
+                        properties.Name;
+
+                    const incidence =
+                        regionValues[region] ?? 0;
+
+
+                    layer.bindTooltip(
+                        `<strong>${region ?? "Unknown region"}</strong><br>
+                         Inzidenz: ${incidence.toFixed(1)}`,
+                        {
+                            sticky: true
+                        }
+                    );
+
+
+                    layer.on({
+                        mouseover: function(event) {
+
+                            event.target.setStyle({
+                                weight: 3,
+                                color: "#222"
+                            });
+
+                            event.target.bringToFront();
+                        },
+
+                        mouseout: function(event) {
+
+                            mapLayer.resetStyle(event.target);
+                        }
+                    });
+                }
+
+            }).addTo(map);
+
+
+            // Automatically fit map to Germany
+            map.fitBounds(mapLayer.getBounds());
+
+
+            // --------------------------------------------------------
+            // LEGEND
+            // --------------------------------------------------------
+
+            const legend = L.control({
+                position: "bottomright"
+            });
+
+
+            legend.onAdd = function() {
+
+                const div = L.DomUtil.create(
+                    "div",
+                    "legend"
+                );
+
+                div.innerHTML =
+                    "<strong>Inzidenz</strong>";
+
+
+                const labels = [
+                    ["= 0", "#D3D3D3"],
+                    ["1 < 1500", "#FFDFAD"],
+                    ["1500 < 3000", "#FDD291"],
+                    ["3000 < 4500", "#FFBB63"],
+                    ["4500 < 6000", "#FFA037"],
+                    ["6000 < 7500", "#F68511"],
+                    ["7500 < 9000", "#E46F00"],
+                    ["9000 < 10500", "#CB5D00"],
+                    ["10500 < 12000", "#B14C00"],
+                    ["12000 < 13500", "#953D00"],
+                    ["13500 < 15000", "#7A2F00"],
+                    [">= 15000", "#612300"]
+                ];
+
+
+                labels.forEach(item => {
+
+                    div.innerHTML += `
+                        <div class="legend-row">
+                            <span
+                                class="legend-color"
+                                style="background:${item[1]}"
+                            ></span>
+                            <span>${item[0]}</span>
+                        </div>
+                    `;
+                });
+
+
+                return div;
+            };
+
+
+            legend.addTo(map);
+
+        })
+
+
+        .catch(error => {
+
+            console.error(error);
+
+            document.getElementById("map").innerHTML = `
+                <div style="
+                    padding:30px;
+                    font-family:Arial;
+                    color:#b00020;
+                ">
+                    <h2>Could not load dashboard data</h2>
+                    <p>${error.message}</p>
+                    <p>
+                        Open the browser developer console
+                        (F12) for more information.
+                    </p>
+                </div>
+            `;
+        });
+
+    </script>
+
+</body>
+</html>
