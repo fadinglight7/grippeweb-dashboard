@@ -340,6 +340,8 @@ const mapLayer = L.geoJSON(geojsonData, {
                 const incidence =
                     regionValues[region] ?? 0;
 
+                console.log("Tooltip:", region, incidence);   
+                    
                 layer.bindTooltip(
 
                     `<strong>
