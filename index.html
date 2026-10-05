@@ -205,7 +205,19 @@ Promise.all([
     console.log("Number of TSV rows:", rows.length);
 
     console.log("First TSV row:", rows[0]);
-
+console.log("Seasons:", [...new Set(rows.map(r => r.Saison))]);
+console.log(
+    "2025/26 rows:",
+    rows.filter(r => r.Saison === "2025/26").slice(0, 5)
+);
+console.log(
+    "2025/26 weeks:",
+    [...new Set(
+        rows
+            .filter(r => r.Saison === "2025/26")
+            .map(r => r.Kalenderwoche)
+    )]
+);
 
 // ------------------------------------------------------------
 // FILTER
