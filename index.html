@@ -565,34 +565,8 @@ const mapLayer = L.geoJSON(geojsonData, {
 
     const selectedSeason = this.value;
 
-    availableWeeks =
-        getWeeksForSeason(selectedSeason);
-
-    let newIndex =
-        availableWeeks.indexOf(selectedWeek);
-
-    if (newIndex === -1) {
-        newIndex =
-            availableWeeks.length - 1;
-    }
-
-    weekFilter.max =
-        availableWeeks.length - 1;
-
-    weekFilter.value =
-        newIndex;
-
-    selectedWeek =
-        availableWeeks[newIndex];
-
-    weekLabel.textContent =
-        "Week " + selectedWeek.split("-W")[1];
-
     regionValues =
-        getRegionValues(
-            selectedSeason,
-            selectedWeek
-        );
+        getRegionValues(selectedSeason);
 
     mapLayer.eachLayer(function(layer) {
 
@@ -612,7 +586,6 @@ const mapLayer = L.geoJSON(geojsonData, {
             color: "#555",
 
             fillOpacity: 0.85
-
         });
 
         layer.setTooltipContent(`
@@ -626,8 +599,6 @@ const mapLayer = L.geoJSON(geojsonData, {
         `);
 
     });
-
-});
 
 });
 
