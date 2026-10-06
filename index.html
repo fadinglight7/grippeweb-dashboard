@@ -334,6 +334,45 @@ weekFilter.addEventListener("input", function () {
     weekLabel.textContent =
         "Week " + selectedWeek.split("-W")[1];
 
+    regionValues =
+        getRegionValues(
+            seasonFilter.value,
+            selectedWeek
+        );
+
+    mapLayer.eachLayer(function(layer) {
+
+        const region =
+            layer.feature?.properties?.id;
+
+        const incidence =
+            regionValues[region] ?? 0;
+
+        layer.setStyle({
+
+            fillColor:
+                getColor(incidence),
+
+            weight: 1,
+
+            color: "#555",
+
+            fillOpacity: 0.85
+
+        });
+
+        layer.setTooltipContent(`
+
+            <strong>
+                ${region ?? "Unknown region"}
+            </strong><br>
+
+            Inzidenz: ${incidence.toFixed(1)}
+
+        `);
+
+    });
+
 });
 
 
@@ -359,11 +398,11 @@ console.log(
 // FILTER
 // ------------------------------------------------------------
 
-    function getRegionValues(season) {
+    function getRegionValues(season, week) {
 
     const filtered = rows.filter(row =>
         row.Saison === season &&
-        //row.Kalenderwoche === DEFAULT_WEEK &&
+        row.Kalenderwoche === week &&
         row.Erkrankung === DEFAULT_ERKRANKUNG &&
         row.Altersgruppe === DEFAULT_ALTERSGRUPPE
     );
@@ -397,8 +436,10 @@ console.log(
 }
 
 let regionValues =
-    getRegionValues(DEFAULT_SEASON);
-
+    getRegionValues(
+        DEFAULT_SEASON,
+        selectedWeek
+    );
 
 // ------------------------------------------------------------
 // INSPECT GEOJSON
