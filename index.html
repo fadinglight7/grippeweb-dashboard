@@ -565,6 +565,24 @@ const mapLayer = L.geoJSON(geojsonData, {
 
     const selectedSeason = this.value;
 
+    const weekNumber =
+    selectedWeek.split("-W")[1];
+
+availableWeeks =
+    getWeeksForSeason(selectedSeason);
+
+const matchingWeek =
+    availableWeeks.find(
+        week => week.endsWith("-W" + weekNumber)
+    );
+
+if (matchingWeek) {
+    selectedWeek = matchingWeek;
+} else {
+    selectedWeek =
+        availableWeeks[availableWeeks.length - 1];
+}
+
     regionValues =
     getRegionValues(
         selectedSeason,
