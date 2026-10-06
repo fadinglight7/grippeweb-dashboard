@@ -57,6 +57,29 @@
             margin-right: 7px;
             border: 1px solid #999;
         }
+
+        .week-control {
+    display: inline-block;
+    width: 350px;
+    vertical-align: middle;
+}
+
+#weekFilter {
+    width: 100%;
+}
+
+#weekTicks {
+    display: flex;
+    justify-content: space-between;
+    font-size: 9px;
+    margin-top: 2px;
+}
+
+.week-tick {
+    width: 1px;
+    height: 5px;
+    background: #777;
+}
     </style>
 </head>
 
@@ -74,6 +97,7 @@
 
     <label>
     Kalenderwoche:
+    <div class="week-control">
     <input
         type="range"
         id="weekFilter"
@@ -82,7 +106,11 @@
         step="1"
         value="0"
     >
-    <span id="weekLabel">2026-W19</span>
+
+    <div id="weekTicks"></div>
+</div>
+
+<span id="weekLabel">Week 19</span>
 </label>
     &nbsp; | &nbsp;
 
@@ -274,6 +302,22 @@ let selectedWeek = DEFAULT_WEEK;
 
 weekFilter.max =
     availableWeeks.length - 1;
+
+
+const weekTicks =
+    document.getElementById("weekTicks");
+
+availableWeeks.forEach(() => {
+
+    const tick =
+        document.createElement("span");
+
+    tick.className = "week-tick";
+
+    weekTicks.appendChild(tick);
+
+});
+    
 
 weekFilter.value =
     availableWeeks.indexOf(selectedWeek);
