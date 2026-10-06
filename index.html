@@ -566,7 +566,10 @@ const mapLayer = L.geoJSON(geojsonData, {
     const selectedSeason = this.value;
 
     regionValues =
-        getRegionValues(selectedSeason);
+    getRegionValues(
+        selectedSeason,
+        selectedWeek
+    );
 
     mapLayer.eachLayer(function(layer) {
 
