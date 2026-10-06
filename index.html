@@ -262,21 +262,14 @@ console.log(
 // FILTER
 // ------------------------------------------------------------
 
-    const filtered = rows.filter(row =>
+    function getRegionValues(season) {
 
-        row.Saison === DEFAULT_SEASON &&
+    const filtered = rows.filter(row =>
+        row.Saison === season &&
         row.Kalenderwoche === DEFAULT_WEEK &&
         row.Erkrankung === DEFAULT_ERKRANKUNG &&
         row.Altersgruppe === DEFAULT_ALTERSGRUPPE
-
     );
-
-    console.log("Filtered rows:", filtered);
-
-
-// ------------------------------------------------------------
-// SUM INCIDENCE BY REGION
-// ------------------------------------------------------------
 
     const regionValues = {};
 
@@ -302,6 +295,12 @@ console.log(
         "Region incidence:",
         regionValues
     );
+
+    return regionValues;
+}
+
+let regionValues =
+    getRegionValues(DEFAULT_SEASON);
 
 
 // ------------------------------------------------------------
