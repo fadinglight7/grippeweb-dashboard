@@ -211,6 +211,35 @@ Promise.all([
     console.log("GeoJSON loaded");
 
     const rows = parseTSV(tsvText);
+    
+
+
+    // ------------------------------------------------------------
+// SEASON FILTER
+// ------------------------------------------------------------
+
+const seasonFilter =
+    document.getElementById("seasonFilter");
+
+const seasons = [
+    ...new Set(
+        rows.map(row => row.Saison)
+    )
+].sort();
+
+seasons.forEach(season => {
+
+    const option =
+        document.createElement("option");
+
+    option.value = season;
+    option.textContent = season;
+
+    seasonFilter.appendChild(option);
+});
+
+seasonFilter.value = DEFAULT_SEASON;
+    
 
     console.log("Number of TSV rows:", rows.length);
 
