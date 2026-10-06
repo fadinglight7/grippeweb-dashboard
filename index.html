@@ -423,7 +423,50 @@ const mapLayer = L.geoJSON(geojsonData, {
         mapLayer.getBounds()
     );
 
+    seasonFilter.addEventListener("change", function () {
 
+    const selectedSeason = this.value;
+
+    regionValues =
+        getRegionValues(selectedSeason);
+
+    mapLayer.eachLayer(function(layer) {
+
+        const region =
+            layer.feature?.properties?.id;
+
+        const incidence =
+            regionValues[region] ?? 0;
+
+        layer.setStyle({
+
+            fillColor:
+                getColor(incidence),
+
+            weight: 1,
+
+            color: "#555",
+
+            fillOpacity: 0.85
+        });
+
+        layer.setTooltipContent(`
+
+            <strong>
+                ${region ?? "Unknown region"}
+            </strong><br>
+
+            Inzidenz: ${incidence.toFixed(1)}
+
+        `);
+
+    });
+
+});
+
+
+
+    
 // ------------------------------------------------------------
 // LEGEND
 // ------------------------------------------------------------
