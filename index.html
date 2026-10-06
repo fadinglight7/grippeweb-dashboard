@@ -281,6 +281,19 @@ weekFilter.value =
 weekLabel.textContent =
     "Week " + selectedWeek.split("-W")[1];    
 
+weekFilter.addEventListener("input", function () {
+
+    const index = Number(this.value);
+
+    selectedWeek = availableWeeks[index];
+
+    weekLabel.textContent =
+        "Week " + selectedWeek.split("-W")[1];
+
+});
+
+
+    
     console.log("Number of TSV rows:", rows.length);
 
     console.log("First TSV row:", rows[0]);
