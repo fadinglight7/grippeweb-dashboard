@@ -312,6 +312,101 @@ console.log(
     getChartData(getSelectedSeasons())
 );
 
+function drawChart() {
+
+    const selectedSeasons = getSelectedSeasons();
+    const chartData = getChartData(selectedSeasons);
+
+    const traces = [];
+
+    selectedSeasons.forEach(season => {
+
+        const weeks = getWeeksForSeason(season);
+
+        const x = [];
+        const y = [];
+
+        weeks.forEach(fullWeek => {
+
+            if (
+                chartData[season] &&
+                chartData[season][fullWeek] !== undefined
+            ) {
+                x.push(fullWeek.split("-")[1]);
+                y.push(chartData[season][fullWeek]);
+            }
+        });
+
+        traces.push({
+            x: x,
+            y: y,
+            mode: "lines+markers",
+            name: season,
+            connectgaps: false
+        });
+    });
+
+    Plotly.newPlot(
+        "chart",
+        traces,
+        {
+            title: "Inzidenz – Bundesweit",
+            xaxis: {
+                title: "Kalenderwoche",
+                categoryorder: "array",
+                categoryarray: [
+                    "W40", "W41", "W42", "W43",
+                    "W44", "W45", "W46", "W47",
+                    "W48", "W49", "W50", "W51",
+                    "W52", "W53",
+                    "W1", "W2", "W3", "W4",
+                    "W5", "W6", "W7", "W8",
+                    "W9", "W10", "W11", "W12",
+                    "W13", "W14", "W15", "W16",
+                    "W17", "W18", "W19", "W20",
+                    "W21", "W22", "W23", "W24",
+                    "W25", "W26", "W27", "W28",
+                    "W29", "W30", "W31", "W32",
+                    "W33", "W34", "W35", "W36",
+                    "W37", "W38", "W39"
+                ]
+            },
+            yaxis: {
+                title: "Inzidenz"
+            },
+            hovermode: "x unified"
+        },
+        {
+            responsive: true
+        }
+    );
+}
+
+
+function getWeeksForSeason(season) {
+
+    const [startYear, endYearShort] =
+        season.split("/").map(Number);
+
+    const endYear =
+        Math.floor(startYear / 100) * 100 + endYearShort;
+
+    const weeks = [];
+
+    for (let week = 40; week <= 53; week++) {
+        weeks.push(
+            `${startYear}-W${String(week).padStart(2, "0")}`
+        );
+    }
+
+    for (let week = 1; week <= 39; week++) {
+        weeks.push(
+            `${endYear}-W${String(week).padStart(2, "0")}`
+        );
+    }
+
+    return weeks;
+}
 
 console.log(
     "Selected seasons:",
@@ -319,7 +414,7 @@ console.log(
 );
 
 console.log("Seasons:", seasons);
-
+drawChart();
         })
         .catch(error => {
             console.error(
