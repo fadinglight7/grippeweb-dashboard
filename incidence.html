@@ -40,27 +40,47 @@
 
 
 <script>
-    const data = [{
-        x: ["W40", "W41", "W42", "W43"],
-        y: [1000, 1500, 1200, 1800],
-        type: "scatter",
-        mode: "lines+markers",
-        name: "Test Season"
-    }];
+    const TSV_URL =
+        "https://raw.githubusercontent.com/fadinglight7/grippeweb-dashboard/main/GrippeWeb_Daten_des_Wochenberichts.tsv";
 
-    const layout = {
-        title: "Test Incidence Chart",
-        xaxis: {
-            title: "Kalenderwoche"
-        },
-        yaxis: {
-            title: "Inzidenz"
-        }
-    };
+    fetch(TSV_URL)
+        .then(response => response.text())
+        .then(tsvText => {
 
-    Plotly.newPlot("chart", data, layout, {
-        responsive: true
-    });
+            const lines =
+                tsvText.trim().split(/\r?\n/);
+
+            const headers =
+                lines[0].split("\t");
+
+            const rows =
+                lines.slice(1).map(line => {
+
+                    const values =
+                        line.split("\t");
+
+                    const row = {};
+
+                    headers.forEach(
+                        (header, index) => {
+                            row[header] =
+                                values[index] ?? "";
+                        }
+                    );
+
+                    return row;
+                });
+
+            console.log("TSV loaded:", rows.length);
+            console.log("First row:", rows[0]);
+
+        })
+        .catch(error => {
+            console.error(
+                "Error loading TSV:",
+                error
+            );
+        });
 </script>
 
 </body>
