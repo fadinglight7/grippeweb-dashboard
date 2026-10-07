@@ -238,78 +238,47 @@ const seasons = [
 
 seasons.forEach(season => {
 
-    const label =
-        document.createElement("label");
+    const option =
+        document.createElement("div");
 
-    label.className =
+    option.className =
         "season-option";
 
-    const checkbox =
-        document.createElement("input");
+    option.textContent =
+        season;
 
-    checkbox.type = "checkbox";
-    checkbox.value = season;
+    option.addEventListener(
+        "click",
+        function() {
 
-    if (season === "2025/26") {
-        checkbox.checked = true;
-    }
+            selectedSeason =
+                season;
 
-    label.appendChild(checkbox);
+            seasonDropdownButton.textContent =
+                selectedSeason;
 
-    const text =
-        document.createTextNode(
-            " " + season
-        );
+            seasonDropdownMenu.classList.remove(
+                "show"
+            );
 
-    label.appendChild(text);
+            drawChart();
+        }
+    );
 
-    seasonDropdownMenu.appendChild(label);
+    seasonDropdownMenu.appendChild(option);
 });
 
-function updateSeasonButton() {
+let selectedSeason = "2025/26";
 
-    const selected = [
-        ...seasonDropdownMenu.querySelectorAll(
-            'input[type="checkbox"]:checked'
-        )
-    ];
-
-    if (selected.length === 0) {
-
-        seasonDropdownButton.textContent =
-            "Select season";
-
-    } else if (selected.length === 1) {
-
-        seasonDropdownButton.textContent =
-            selected[0].value;
-
-    } else {
-
-        seasonDropdownButton.textContent =
-            "Multiple seasons";
-    }
-}
-
-seasonDropdownMenu
-    .addEventListener("change", function() {
-
-        updateSeasonButton();
-
-        console.log(
-            "Selected seasons:",
-            getSelectedSeasons()
-        );
-        drawChart();
-    });
-
-seasonDropdownButton
-    .addEventListener("click", function() {
+seasonDropdownButton.addEventListener(
+    "click",
+    function() {
 
         seasonDropdownMenu.classList.toggle(
             "show"
         );
-    });
+    }
+);
 
 document.addEventListener(
     "click",
@@ -327,33 +296,134 @@ document.addEventListener(
     }
 );
 
-updateSeasonButton();
 
-function getSelectedSeasons() {
-
-    return [
-        ...seasonDropdownMenu.querySelectorAll(
-            'input[type="checkbox"]:checked'
-        )
-    ].map(
-        checkbox => checkbox.value
+const ageDropdownButton =
+    document.getElementById(
+        "ageDropdownButton"
     );
+
+const ageDropdownMenu =
+    document.getElementById(
+        "ageDropdownMenu"
+    );
+
+const ageGroups = [
+    ...new Set(
+        rows.map(row => row.Altersgruppe)
+    )
+].sort();
+
+let selectedAgeGroups = ["00+"];
+
+ageGroups.forEach(ageGroup => {
+
+    const label =
+        document.createElement("label");
+
+    label.className =
+        "age-option";
+
+    const checkbox =
+        document.createElement("input");
+
+    checkbox.type = "checkbox";
+    checkbox.value = ageGroup;
+
+    if (selectedAgeGroups.includes(ageGroup)) {
+        checkbox.checked = true;
+    }
+
+    label.appendChild(checkbox);
+
+    const text =
+        document.createTextNode(
+            " " + ageGroup
+        );
+
+    label.appendChild(text);
+
+    ageDropdownMenu.appendChild(label);
+});
+
+function updateAgeButton() {
+
+    if (selectedAgeGroups.length === 0) {
+
+        ageDropdownButton.textContent =
+            "Select age group";
+
+    } else if (selectedAgeGroups.length === 1) {
+
+        ageDropdownButton.textContent =
+            selectedAgeGroups[0];
+
+    } else {
+
+        ageDropdownButton.textContent =
+            "Multiple age groups";
+    }
 }
 
-function getChartData(selectedSeasons) {
+ageDropdownMenu.addEventListener(
+    "change",
+    function() {
+
+        selectedAgeGroups = [
+            ...ageDropdownMenu.querySelectorAll(
+                'input[type="checkbox"]:checked'
+            )
+        ].map(
+            checkbox => checkbox.value
+        );
+
+        updateAgeButton();
+
+        drawChart();
+    }
+);
+
+ageDropdownButton.addEventListener(
+    "click",
+    function() {
+
+        ageDropdownMenu.classList.toggle(
+            "show"
+        );
+    }
+);
+
+document.addEventListener(
+    "click",
+    function(event) {
+
+        if (
+            !event.target.closest(
+                ".age-dropdown"
+            )
+        ) {
+            ageDropdownMenu.classList.remove(
+                "show"
+            );
+        }
+    }
+);
+
+updateAgeButton();
+
+function getChartData() {
 
     const filteredRows = rows.filter(row =>
-        selectedSeasons.includes(row.Saison) &&
+        row.Saison === selectedSeason &&
+        selectedAgeGroups.includes(row.Altersgruppe) &&
         row.Region === "Bundesweit" &&
-        row.Erkrankung === "ARE" &&
-        row.Altersgruppe === "00+"
+        row.Erkrankung === "ARE"
     );
 
     const chartData = {};
 
     filteredRows.forEach(row => {
 
-        const season = row.Saison;
+        const ageGroup = row.Altersgruppe;
         const week = row.Kalenderwoche;
 
         const incidence = Number(
@@ -365,15 +435,15 @@ function getChartData(selectedSeasons) {
             return;
         }
 
-        if (!chartData[season]) {
-            chartData[season] = {};
+        if (!chartData[ageGroup]) {
+            chartData[ageGroup] = {};
         }
 
-        if (!chartData[season][week]) {
-            chartData[season][week] = 0;
+        if (!chartData[ageGroup][week]) {
+            chartData[ageGroup][week] = 0;
         }
 
-        chartData[season][week] += incidence;
+        chartData[ageGroup][week] += incidence;
     });
 
     return chartData;
@@ -381,13 +451,12 @@ function getChartData(selectedSeasons) {
 
 console.log(
     "Chart data:",
-    getChartData(getSelectedSeasons())
+    getChartData()
 );
 
 function drawChart() {
 
-    const selectedSeasons = getSelectedSeasons();
-    const chartData = getChartData(selectedSeasons);
+    const chartData = getChartData();
 
     const weekOrder = [
         "W40", "W41", "W42", "W43",
@@ -408,7 +477,7 @@ function drawChart() {
 
     const traces = [];
 
-    selectedSeasons.forEach(season => {
+    selectedAgeGroups.forEach(ageGroup => {
 
         const x = [];
         const y = [];
@@ -416,23 +485,25 @@ function drawChart() {
         weekOrder.forEach((week, index) => {
 
             const fullWeek =
-    Object.keys(chartData[season] || {})
-        .find(value => {
+                Object.keys(chartData[ageGroup] || {})
+                    .find(value => {
 
-            const weekNumber =
-                value.split("-W")[1];
+                        const weekNumber =
+                            value.split("-W")[1];
 
-            return (
-                `W${Number(weekNumber)}` === week
-            );
-        });
+                        return (
+                            `W${Number(weekNumber)}` === week
+                        );
+                    });
 
             if (
                 fullWeek &&
-                chartData[season][fullWeek] !== undefined
+                chartData[ageGroup][fullWeek] !== undefined
             ) {
                 x.push(index);
-                y.push(chartData[season][fullWeek]);
+                y.push(
+                    chartData[ageGroup][fullWeek]
+                );
             }
         });
 
@@ -440,7 +511,7 @@ function drawChart() {
             x: x,
             y: y,
             mode: "lines+markers",
-            name: season,
+            name: ageGroup,
             connectgaps: false
         });
     });
@@ -449,16 +520,18 @@ function drawChart() {
         "chart",
         traces,
         {
-            title: "Inzidenz – Bundesweit",
+            title:
+                "Inzidenz – Bundesweit",
 
             xaxis: {
                 title: "Kalenderwoche",
 
                 tickmode: "array",
 
-                tickvals: weekOrder.map(
-                    (_, index) => index
-                ),
+                tickvals:
+                    weekOrder.map(
+                        (_, index) => index
+                    ),
 
                 ticktext: weekOrder
             },
@@ -502,10 +575,6 @@ function getWeeksForSeason(season) {
     return weeks;
 }
 
-console.log(
-    "Selected seasons:",
-    getSelectedSeasons()
-);
 
 console.log("Seasons:", seasons);
 drawChart();
