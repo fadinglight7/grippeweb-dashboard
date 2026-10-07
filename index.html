@@ -296,13 +296,27 @@ const weekLabel =
 
 function getWeeksForSeason(season) {
 
-    return [
-        ...new Set(
-            rows
-                .filter(row => row.Saison === season)
-                .map(row => row.Kalenderwoche)
-        )
-    ].sort();
+    const [startYear, endYearShort] =
+        season.split("/").map(Number);
+
+    const endYear =
+        Math.floor(startYear / 100) * 100 + endYearShort;
+
+    const weeks = [];
+
+    for (let week = 40; week <= 53; week++) {
+        weeks.push(
+            `${startYear}-W${String(week).padStart(2, "0")}`
+        );
+    }
+
+    for (let week = 1; week <= 39; week++) {
+        weeks.push(
+            `${endYear}-W${String(week).padStart(2, "0")}`
+        );
+    }
+
+    return weeks;
 }
 
 let availableWeeks =
