@@ -37,6 +37,16 @@
             height: 650px;
         }
 
+        .map-incidence-label {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    font-size: 14px;
+    font-weight: bold;
+    color: #222;
+    text-align: center;
+}
+
         .legend {
             background: white;
             padding: 10px;
@@ -339,6 +349,7 @@ weekFilter.addEventListener("input", function () {
             seasonFilter.value,
             selectedWeek
         );
+    updateIncidenceLabels();
 
     mapLayer.eachLayer(function(layer) {
 
@@ -372,6 +383,23 @@ weekFilter.addEventListener("input", function () {
         `);
 
     });
+
+    incidenceLabels.eachLayer(function(label) {
+
+    const region =
+        label.options.region;
+
+    const incidence =
+        regionValues[region] ?? 0;
+
+    label.setIcon(
+        L.divIcon({
+            className: "map-incidence-label",
+            html: `${Math.round(incidence)}`,
+            iconSize: null
+        })
+    );
+});
 
 });
 
@@ -468,7 +496,7 @@ console.log(
 // ------------------------------------------------------------
 
 
-
+const incidenceLabels = L.layerGroup().addTo(map);
 const mapLayer = L.geoJSON(geojsonData, {
 
             style: function(feature) {
@@ -527,6 +555,20 @@ const mapLayer = L.geoJSON(geojsonData, {
         }
     );
 
+    const label = L.marker(
+    layer.getBounds().getCenter(),
+    {   region: region,
+        icon: L.divIcon({
+            className: "map-incidence-label",
+            html: `${Math.round(incidence)}`,
+            iconSize: null
+        }),
+        interactive: false
+    }
+);
+
+incidenceLabels.addLayer(label);
+
 
                 layer.on({
 
@@ -555,6 +597,26 @@ const mapLayer = L.geoJSON(geojsonData, {
         }
 
     ).addTo(map);
+
+
+    function updateIncidenceLabels() {
+
+    incidenceLabels.eachLayer(function(label) {
+
+        const region = label.options.region;
+
+        const incidence =
+            regionValues[region] ?? 0;
+
+        label.setIcon(
+            L.divIcon({
+                className: "map-incidence-label",
+                html: `${Math.round(incidence)}`,
+                iconSize: null
+            })
+        );
+    });
+}        
 
 
     map.fitBounds(
@@ -588,6 +650,8 @@ if (matchingWeek) {
         selectedSeason,
         selectedWeek
     );
+
+    updateIncidenceLabels();
 
     mapLayer.eachLayer(function(layer) {
 
