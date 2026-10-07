@@ -36,5 +36,32 @@
 
     <div id="chart"></div>
 
+
+
+
+<script>
+    const data = [{
+        x: ["W40", "W41", "W42", "W43"],
+        y: [1000, 1500, 1200, 1800],
+        type: "scatter",
+        mode: "lines+markers",
+        name: "Test Season"
+    }];
+
+    const layout = {
+        title: "Test Incidence Chart",
+        xaxis: {
+            title: "Kalenderwoche"
+        },
+        yaxis: {
+            title: "Inzidenz"
+        }
+    };
+
+    Plotly.newPlot("chart", data, layout, {
+        responsive: true
+    });
+</script>
+
 </body>
 </html>
