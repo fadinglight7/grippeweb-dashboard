@@ -74,6 +74,55 @@
     font-weight: normal;
 }
 
+.age-dropdown {
+    position: relative;
+    display: inline-block;
+    margin-left: 20px;
+}
+
+#ageDropdownButton {
+    min-width: 180px;
+    padding: 8px 12px;
+    background: white;
+    border: 1px solid #999;
+    border-radius: 3px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.age-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 180px;
+    max-height: 250px;
+    overflow-y: auto;
+    background: white;
+    border: 1px solid #999;
+    z-index: 1000;
+}
+
+.age-dropdown-menu.show {
+    display: block;
+}
+
+.age-option {
+    display: block;
+    padding: 6px 10px;
+    cursor: pointer;
+}
+
+.age-option:hover {
+    background: #f0f0f0;
+}
+
+.age-label {
+    margin-left: 8px;
+    margin-right: 8px;
+    font-weight: normal;
+}
+
     </style>
 
 <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
@@ -83,10 +132,11 @@
 
 <body>
 
-    <h1>GrippeWeb – Inzidenz</h1>
+    <h1>GrippeWeb – Altersgruppen</h1>
 
     <div id="controls">
-        <label class="season-label">
+
+    <label class="season-label">
         Saison:
     </label>
 
@@ -102,6 +152,27 @@
         <div
             id="seasonDropdownMenu"
             class="season-dropdown-menu"
+        >
+        </div>
+
+    </div>
+
+    <label class="age-label">
+        Altersgruppe:
+    </label>
+
+    <div class="age-dropdown">
+
+        <button
+            type="button"
+            id="ageDropdownButton"
+        >
+            00+
+        </button>
+
+        <div
+            id="ageDropdownMenu"
+            class="age-dropdown-menu"
         >
         </div>
 
