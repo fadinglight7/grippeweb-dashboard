@@ -23,6 +23,54 @@
             width: 100%;
             height: 600px;
         }
+
+        #controls {
+    margin-bottom: 20px;
+}
+
+.season-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+#seasonDropdownButton {
+    min-width: 180px;
+    padding: 8px 12px;
+    background: white;
+    border: 1px solid #999;
+    border-radius: 3px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.season-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 180px;
+    max-height: 250px;
+    overflow-y: auto;
+    background: white;
+    border: 1px solid #999;
+    z-index: 1000;
+}
+
+.season-dropdown-menu.show {
+    display: block;
+}
+
+.season-option {
+    display: block;
+    padding: 6px 10px;
+    cursor: pointer;
+}
+
+.season-option:hover {
+    background: #f0f0f0;
+}
+
+
     </style>
 
 <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
@@ -36,12 +84,22 @@
 
     <div id="controls">
 
-    <label for="seasonFilter">
-        Season:
-    </label>
+    <div class="season-dropdown">
 
-    <select id="seasonFilter" multiple size="6">
-    </select>
+        <button
+            type="button"
+            id="seasonDropdownButton"
+        >
+            2025/26
+        </button>
+
+        <div
+            id="seasonDropdownMenu"
+            class="season-dropdown-menu"
+        >
+        </div>
+
+    </div>
 
 </div>
 
@@ -85,8 +143,15 @@
             console.log("TSV loaded:", rows.length);
             console.log("First row:", rows[0]);
 
-            const seasonFilter =
-    document.getElementById("seasonFilter");
+            const seasonDropdownButton =
+    document.getElementById(
+        "seasonDropdownButton"
+    );
+
+const seasonDropdownMenu =
+    document.getElementById(
+        "seasonDropdownMenu"
+    );
 
 const seasons = [
     ...new Set(
@@ -96,14 +161,87 @@ const seasons = [
 
 seasons.forEach(season => {
 
-    const option =
-        document.createElement("option");
+    const label =
+        document.createElement("label");
 
-    option.value = season;
-    option.textContent = season;
+    label.className =
+        "season-option";
 
-    seasonFilter.appendChild(option);
+    const checkbox =
+        document.createElement("input");
+
+    checkbox.type = "checkbox";
+    checkbox.value = season;
+
+    if (season === "2025/26") {
+        checkbox.checked = true;
+    }
+
+    label.appendChild(checkbox);
+
+    const text =
+        document.createTextNode(
+            " " + season
+        );
+
+    label.appendChild(text);
+
+    seasonDropdownMenu.appendChild(label);
 });
+
+function updateSeasonButton() {
+
+    const selected = [
+        ...seasonDropdownMenu.querySelectorAll(
+            'input[type="checkbox"]:checked'
+        )
+    ];
+
+    if (selected.length === 0) {
+
+        seasonDropdownButton.textContent =
+            "Select season";
+
+    } else if (selected.length === 1) {
+
+        seasonDropdownButton.textContent =
+            selected[0].value;
+
+    } else {
+
+        seasonDropdownButton.textContent =
+            "Multiple seasons";
+    }
+}
+
+seasonDropdownMenu
+    .addEventListener("change", updateSeasonButton);
+
+seasonDropdownButton
+    .addEventListener("click", function() {
+
+        seasonDropdownMenu.classList.toggle(
+            "show"
+        );
+    });
+
+document.addEventListener(
+    "click",
+    function(event) {
+
+        if (
+            !event.target.closest(
+                ".season-dropdown"
+            )
+        ) {
+            seasonDropdownMenu.classList.remove(
+                "show"
+            );
+        }
+    }
+);
+
+updateSeasonButton();
 
 console.log("Seasons:", seasons);
 
