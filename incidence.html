@@ -34,7 +34,18 @@
 
     <h1>GrippeWeb – Inzidenz</h1>
 
-    <div id="chart"></div>
+    <div id="controls">
+
+    <label for="seasonFilter">
+        Season:
+    </label>
+
+    <select id="seasonFilter" multiple size="6">
+    </select>
+
+</div>
+
+<div id="chart"></div>
 
 
 
@@ -73,6 +84,28 @@
 
             console.log("TSV loaded:", rows.length);
             console.log("First row:", rows[0]);
+
+            const seasonFilter =
+    document.getElementById("seasonFilter");
+
+const seasons = [
+    ...new Set(
+        rows.map(row => row.Saison)
+    )
+].sort();
+
+seasons.forEach(season => {
+
+    const option =
+        document.createElement("option");
+
+    option.value = season;
+    option.textContent = season;
+
+    seasonFilter.appendChild(option);
+});
+
+console.log("Seasons:", seasons);
 
         })
         .catch(error => {
