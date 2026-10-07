@@ -344,11 +344,16 @@ function drawChart() {
         weekOrder.forEach((week, index) => {
 
             const fullWeek =
-                Object.keys(chartData[season] || {})
-                    .find(
-                        value =>
-                            value.endsWith("-" + week)
-                    );
+    Object.keys(chartData[season] || {})
+        .find(value => {
+
+            const weekNumber =
+                value.split("-W")[1];
+
+            return (
+                `W${Number(weekNumber)}` === week
+            );
+        });
 
             if (
                 fullWeek &&
