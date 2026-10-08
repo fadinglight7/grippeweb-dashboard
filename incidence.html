@@ -1,92 +1,108 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>GrippeWeb – Inzidenz</title>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background: #ffffff;
-            color: #222;
-        }
+<title>GrippeWeb – Inzidenz</title>
 
-        h1 {
-            margin-bottom: 10px;
-        }
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background: #ffffff;
+        color: #222;
+    }
 
-        #chart {
-            width: 100%;
-            height: 600px;
-        }
+    h1 {
+        margin-bottom: 10px;
+    }
 
-        #controls {
-    margin-bottom: 20px;
-}
+    #controls {
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
 
-.season-dropdown {
-    position: relative;
-    display: inline-block;
-}
+    #chart {
+        width: 100%;
+        height: 600px;
+    }
 
-#seasonDropdownButton {
-    min-width: 180px;
-    padding: 8px 12px;
-    background: white;
-    border: 1px solid #999;
-    border-radius: 3px;
-    text-align: left;
-    cursor: pointer;
-}
+    .season-dropdown {
+        position: relative;
+        display: inline-block;
+    }
 
-.season-dropdown-menu {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    min-width: 180px;
-    max-height: 250px;
-    overflow-y: auto;
-    background: white;
-    border: 1px solid #999;
-    z-index: 1000;
-}
+    #seasonDropdownButton {
+        min-width: 180px;
+        padding: 8px 12px;
+        background: white;
+        border: 1px solid #999;
+        border-radius: 3px;
+        text-align: left;
+        cursor: pointer;
+    }
 
-.season-dropdown-menu.show {
-    display: block;
-}
+    .season-dropdown-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        min-width: 180px;
+        max-height: 250px;
+        overflow-y: auto;
+        background: white;
+        border: 1px solid #999;
+        z-index: 1000;
+    }
 
-.season-option {
-    display: block;
-    padding: 6px 10px;
-    cursor: pointer;
-}
+    .season-dropdown-menu.show {
+        display: block;
+    }
 
-.season-option:hover {
-    background: #f0f0f0;
-}
+    .season-option {
+        display: block;
+        padding: 6px 10px;
+        cursor: pointer;
+    }
+
+    .season-option:hover {
+        background: #f0f0f0;
+    }
+
     .season-label {
-    margin-right: 8px;
-    font-weight: normal;
-}
+        margin-right: 4px;
+        font-weight: normal;
+    }
 
-    </style>
+    #diseaseSelect {
+        padding: 8px 12px;
+        background: white;
+        border: 1px solid #999;
+        border-radius: 3px;
+        font-size: 14px;
+    }
+</style>
 
 <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
-
+```
 
 </head>
 
 <body>
 
-    <h1>GrippeWeb – Inzidenz</h1>
+```
+<h1>GrippeWeb – Inzidenz</h1>
 
-    <div id="controls">
-        <label class="season-label">
+<div id="controls">
+
+    <label class="season-label" for="seasonDropdownButton">
         Saison:
     </label>
 
@@ -102,391 +118,261 @@
         <div
             id="seasonDropdownMenu"
             class="season-dropdown-menu"
-        >
-        </div>
+        ></div>
 
     </div>
+
+    <label class="season-label" for="diseaseSelect" style="margin-left: 12px;">
+        Erkrankung:
+    </label>
+
+    <select id="diseaseSelect">
+        <option value="ARE" selected>ARE</option>
+        <option value="ILI">ILI</option>
+    </select>
 
 </div>
 
 <div id="chart"></div>
-
-
-
 
 <script>
     const TSV_URL =
         "https://raw.githubusercontent.com/fadinglight7/grippeweb-dashboard/main/GrippeWeb_Daten_des_Wochenberichts.tsv";
 
     fetch(TSV_URL)
-        .then(response => response.text())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Failed to load TSV: " + response.status);
+            }
+            return response.text();
+        })
         .then(tsvText => {
 
-            const lines =
-                tsvText.trim().split(/\r?\n/);
+            const lines = tsvText.trim().split(/\r?\n/);
+            const headers = lines[0].split("\t");
 
-            const headers =
-                lines[0].split("\t");
+            const rows = lines.slice(1).map(line => {
+                const values = line.split("\t");
+                const row = {};
 
-            const rows =
-                lines.slice(1).map(line => {
-
-                    const values =
-                        line.split("\t");
-
-                    const row = {};
-
-                    headers.forEach(
-                        (header, index) => {
-                            row[header] =
-                                values[index] ?? "";
-                        }
-                    );
-
-                    return row;
+                headers.forEach((header, index) => {
+                    row[header] = values[index] ?? "";
                 });
 
+                return row;
+            });
+
             console.log("TSV loaded:", rows.length);
-            console.log("First row:", rows[0]);
 
             const seasonDropdownButton =
-    document.getElementById(
-        "seasonDropdownButton"
-    );
+                document.getElementById("seasonDropdownButton");
 
-const seasonDropdownMenu =
-    document.getElementById(
-        "seasonDropdownMenu"
-    );
+            const seasonDropdownMenu =
+                document.getElementById("seasonDropdownMenu");
 
-const seasons = [
-    ...new Set(
-        rows.map(row => row.Saison)
-    )
-].sort();
+            const diseaseSelect =
+                document.getElementById("diseaseSelect");
 
-seasons.forEach(season => {
+            const seasons = [
+                ...new Set(rows.map(row => row.Saison))
+            ].sort();
 
-    const label =
-        document.createElement("label");
+            seasons.forEach(season => {
 
-    label.className =
-        "season-option";
+                const label = document.createElement("label");
+                label.className = "season-option";
 
-    const checkbox =
-        document.createElement("input");
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.value = season;
+                checkbox.checked = season === "2025/26";
 
-    checkbox.type = "checkbox";
-    checkbox.value = season;
+                label.appendChild(checkbox);
+                label.appendChild(
+                    document.createTextNode(" " + season)
+                );
 
-    if (season === "2025/26") {
-        checkbox.checked = true;
-    }
+                seasonDropdownMenu.appendChild(label);
+            });
 
-    label.appendChild(checkbox);
-
-    const text =
-        document.createTextNode(
-            " " + season
-        );
-
-    label.appendChild(text);
-
-    seasonDropdownMenu.appendChild(label);
-});
-
-function updateSeasonButton() {
-
-    const selected = [
-        ...seasonDropdownMenu.querySelectorAll(
-            'input[type="checkbox"]:checked'
-        )
-    ];
-
-    if (selected.length === 0) {
-
-        seasonDropdownButton.textContent =
-            "Select season";
-
-    } else if (selected.length === 1) {
-
-        seasonDropdownButton.textContent =
-            selected[0].value;
-
-    } else {
-
-        seasonDropdownButton.textContent =
-            "Multiple seasons";
-    }
-}
-
-seasonDropdownMenu
-    .addEventListener("change", function() {
-
-        updateSeasonButton();
-
-        console.log(
-            "Selected seasons:",
-            getSelectedSeasons()
-        );
-        drawChart();
-    });
-
-seasonDropdownButton
-    .addEventListener("click", function() {
-
-        seasonDropdownMenu.classList.toggle(
-            "show"
-        );
-    });
-
-document.addEventListener(
-    "click",
-    function(event) {
-
-        if (
-            !event.target.closest(
-                ".season-dropdown"
-            )
-        ) {
-            seasonDropdownMenu.classList.remove(
-                "show"
-            );
-        }
-    }
-);
-
-updateSeasonButton();
-
-document.getElementById("diseaseSelect")
-    .addEventListener("change", function() {
-        drawChart();
-    });
-
-function getSelectedSeasons() {
-
-    return [
-        ...seasonDropdownMenu.querySelectorAll(
-            'input[type="checkbox"]:checked'
-        )
-    ].map(
-        checkbox => checkbox.value
-    );
-}
-
-function getChartData(selectedSeasons) {
-
-
-const selectedDisease =
-    document.getElementById("diseaseSelect").value;
-
-const filteredRows = rows.filter(row =>
-    selectedSeasons.includes(row.Saison) &&
-    row.Region === "Bundesweit" &&
-    row.Erkrankung === selectedDisease &&
-    row.Altersgruppe === "00+"
-);
-
-const chartData = {};
-
-filteredRows.forEach(row => {
-
-    const season = row.Saison;
-    const week = row.Kalenderwoche;
-
-    const incidence = Number(
-        String(row.Inzidenz)
-            .replace(",", ".")
-    );
-
-    if (!Number.isFinite(incidence)) {
-        return;
-    }
-
-    if (!chartData[season]) {
-        chartData[season] = {};
-    }
-
-    if (!chartData[season][week]) {
-        chartData[season][week] = 0;
-    }
-
-    chartData[season][week] += incidence;
-});
-
-return chartData;
-
-}
-
-
-    const chartData = {};
-
-    filteredRows.forEach(row => {
-
-        const season = row.Saison;
-        const week = row.Kalenderwoche;
-
-        const incidence = Number(
-            String(row.Inzidenz)
-                .replace(",", ".")
-        );
-
-        if (!Number.isFinite(incidence)) {
-            return;
-        }
-
-        if (!chartData[season]) {
-            chartData[season] = {};
-        }
-
-        if (!chartData[season][week]) {
-            chartData[season][week] = 0;
-        }
-
-        chartData[season][week] += incidence;
-    });
-
-    return chartData;
-}
-
-console.log(
-    "Chart data:",
-    getChartData(getSelectedSeasons())
-);
-
-function drawChart() {
-
-    const selectedSeasons = getSelectedSeasons();
-    const chartData = getChartData(selectedSeasons);
-
-    const weekOrder = [
-        "W40", "W41", "W42", "W43",
-        "W44", "W45", "W46", "W47",
-        "W48", "W49", "W50", "W51",
-        "W52", "W53",
-        "W1", "W2", "W3", "W4",
-        "W5", "W6", "W7", "W8",
-        "W9", "W10", "W11", "W12",
-        "W13", "W14", "W15", "W16",
-        "W17", "W18", "W19", "W20",
-        "W21", "W22", "W23", "W24",
-        "W25", "W26", "W27", "W28",
-        "W29", "W30", "W31", "W32",
-        "W33", "W34", "W35", "W36",
-        "W37", "W38", "W39"
-    ];
-
-    const traces = [];
-
-    selectedSeasons.forEach(season => {
-
-        const x = [];
-        const y = [];
-
-        weekOrder.forEach((week, index) => {
-
-            const fullWeek =
-    Object.keys(chartData[season] || {})
-        .find(value => {
-
-            const weekNumber =
-                value.split("-W")[1];
-
-            return (
-                `W${Number(weekNumber)}` === week
-            );
-        });
-
-            if (
-                fullWeek &&
-                chartData[season][fullWeek] !== undefined
-            ) {
-                x.push(index);
-                y.push(chartData[season][fullWeek]);
+            function getSelectedSeasons() {
+                return [
+                    ...seasonDropdownMenu.querySelectorAll(
+                        'input[type="checkbox"]:checked'
+                    )
+                ].map(checkbox => checkbox.value);
             }
-        });
 
-        traces.push({
-            x: x,
-            y: y,
-            mode: "lines+markers",
-            name: season,
-            connectgaps: false
-        });
-    });
+            function updateSeasonButton() {
 
-    Plotly.newPlot(
-        "chart",
-        traces,
-        {
-            title: "Inzidenz – Bundesweit",
+                const selected = getSelectedSeasons();
 
-            xaxis: {
-                title: "Kalenderwoche",
+                if (selected.length === 0) {
+                    seasonDropdownButton.textContent = "Select season";
+                } else if (selected.length === 1) {
+                    seasonDropdownButton.textContent = selected[0];
+                } else {
+                    seasonDropdownButton.textContent = "Multiple seasons";
+                }
+            }
 
-                tickmode: "array",
+            seasonDropdownMenu.addEventListener("change", () => {
+                updateSeasonButton();
+                drawChart();
+            });
 
-                tickvals: weekOrder.map(
-                    (_, index) => index
-                ),
+            seasonDropdownButton.addEventListener("click", () => {
+                seasonDropdownMenu.classList.toggle("show");
+            });
 
-                ticktext: weekOrder
-            },
+            document.addEventListener("click", event => {
+                if (!event.target.closest(".season-dropdown")) {
+                    seasonDropdownMenu.classList.remove("show");
+                }
+            });
 
-            yaxis: {
-                title: "Inzidenz",
-                rangemode: "tozero"
-            },
+            diseaseSelect.addEventListener("change", drawChart);
 
-            hovermode: "x unified"
-        },
-        {
-            responsive: true
-        }
-    );
-}
+            function getChartData(selectedSeasons) {
 
+                const selectedDisease = diseaseSelect.value;
 
-function getWeeksForSeason(season) {
+                const filteredRows = rows.filter(row =>
+                    selectedSeasons.includes(row.Saison) &&
+                    row.Region === "Bundesweit" &&
+                    row.Erkrankung === selectedDisease &&
+                    row.Altersgruppe === "00+"
+                );
 
-    const [startYear, endYearShort] =
-        season.split("/").map(Number);
+                const chartData = {};
 
-    const endYear =
-        Math.floor(startYear / 100) * 100 + endYearShort;
+                filteredRows.forEach(row => {
 
-    const weeks = [];
+                    const season = row.Saison;
+                    const week = row.Kalenderwoche;
 
-    for (let week = 40; week <= 53; week++) {
-        weeks.push(
-            `${startYear}-W${String(week).padStart(2, "0")}`
-        );
-    }
+                    const incidence = Number(
+                        String(row.Inzidenz).replace(",", ".")
+                    );
 
-    for (let week = 1; week <= 39; week++) {
-        weeks.push(
-            `${endYear}-W${String(week).padStart(2, "0")}`
-        );
-    }
+                    if (!Number.isFinite(incidence)) {
+                        return;
+                    }
 
-    return weeks;
-}
+                    if (!chartData[season]) {
+                        chartData[season] = {};
+                    }
 
-console.log(
-    "Selected seasons:",
-    getSelectedSeasons()
-);
+                    if (chartData[season][week] === undefined) {
+                        chartData[season][week] = 0;
+                    }
 
-console.log("Seasons:", seasons);
-drawChart();
+                    chartData[season][week] += incidence;
+                });
+
+                return chartData;
+            }
+
+            function drawChart() {
+
+                const selectedSeasons = getSelectedSeasons();
+                const chartData = getChartData(selectedSeasons);
+
+                const weekOrder = [
+                    "W40", "W41", "W42", "W43",
+                    "W44", "W45", "W46", "W47",
+                    "W48", "W49", "W50", "W51",
+                    "W52", "W53",
+                    "W1", "W2", "W3", "W4",
+                    "W5", "W6", "W7", "W8",
+                    "W9", "W10", "W11", "W12",
+                    "W13", "W14", "W15", "W16",
+                    "W17", "W18", "W19", "W20",
+                    "W21", "W22", "W23", "W24",
+                    "W25", "W26", "W27", "W28",
+                    "W29", "W30", "W31", "W32",
+                    "W33", "W34", "W35", "W36",
+                    "W37", "W38", "W39"
+                ];
+
+                const traces = [];
+
+                selectedSeasons.forEach(season => {
+
+                    const x = [];
+                    const y = [];
+
+                    weekOrder.forEach((week, index) => {
+
+                        const fullWeek = Object.keys(
+                            chartData[season] || {}
+                        ).find(value => {
+
+                            const weekNumber = value.split("-W")[1];
+
+                            return `W${Number(weekNumber)}` === week;
+                        });
+
+                        if (
+                            fullWeek &&
+                            chartData[season][fullWeek] !== undefined
+                        ) {
+                            x.push(index);
+                            y.push(chartData[season][fullWeek]);
+                        }
+                    });
+
+                    traces.push({
+                        x,
+                        y,
+                        mode: "lines+markers",
+                        name: season,
+                        connectgaps: false
+                    });
+                });
+
+                const diseaseName =
+                    diseaseSelect.value === "ARE"
+                        ? "ARE"
+                        : "ILI";
+
+                Plotly.react(
+                    "chart",
+                    traces,
+                    {
+                        title: `Inzidenz – Bundesweit (${diseaseName})`,
+
+                        xaxis: {
+                            title: "Kalenderwoche",
+                            tickmode: "array",
+                            tickvals: weekOrder.map((_, index) => index),
+                            ticktext: weekOrder
+                        },
+
+                        yaxis: {
+                            title: "Inzidenz",
+                            rangemode: "tozero"
+                        },
+
+                        hovermode: "x unified"
+                    },
+                    {
+                        responsive: true
+                    }
+                );
+            }
+
+            updateSeasonButton();
+            drawChart();
+
         })
         .catch(error => {
-            console.error(
-                "Error loading TSV:",
-                error
-            );
+            console.error("Error loading dashboard data:", error);
+            document.getElementById("chart").textContent =
+                "The chart data could not be loaded. Please refresh the page.";
         });
 </script>
+
 
 </body>
 </html>
