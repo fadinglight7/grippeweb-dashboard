@@ -1,162 +1,671 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>GrippeWeb Dashboard</title>
+<title>GrippeWeb Dashboard</title>
 
-    <link
-        rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    />
+<link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
 
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #ffffff;
-        }
+<style>
 
-        h1 {
-            margin: 20px 30px 5px;
-            font-size: 24px;
-        }
+* {
+    box-sizing: border-box;
+}
 
-        #subtitle {
-            margin: 0 30px 15px;
-            color: #555;
-        }
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #ffffff;
+    color: #222;
+}
 
-        #map {
-            width: 100%;
-            height: 650px;
-        }
+/* =========================================================
+   HEADER
+   ========================================================= */
 
-        .map-incidence-label {
-            background: transparent;
-            border: none;
-            box-shadow: none;
-            font-size: 14px;
-            font-weight: bold;
-            color: #222;
-            text-align: center;
-        }
+.header {
+    padding: 20px 30px 10px;
+}
 
-        .legend {
-            background: white;
-            padding: 10px;
-            line-height: 18px;
-            border-radius: 4px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.15);
-        }
+.header h1 {
+    margin: 0 0 5px;
+    font-size: 26px;
+}
 
-        .legend-row {
-            display: flex;
-            align-items: center;
-            margin: 2px 0;
-        }
+.header p {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+}
 
-        .legend-color {
-            width: 22px;
-            height: 16px;
-            margin-right: 7px;
-            border: 1px solid #999;
-        }
+/* =========================================================
+   NAVIGATION TABS
+   ========================================================= */
 
-        .week-control {
-            display: inline-block;
-            width: 350px;
-            vertical-align: middle;
-        }
+.tabs {
+    display: flex;
+    gap: 4px;
+    padding: 10px 30px 0;
+    border-bottom: 1px solid #ddd;
+    overflow-x: auto;
+}
 
-        #weekFilter {
-            width: 100%;
-        }
+.tab-button {
+    border: none;
+    background: #f2f2f2;
+    padding: 11px 18px;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 6px 6px 0 0;
+    white-space: nowrap;
+}
 
-        #weekTicks {
-            display: flex;
-            justify-content: space-between;
-            font-size: 9px;
-            margin-top: 2px;
-        }
+.tab-button:hover {
+    background: #e5e5e5;
+}
 
-        .week-tick {
-            width: 1px;
-            height: 5px;
-            background: #777;
-        }
+.tab-button.active {
+    background: #333;
+    color: white;
+}
 
-        #diseaseFilter {
-            padding: 2px 5px;
-        }
-    </style>
+/* =========================================================
+   TAB CONTENT
+   ========================================================= */
+
+.tab-content {
+    display: none;
+    padding: 20px 30px 30px;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* =========================================================
+   OVERVIEW
+   ========================================================= */
+
+.overview-card {
+    max-width: 850px;
+    margin: 25px auto;
+    padding: 30px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fafafa;
+}
+
+.overview-card h2 {
+    margin-top: 0;
+}
+
+.overview-card p {
+    line-height: 1.6;
+    color: #444;
+}
+
+.overview-card ul {
+    line-height: 1.8;
+    color: #444;
+}
+
+/* =========================================================
+   CONTROLS
+   ========================================================= */
+
+.controls {
+    margin-bottom: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.control-group label {
+    font-size: 14px;
+}
+
+select {
+    padding: 5px 7px;
+    font-size: 14px;
+}
+
+/* =========================================================
+   MAP
+   ========================================================= */
+
+#map {
+    width: 100%;
+    height: 650px;
+}
+
+.map-incidence-label {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    font-size: 14px;
+    font-weight: bold;
+    color: #222;
+    text-align: center;
+}
+
+.legend {
+    background: white;
+    padding: 10px;
+    line-height: 18px;
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.15);
+}
+
+.legend-row {
+    display: flex;
+    align-items: center;
+    margin: 2px 0;
+}
+
+.legend-color {
+    width: 22px;
+    height: 16px;
+    margin-right: 7px;
+    border: 1px solid #999;
+}
+
+.week-control {
+    display: inline-block;
+    width: 350px;
+    vertical-align: middle;
+}
+
+#weekFilter {
+    width: 100%;
+}
+
+#weekTicks {
+    display: flex;
+    justify-content: space-between;
+    font-size: 9px;
+    margin-top: 2px;
+}
+
+.week-tick {
+    width: 1px;
+    height: 5px;
+    background: #777;
+}
+
+/* =========================================================
+   CHART AREAS
+   ========================================================= */
+
+.chart-container {
+    width: 100%;
+    min-height: 550px;
+}
+
+.chart {
+    width: 100%;
+    height: 600px;
+}
+
+/* =========================================================
+   CUSTOM DROPDOWNS
+   ========================================================= */
+
+.custom-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-button {
+    min-width: 180px;
+    padding: 6px 10px;
+    background: white;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: left;
+    font-size: 14px;
+}
+
+.dropdown-button::after {
+    content: "▼";
+    float: right;
+    font-size: 9px;
+    margin-top: 3px;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    z-index: 1000;
+    top: calc(100% + 3px);
+    left: 0;
+    min-width: 220px;
+    max-height: 300px;
+    overflow-y: auto;
+    background: white;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    padding: 8px;
+}
+
+.custom-dropdown.open .dropdown-menu {
+    display: block;
+}
+
+.dropdown-option {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 4px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.dropdown-option:hover {
+    background: #f1f1f1;
+}
+
+.dropdown-option input {
+    cursor: pointer;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    .header {
+        padding: 15px;
+    }
+
+    .header h1 {
+        font-size: 21px;
+    }
+
+    .tabs {
+        padding: 10px 15px 0;
+    }
+
+    .tab-content {
+        padding: 15px;
+    }
+
+    .controls {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .control-group {
+        flex-wrap: wrap;
+    }
+
+    .week-control {
+        width: 250px;
+    }
+
+    #map {
+        height: 500px;
+    }
+
+    .chart {
+        height: 500px;
+    }
+
+    .overview-card {
+        padding: 20px;
+    }
+}
+
+</style>
 </head>
 
 <body>
 
-<h1>GrippeWeb – Inzidenz</h1>
+<!-- =========================================================
+     HEADER
+     ========================================================= -->
 
-<div id="subtitle">
+<div class="header">
 
-    <label>
-        Saison:
-        <select id="seasonFilter"></select>
-    </label>
+    <h1>GrippeWeb Dashboard</h1>
 
-    &nbsp; | &nbsp;
-
-    <label>
-        Kalenderwoche:
-        <div class="week-control">
-
-            <input
-                type="range"
-                id="weekFilter"
-                min="0"
-                max="0"
-                step="1"
-                value="0"
-            >
-
-            <div id="weekTicks"></div>
-
-        </div>
-
-        <span id="weekLabel">Week 19</span>
-    </label>
-
-    &nbsp; | &nbsp;
-
-    <label>
-        Erkrankung:
-        <select id="diseaseFilter">
-
-            <option value="ARE" selected>
-                ARE
-            </option>
-
-            <option value="ILI">
-                ILI
-            </option>
-
-        </select>
-    </label>
-
-    &nbsp; | &nbsp;
-
-    Altersgruppe: 00+
+    <p>
+        Interactive visualization of respiratory illness incidence in Germany
+    </p>
 
 </div>
 
-<div id="map"></div>
+
+<!-- =========================================================
+     NAVIGATION
+     ========================================================= -->
+
+<div class="tabs">
+
+    <button class="tab-button active" data-tab="overview">
+        Overview
+    </button>
+
+    <button class="tab-button" data-tab="regional-map">
+        Regional Map
+    </button>
+
+    <button class="tab-button" data-tab="incidence">
+        Incidence
+    </button>
+
+    <button class="tab-button" data-tab="age-groups">
+        Age Groups
+    </button>
+
+</div>
+
+
+<!-- =========================================================
+     OVERVIEW TAB
+     ========================================================= -->
+
+<div id="overview" class="tab-content active">
+
+    <div class="overview-card">
+
+        <h2>GrippeWeb</h2>
+
+        <p>
+            This dashboard presents incidence estimates from the
+            GrippeWeb surveillance system for respiratory illnesses
+            in Germany.
+        </p>
+
+        <p>
+            Use the tabs above to explore the data from different
+            perspectives.
+        </p>
+
+        <ul>
+            <li>
+                <strong>Regional Map</strong> – explore incidence across
+                German regions by season and calendar week.
+            </li>
+
+            <li>
+                <strong>Incidence</strong> – compare nationwide incidence
+                across different seasons.
+            </li>
+
+            <li>
+                <strong>Age Groups</strong> – examine nationwide incidence
+                across different age groups.
+            </li>
+        </ul>
+
+        <p>
+            The filters can be used to change the disease, season,
+            calendar week, or age group depending on the visualization.
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     REGIONAL MAP TAB
+     ========================================================= -->
+
+<div id="regional-map" class="tab-content">
+
+    <div class="controls">
+
+        <div class="control-group">
+
+            <label for="seasonFilter">
+                Saison:
+            </label>
+
+            <select id="seasonFilter"></select>
+
+        </div>
+
+
+        <div class="control-group">
+
+            <label>
+                Kalenderwoche:
+            </label>
+
+            <div class="week-control">
+
+                <input
+                    type="range"
+                    id="weekFilter"
+                    min="0"
+                    max="0"
+                    step="1"
+                    value="0"
+                >
+
+                <div id="weekTicks"></div>
+
+            </div>
+
+            <span id="weekLabel">
+                Week 19
+            </span>
+
+        </div>
+
+
+        <div class="control-group">
+
+            <label for="diseaseFilter">
+                Erkrankung:
+            </label>
+
+            <select id="diseaseFilter">
+
+                <option value="ARE" selected>
+                    ARE
+                </option>
+
+                <option value="ILI">
+                    ILI
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div class="control-group">
+
+            <span>
+                Altersgruppe: 00+
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <div id="map"></div>
+
+</div>
+
+
+<!-- =========================================================
+     INCIDENCE TAB
+     ========================================================= -->
+
+<div id="incidence" class="tab-content">
+
+    <div class="controls">
+
+        <div class="control-group">
+
+            <label>
+                Saison:
+            </label>
+
+            <div class="custom-dropdown" id="incidenceSeasonDropdown">
+
+                <button
+                    type="button"
+                    class="dropdown-button"
+                    id="incidenceSeasonButton"
+                >
+                    2025/26
+                </button>
+
+                <div
+                    class="dropdown-menu"
+                    id="incidenceSeasonMenu"
+                ></div>
+
+            </div>
+
+        </div>
+
+
+        <div class="control-group">
+
+            <label for="incidenceDiseaseFilter">
+                Erkrankung:
+            </label>
+
+            <select id="incidenceDiseaseFilter">
+
+                <option value="ARE" selected>
+                    ARE
+                </option>
+
+                <option value="ILI">
+                    ILI
+                </option>
+
+            </select>
+
+        </div>
+
+    </div>
+
+
+    <div class="chart-container">
+
+        <div
+            id="incidenceChart"
+            class="chart"
+        ></div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     AGE GROUPS TAB
+     ========================================================= -->
+
+<div id="age-groups" class="tab-content">
+
+    <div class="controls">
+
+        <div class="control-group">
+
+            <label>
+                Saison:
+            </label>
+
+            <select id="ageSeasonFilter"></select>
+
+        </div>
+
+
+        <div class="control-group">
+
+            <label>
+                Altersgruppe:
+            </label>
+
+            <div class="custom-dropdown" id="ageGroupDropdown">
+
+                <button
+                    type="button"
+                    class="dropdown-button"
+                    id="ageGroupButton"
+                >
+                    00+
+                </button>
+
+                <div
+                    class="dropdown-menu"
+                    id="ageGroupMenu"
+                ></div>
+
+            </div>
+
+        </div>
+
+
+        <div class="control-group">
+
+            <label for="ageDiseaseFilter">
+                Erkrankung:
+            </label>
+
+            <select id="ageDiseaseFilter">
+
+                <option value="ARE" selected>
+                    ARE
+                </option>
+
+                <option value="ILI">
+                    ILI
+                </option>
+
+            </select>
+
+        </div>
+
+    </div>
+
+
+    <div class="chart-container">
+
+        <div
+            id="ageChart"
+            class="chart"
+        ></div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     JAVASCRIPT LIBRARIES
+     ========================================================= -->
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 <script src="https://unpkg.com/topojson-client@3"></script>
+
 
 <script>
 
@@ -166,46 +675,327 @@ const TSV_URL =
 const GEOJSON_URL =
     "https://raw.githubusercontent.com/fadinglight7/grippeweb-dashboard/main/germany4regionmap.json";
 
+
+/* =========================================================
+   DEFAULT VALUES
+   ========================================================= */
+
 const DEFAULT_SEASON = "2025/26";
+
 const DEFAULT_WEEK = "2026-W19";
+
 const DEFAULT_ERKRANKUNG = "ARE";
+
 const DEFAULT_ALTERSGRUPPE = "00+";
 
 
-// ------------------------------------------------------------
-// TSV PARSER
-// ------------------------------------------------------------
+/* =========================================================
+   GLOBAL DATA
+   ========================================================= */
+
+let rows = [];
+
+let geojson = null;
+
+let dataLoaded = false;
+
+
+/* =========================================================
+   TSV PARSER
+   ========================================================= */
 
 function parseTSV(text) {
 
-    const lines =
-        text.trim().split(/\r?\n/);
+    const lines = text.trim().split(/\r?\n/);
 
-    const headers =
-        lines[0].split("\t");
+    const headers = lines[0].split("\t");
 
     return lines.slice(1).map(line => {
 
-        const values =
-            line.split("\t");
+        const values = line.split("\t");
 
         const row = {};
 
-        headers.forEach(
-            (header, index) => {
-                row[header] =
-                    values[index] ?? "";
-            }
-        );
+        headers.forEach((header, index) => {
+
+            row[header] = values[index] ?? "";
+
+        });
 
         return row;
+
     });
+
 }
 
 
-// ------------------------------------------------------------
-// THRESHOLDS
-// ------------------------------------------------------------
+/* =========================================================
+   WEEK ORDER
+   ========================================================= */
+
+function getWeeksForSeason(season) {
+
+    const [startYear, endYearShort] =
+        season.split("/").map(Number);
+
+    const endYear =
+        Math.floor(startYear / 100) * 100 + endYearShort;
+
+    const weeks = [];
+
+    /*
+       Season starts at week 40 of the first year
+       and continues through week 53 if present.
+    */
+
+    for (let week = 40; week <= 53; week++) {
+
+        weeks.push(
+            `${startYear}-W${String(week).padStart(2, "0")}`
+        );
+
+    }
+
+    /*
+       Then weeks 1–39 of the following year.
+    */
+
+    for (let week = 1; week <= 39; week++) {
+
+        weeks.push(
+            `${endYear}-W${String(week).padStart(2, "0")}`
+        );
+
+    }
+
+    return weeks;
+
+}
+
+
+/* =========================================================
+   WEEK LABEL
+   ========================================================= */
+
+function getWeekLabel(week) {
+
+    return "Week " + week.split("-W")[1];
+
+}
+
+
+/* =========================================================
+   TAB SYSTEM
+   ========================================================= */
+
+const tabButtons =
+    document.querySelectorAll(".tab-button");
+
+const tabContents =
+    document.querySelectorAll(".tab-content");
+
+
+tabButtons.forEach(button => {
+
+    button.addEventListener("click", function() {
+
+        const targetTab =
+            this.dataset.tab;
+
+
+        tabButtons.forEach(btn => {
+
+            btn.classList.remove("active");
+
+        });
+
+
+        tabContents.forEach(content => {
+
+            content.classList.remove("active");
+
+        });
+
+
+        this.classList.add("active");
+
+        document
+            .getElementById(targetTab)
+            .classList.add("active");
+
+
+        /*
+           Leaflet needs to recalculate its size
+           after becoming visible.
+        */
+
+        if (targetTab === "regional-map" && map) {
+
+            setTimeout(() => {
+
+                map.invalidateSize();
+
+                if (mapLayer) {
+
+                    map.fitBounds(
+                        mapLayer.getBounds()
+                    );
+
+                }
+
+            }, 100);
+
+        }
+
+
+        /*
+           Plotly charts also need resizing when their
+           containing tab becomes visible.
+        */
+
+        if (targetTab === "incidence") {
+
+            setTimeout(() => {
+
+                Plotly.Plots.resize(
+                    "incidenceChart"
+                );
+
+            }, 100);
+
+        }
+
+
+        if (targetTab === "age-groups") {
+
+            setTimeout(() => {
+
+                Plotly.Plots.resize(
+                    "ageChart"
+                );
+
+            }, 100);
+
+        }
+
+    });
+
+});
+
+
+/* =========================================================
+   LOAD DATA
+   ========================================================= */
+
+Promise.all([
+
+    fetch(TSV_URL).then(response => {
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Could not load TSV: HTTP " +
+                response.status
+            );
+
+        }
+
+        return response.text();
+
+    }),
+
+    fetch(GEOJSON_URL).then(response => {
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Could not load GeoJSON: HTTP " +
+                response.status
+            );
+
+        }
+
+        return response.json();
+
+    })
+
+])
+
+.then(([tsvText, geojsonData]) => {
+
+    rows = parseTSV(tsvText);
+
+    geojson = geojsonData;
+
+    dataLoaded = true;
+
+
+    initializeAllVisualizations();
+
+})
+
+.catch(error => {
+
+    console.error(error);
+
+    document.body.innerHTML = `
+
+        <div style="
+            padding:30px;
+            font-family:Arial;
+            color:#b00020;
+        ">
+
+            <h2>
+                Could not load dashboard data
+            </h2>
+
+            <p>
+                ${error.message}
+            </p>
+
+            <p>
+                Please refresh the page and try again.
+            </p>
+
+        </div>
+
+    `;
+
+});
+
+
+/* =========================================================
+   INITIALIZE EVERYTHING
+   ========================================================= */
+
+function initializeAllVisualizations() {
+
+    initializeMap();
+
+    initializeIncidenceChart();
+
+    initializeAgeGroupsChart();
+
+}
+
+
+/* =========================================================
+   =========================================================
+   REGIONAL MAP
+   =========================================================
+   ========================================================= */
+
+let map = null;
+
+let mapLayer = null;
+
+let incidenceLabels = null;
+
+let regionValues = {};
+
+let selectedMapWeek = DEFAULT_WEEK;
+
 
 const thresholds = [
 
@@ -287,7 +1077,9 @@ const thresholds = [
 function getColor(value) {
 
     if (value === 0) {
+
         return "#D3D3D3";
+
     }
 
     for (const threshold of thresholds) {
@@ -296,138 +1088,45 @@ function getColor(value) {
             value >= threshold.min &&
             value < threshold.max
         ) {
+
             return threshold.color;
+
         }
 
     }
 
     return "#D3D3D3";
+
 }
 
 
-// ------------------------------------------------------------
-// MAP
-// ------------------------------------------------------------
+function initializeMap() {
 
-const map =
-    L.map("map");
+    map = L.map("map");
 
-map.setView(
-    [51.2, 10.4],
-    5.5
-);
+    map.setView(
+        [51.2, 10.4],
+        5.5
+    );
 
-
-// ------------------------------------------------------------
-// LOAD TSV + GEOJSON
-// ------------------------------------------------------------
-
-Promise.all([
-
-    fetch(TSV_URL)
-        .then(response => {
-
-            if (!response.ok) {
-
-                throw new Error(
-                    "Could not load TSV: HTTP " +
-                    response.status
-                );
-
-            }
-
-            return response.text();
-
-        }),
-
-    fetch(GEOJSON_URL)
-        .then(response => {
-
-            if (!response.ok) {
-
-                throw new Error(
-                    "Could not load GeoJSON: HTTP " +
-                    response.status
-                );
-
-            }
-
-            return response.json();
-
-        })
-
-])
-
-.then(([tsvText, geojson]) => {
-
-    console.log("TSV loaded");
-    console.log("GeoJSON loaded");
-
-    const rows =
-        parseTSV(tsvText);
-
-
-    // --------------------------------------------------------
-    // SEASON FILTER
-    // --------------------------------------------------------
 
     const seasonFilter =
         document.getElementById(
             "seasonFilter"
         );
 
-    const seasons = [
-        ...new Set(
-            rows.map(
-                row => row.Saison
-            )
-        )
-    ].sort();
-
-    seasons.forEach(season => {
-
-        const option =
-            document.createElement(
-                "option"
-            );
-
-        option.value =
-            season;
-
-        option.textContent =
-            season;
-
-        seasonFilter.appendChild(
-            option
-        );
-
-    });
-
-    seasonFilter.value =
-        DEFAULT_SEASON;
-
-
-    // --------------------------------------------------------
-    // DISEASE FILTER
-    // --------------------------------------------------------
 
     const diseaseFilter =
         document.getElementById(
             "diseaseFilter"
         );
 
-    diseaseFilter.value =
-        DEFAULT_ERKRANKUNG;
-
-
-    // --------------------------------------------------------
-    // WEEK FILTER
-    // --------------------------------------------------------
 
     const weekFilter =
         document.getElementById(
             "weekFilter"
         );
+
 
     const weekLabel =
         document.getElementById(
@@ -435,66 +1134,49 @@ Promise.all([
         );
 
 
-    function getWeeksForSeason(
-        season
-    ) {
+    /*
+       Populate seasons
+    */
 
-        const [
-            startYear,
-            endYearShort
-        ] =
-            season
-                .split("/")
-                .map(Number);
-
-        const endYear =
-            Math.floor(
-                startYear / 100
-            ) * 100 +
-            endYearShort;
-
-        const weeks = [];
+    const seasons =
+        [...new Set(
+            rows.map(row => row.Saison)
+        )].sort();
 
 
-        for (
-            let week = 40;
-            week <= 53;
-            week++
-        ) {
+    seasons.forEach(season => {
 
-            weeks.push(
-                `${startYear}-W${String(
-                    week
-                ).padStart(2, "0")}`
-            );
+        const option =
+            document.createElement("option");
 
-        }
+        option.value = season;
+
+        option.textContent = season;
+
+        seasonFilter.appendChild(option);
+
+    });
 
 
-        for (
-            let week = 1;
-            week <= 39;
-            week++
-        ) {
+    seasonFilter.value =
+        DEFAULT_SEASON;
 
-            weeks.push(
-                `${endYear}-W${String(
-                    week
-                ).padStart(2, "0")}`
-            );
 
-        }
+    diseaseFilter.value =
+        DEFAULT_ERKRANKUNG;
 
-        return weeks;
-    }
 
+    /*
+       Weeks
+    */
 
     let availableWeeks =
         getWeeksForSeason(
             DEFAULT_SEASON
         );
 
-    let selectedWeek =
+
+    selectedMapWeek =
         DEFAULT_WEEK;
 
 
@@ -502,41 +1184,47 @@ Promise.all([
         availableWeeks.length - 1;
 
 
+    /*
+       Week tick marks
+    */
+
     const weekTicks =
         document.getElementById(
             "weekTicks"
         );
 
+
+    weekTicks.innerHTML = "";
+
+
     availableWeeks.forEach(() => {
 
         const tick =
-            document.createElement(
-                "span"
-            );
+            document.createElement("span");
 
         tick.className =
             "week-tick";
 
-        weekTicks.appendChild(
-            tick
-        );
+        weekTicks.appendChild(tick);
 
     });
 
 
     weekFilter.value =
         availableWeeks.indexOf(
-            selectedWeek
+            selectedMapWeek
         );
 
+
     weekLabel.textContent =
-        "Week " +
-        selectedWeek.split("-W")[1];
+        getWeekLabel(
+            selectedMapWeek
+        );
 
 
-    // --------------------------------------------------------
-    // FILTER
-    // --------------------------------------------------------
+    /*
+       Get regional values
+    */
 
     function getRegionValues(
         season,
@@ -554,8 +1242,7 @@ Promise.all([
 
                 row.Kalenderwoche === week &&
 
-                row.Erkrankung ===
-                    selectedDisease &&
+                row.Erkrankung === selectedDisease &&
 
                 row.Altersgruppe ===
                     DEFAULT_ALTERSGRUPPE
@@ -563,13 +1250,14 @@ Promise.all([
             );
 
 
-        const regionValues = {};
+        const values = {};
 
 
         filtered.forEach(row => {
 
             const region =
                 row.Region;
+
 
             const incidence =
                 Number(
@@ -578,87 +1266,60 @@ Promise.all([
                 );
 
 
-            if (!regionValues[region]) {
+            if (!values[region]) {
 
-                regionValues[region] =
-                    0;
+                values[region] = 0;
 
             }
 
 
             if (
-                Number.isFinite(
-                    incidence
-                )
+                Number.isFinite(incidence)
             ) {
 
-                regionValues[region] +=
-                    incidence;
+                values[region] += incidence;
 
             }
 
         });
 
 
-        console.log(
-            "Region incidence:",
-            regionValues
-        );
+        return values;
 
-
-        return regionValues;
     }
 
 
-    let regionValues =
+    regionValues =
         getRegionValues(
             DEFAULT_SEASON,
-            selectedWeek
+            selectedMapWeek
         );
 
 
-    // --------------------------------------------------------
-    // INSPECT GEOJSON
-    // --------------------------------------------------------
-
-    console.log(
-        "TopoJSON object names:",
-        Object.keys(
-            geojson.objects
-        )
-    );
-
+    /*
+       Convert TopoJSON to GeoJSON
+    */
 
     const geojsonData =
         topojson.feature(
             geojson,
-            geojson.objects
-                .DEUADM1gbOpen
+            geojson.objects.DEUADM1gbOpen
         );
 
 
-    console.log(
-        "Converted GeoJSON feature count:",
-        geojsonData.features.length
-    );
+    /*
+       Labels
+    */
+
+    incidenceLabels =
+        L.layerGroup().addTo(map);
 
 
-    console.log(
-        "First converted feature:",
-        geojsonData.features[0]
-    );
+    /*
+       Map
+    */
 
-
-    // --------------------------------------------------------
-    // DRAW MAP
-    // --------------------------------------------------------
-
-    const incidenceLabels =
-        L.layerGroup()
-            .addTo(map);
-
-
-    const mapLayer =
+    mapLayer =
         L.geoJSON(
             geojsonData,
             {
@@ -666,24 +1327,21 @@ Promise.all([
                 style: function(feature) {
 
                     const properties =
-                        feature.properties ||
-                        {};
+                        feature.properties || {};
+
 
                     const region =
                         properties.id;
 
+
                     const incidence =
-                        regionValues[
-                            region
-                        ] ?? 0;
+                        regionValues[region] ?? 0;
 
 
                     return {
 
                         fillColor:
-                            getColor(
-                                incidence
-                            ),
+                            getColor(incidence),
 
                         weight: 1,
 
@@ -697,34 +1355,28 @@ Promise.all([
 
 
                 onEachFeature:
-                    function(
-                        feature,
-                        layer
-                    ) {
+                    function(feature, layer) {
 
                         const properties =
-                            feature.properties ||
-                            {};
+                            feature.properties || {};
+
 
                         const region =
                             properties.id;
 
+
                         const incidence =
-                            regionValues[
-                                region
-                            ] ?? 0;
+                            regionValues[region] ?? 0;
 
 
                         layer.bindTooltip(
 
                             `<strong>
-                                ${region ??
-                                "Unknown region"}
-                             </strong><br>
+                                ${region ?? "Unknown region"}
+                             </strong>
+                             <br>
                              Inzidenz:
-                             ${Math.round(
-                                incidence
-                             )}`,
+                             ${Math.round(incidence)}`,
 
                             {
                                 sticky: true
@@ -733,14 +1385,18 @@ Promise.all([
                         );
 
 
+                        /*
+                           Direct incidence label
+                        */
+
                         const label =
                             L.marker(
-
                                 layer
                                     .getBounds()
                                     .getCenter(),
 
                                 {
+
                                     region: region,
 
                                     icon:
@@ -750,26 +1406,21 @@ Promise.all([
                                                 "map-incidence-label",
 
                                             html:
-                                                `${Math.round(
-                                                    incidence
-                                                )}`,
+                                                `${Math.round(incidence)}`,
 
-                                            iconSize:
-                                                null
+                                            iconSize: null
 
                                         }),
 
-                                    interactive:
-                                        false
+                                    interactive: false
+
                                 }
 
                             );
 
 
                         incidenceLabels
-                            .addLayer(
-                                label
-                            );
+                            .addLayer(label);
 
 
                         layer.on({
@@ -785,6 +1436,7 @@ Promise.all([
                                             color: "#222"
 
                                         });
+
 
                                     event.target
                                         .bringToFront();
@@ -811,9 +1463,9 @@ Promise.all([
         ).addTo(map);
 
 
-    // --------------------------------------------------------
-    // UPDATE LABELS
-    // --------------------------------------------------------
+    /*
+       Update labels
+    */
 
     function updateIncidenceLabels() {
 
@@ -823,10 +1475,9 @@ Promise.all([
                 const region =
                     label.options.region;
 
+
                 const incidence =
-                    regionValues[
-                        region
-                    ] ?? 0;
+                    regionValues[region] ?? 0;
 
 
                 label.setIcon(
@@ -837,12 +1488,9 @@ Promise.all([
                             "map-incidence-label",
 
                         html:
-                            `${Math.round(
-                                incidence
-                            )}`,
+                            `${Math.round(incidence)}`,
 
-                        iconSize:
-                            null
+                        iconSize: null
 
                     })
 
@@ -854,16 +1502,16 @@ Promise.all([
     }
 
 
-    // --------------------------------------------------------
-    // UPDATE MAP
-    // --------------------------------------------------------
+    /*
+       Update map
+    */
 
     function updateMap() {
 
         regionValues =
             getRegionValues(
                 seasonFilter.value,
-                selectedWeek
+                selectedMapWeek
             );
 
 
@@ -875,20 +1523,18 @@ Promise.all([
 
                 const region =
                     layer.feature
-                        ?.properties?.id;
+                        ?.properties
+                        ?.id;
+
 
                 const incidence =
-                    regionValues[
-                        region
-                    ] ?? 0;
+                    regionValues[region] ?? 0;
 
 
                 layer.setStyle({
 
                     fillColor:
-                        getColor(
-                            incidence
-                        ),
+                        getColor(incidence),
 
                     weight: 1,
 
@@ -899,19 +1545,16 @@ Promise.all([
                 });
 
 
-                layer.setTooltipContent(`
+                layer.setTooltipContent(
 
-                    <strong>
-                        ${region ??
-                        "Unknown region"}
-                    </strong><br>
+                    `<strong>
+                        ${region ?? "Unknown region"}
+                     </strong>
+                     <br>
+                     Inzidenz:
+                     ${Math.round(incidence)}`
 
-                    Inzidenz:
-                    ${Math.round(
-                        incidence
-                    )}
-
-                `);
+                );
 
             }
         );
@@ -919,9 +1562,9 @@ Promise.all([
     }
 
 
-    // --------------------------------------------------------
-    // WEEK CHANGE
-    // --------------------------------------------------------
+    /*
+       Week slider
+    */
 
     weekFilter.addEventListener(
         "input",
@@ -930,13 +1573,15 @@ Promise.all([
             const index =
                 Number(this.value);
 
-            selectedWeek =
+
+            selectedMapWeek =
                 availableWeeks[index];
 
 
             weekLabel.textContent =
-                "Week " +
-                selectedWeek.split("-W")[1];
+                getWeekLabel(
+                    selectedMapWeek
+                );
 
 
             updateMap();
@@ -945,9 +1590,9 @@ Promise.all([
     );
 
 
-    // --------------------------------------------------------
-    // SEASON CHANGE
-    // --------------------------------------------------------
+    /*
+       Season
+    */
 
     seasonFilter.addEventListener(
         "change",
@@ -958,9 +1603,8 @@ Promise.all([
 
 
             const weekNumber =
-                selectedWeek.split(
-                    "-W"
-                )[1];
+                selectedMapWeek
+                    .split("-W")[1];
 
 
             availableWeeks =
@@ -973,20 +1617,19 @@ Promise.all([
                 availableWeeks.find(
                     week =>
                         week.endsWith(
-                            "-W" +
-                            weekNumber
+                            "-W" + weekNumber
                         )
                 );
 
 
             if (matchingWeek) {
 
-                selectedWeek =
+                selectedMapWeek =
                     matchingWeek;
 
             } else {
 
-                selectedWeek =
+                selectedMapWeek =
                     availableWeeks[
                         availableWeeks.length - 1
                     ];
@@ -997,17 +1640,40 @@ Promise.all([
             weekFilter.max =
                 availableWeeks.length - 1;
 
+
             weekFilter.value =
                 availableWeeks.indexOf(
-                    selectedWeek
+                    selectedMapWeek
                 );
 
 
             weekLabel.textContent =
-                "Week " +
-                selectedWeek.split(
-                    "-W"
-                )[1];
+                getWeekLabel(
+                    selectedMapWeek
+                );
+
+
+            /*
+               Rebuild tick marks because
+               2025/26 has fewer available weeks.
+            */
+
+            weekTicks.innerHTML = "";
+
+
+            availableWeeks.forEach(() => {
+
+                const tick =
+                    document.createElement(
+                        "span"
+                    );
+
+                tick.className =
+                    "week-tick";
+
+                weekTicks.appendChild(tick);
+
+            });
 
 
             updateMap();
@@ -1016,37 +1682,32 @@ Promise.all([
     );
 
 
-    // --------------------------------------------------------
-    // DISEASE CHANGE
-    // --------------------------------------------------------
+    /*
+       Disease
+    */
 
     diseaseFilter.addEventListener(
         "change",
         function() {
 
-            console.log(
-                "Disease changed to:",
-                this.value
-            );
-
             updateMap();
 
         }
     );
 
 
-    // --------------------------------------------------------
-    // FIT MAP
-    // --------------------------------------------------------
+    /*
+       Fit map
+    */
 
     map.fitBounds(
         mapLayer.getBounds()
     );
 
 
-    // --------------------------------------------------------
-    // LEGEND
-    // --------------------------------------------------------
+    /*
+       Legend
+    */
 
     const legend =
         L.control({
@@ -1070,93 +1731,53 @@ Promise.all([
 
             const labels = [
 
-                [
-                    "= 0",
-                    "#D3D3D3"
-                ],
+                ["= 0", "#D3D3D3"],
 
-                [
-                    "1 < 1500",
-                    "#FFDFAD"
-                ],
+                ["1 < 1500", "#FFDFAD"],
 
-                [
-                    "1500 < 3000",
-                    "#FDD291"
-                ],
+                ["1500 < 3000", "#FDD291"],
 
-                [
-                    "3000 < 4500",
-                    "#FFBB63"
-                ],
+                ["3000 < 4500", "#FFBB63"],
 
-                [
-                    "4500 < 6000",
-                    "#FFA037"
-                ],
+                ["4500 < 6000", "#FFA037"],
 
-                [
-                    "6000 < 7500",
-                    "#F68511"
-                ],
+                ["6000 < 7500", "#F68511"],
 
-                [
-                    "7500 < 9000",
-                    "#E46F00"
-                ],
+                ["7500 < 9000", "#E46F00"],
 
-                [
-                    "9000 < 10500",
-                    "#CB5D00"
-                ],
+                ["9000 < 10500", "#CB5D00"],
 
-                [
-                    "10500 < 12000",
-                    "#B14C00"
-                ],
+                ["10500 < 12000", "#B14C00"],
 
-                [
-                    "12000 < 13500",
-                    "#953D00"
-                ],
+                ["12000 < 13500", "#953D00"],
 
-                [
-                    "13500 < 15000",
-                    "#7A2F00"
-                ],
+                ["13500 < 15000", "#7A2F00"],
 
-                [
-                    ">= 15000",
-                    "#612300"
-                ]
+                [">= 15000", "#612300"]
 
             ];
 
 
-            labels.forEach(
-                item => {
+            labels.forEach(item => {
 
-                    div.innerHTML += `
+                div.innerHTML += `
 
-                        <div class="legend-row">
+                    <div class="legend-row">
 
-                            <span
-                                class="legend-color"
-                                style="
-                                    background:${item[1]}
-                                "
-                            ></span>
+                        <span
+                            class="legend-color"
+                            style="background:${item[1]}"
+                        ></span>
 
-                            <span>
-                                ${item[0]}
-                            </span>
+                        <span>
+                            ${item[0]}
+                        </span>
 
-                        </div>
+                    </div>
 
-                    `;
+                `;
 
-                }
-            );
+            });
 
 
             return div;
@@ -1166,41 +1787,933 @@ Promise.all([
 
     legend.addTo(map);
 
-})
-
-.catch(error => {
-
-    console.error(error);
+}
 
 
-    document.getElementById(
-        "map"
-    ).innerHTML = `
+/* =========================================================
+   =========================================================
+   INCIDENCE CHART
+   =========================================================
+   ========================================================= */
 
-        <div style="
-            padding:30px;
-            font-family:Arial;
-            color:#b00020;
-        ">
+let incidenceSelectedSeasons =
+    [DEFAULT_SEASON];
 
-            <h2>
-                Could not load dashboard data
-            </h2>
 
-            <p>
-                ${error.message}
-            </p>
+function initializeIncidenceChart() {
 
-            <p>
-                Open the browser developer console
-                (F12) for more information.
-            </p>
+    const menu =
+        document.getElementById(
+            "incidenceSeasonMenu"
+        );
 
-        </div>
 
-    `;
+    const button =
+        document.getElementById(
+            "incidenceSeasonButton"
+        );
 
-});
+
+    const diseaseFilter =
+        document.getElementById(
+            "incidenceDiseaseFilter"
+        );
+
+
+    /*
+       Seasons
+    */
+
+    const seasons =
+        [...new Set(
+            rows.map(row => row.Saison)
+        )].sort();
+
+
+    seasons.forEach(season => {
+
+        const label =
+            document.createElement(
+                "label"
+            );
+
+
+        label.className =
+            "dropdown-option";
+
+
+        const checkbox =
+            document.createElement(
+                "input"
+            );
+
+
+        checkbox.type =
+            "checkbox";
+
+
+        checkbox.value =
+            season;
+
+
+        checkbox.checked =
+            season === DEFAULT_SEASON;
+
+
+        checkbox.addEventListener(
+            "change",
+            function() {
+
+                updateIncidenceSeasonSelection();
+
+                drawIncidenceChart();
+
+            }
+        );
+
+
+        label.appendChild(
+            checkbox
+        );
+
+
+        const text =
+            document.createTextNode(
+                season
+            );
+
+
+        label.appendChild(
+            text
+        );
+
+
+        menu.appendChild(
+            label
+        );
+
+    });
+
+
+    /*
+       Dropdown button
+    */
+
+    button.addEventListener(
+        "click",
+        function(event) {
+
+            event.stopPropagation();
+
+            document
+                .getElementById(
+                    "incidenceSeasonDropdown"
+                )
+                .classList.toggle("open");
+
+        }
+    );
+
+
+    /*
+       Close dropdown elsewhere
+    */
+
+    document.addEventListener(
+        "click",
+        function(event) {
+
+            const dropdown =
+                document.getElementById(
+                    "incidenceSeasonDropdown"
+                );
+
+
+            if (!dropdown.contains(event.target)) {
+
+                dropdown.classList.remove(
+                    "open"
+                );
+
+            }
+
+        }
+    );
+
+
+    diseaseFilter.addEventListener(
+        "change",
+        drawIncidenceChart
+    );
+
+
+    updateIncidenceSeasonSelection();
+
+    drawIncidenceChart();
+
+}
+
+
+function updateIncidenceSeasonSelection() {
+
+    const checkboxes =
+        document.querySelectorAll(
+            "#incidenceSeasonMenu input[type='checkbox']"
+        );
+
+
+    incidenceSelectedSeasons =
+        Array.from(checkboxes)
+
+            .filter(
+                checkbox =>
+                    checkbox.checked
+            )
+
+            .map(
+                checkbox =>
+                    checkbox.value
+            );
+
+
+    const button =
+        document.getElementById(
+            "incidenceSeasonButton"
+        );
+
+
+    if (
+        incidenceSelectedSeasons.length === 0
+    ) {
+
+        button.textContent =
+            "Select season";
+
+    } else if (
+        incidenceSelectedSeasons.length === 1
+    ) {
+
+        button.textContent =
+            incidenceSelectedSeasons[0];
+
+    } else {
+
+        button.textContent =
+            incidenceSelectedSeasons.length +
+            " seasons selected";
+
+    }
+
+}
+
+
+function drawIncidenceChart() {
+
+    if (
+        incidenceSelectedSeasons.length === 0
+    ) {
+
+        Plotly.react(
+            "incidenceChart",
+            [],
+            {
+
+                title:
+                    "Please select at least one season",
+
+                xaxis: {
+                    title: "Kalenderwoche"
+                },
+
+                yaxis: {
+                    title: "Inzidenz"
+                }
+
+            },
+
+            {
+                responsive: true
+            }
+        );
+
+        return;
+
+    }
+
+
+    const disease =
+        document.getElementById(
+            "incidenceDiseaseFilter"
+        ).value;
+
+
+    const traces = [];
+
+
+    incidenceSelectedSeasons.forEach(
+        season => {
+
+            const filteredRows =
+                rows.filter(row =>
+
+                    row.Saison === season &&
+
+                    row.Region === "Bundesweit" &&
+
+                    row.Erkrankung === disease &&
+
+                    row.Altersgruppe ===
+                        "00+"
+
+                );
+
+
+            const weekOrder =
+                getWeeksForSeason(
+                    season
+                );
+
+
+            const dataByWeek = {};
+
+
+            filteredRows.forEach(row => {
+
+                const incidence =
+                    Number(
+                        String(row.Inzidenz)
+                            .replace(",", ".")
+                    );
+
+
+                if (
+                    Number.isFinite(incidence)
+                ) {
+
+                    dataByWeek[
+                        row.Kalenderwoche
+                    ] = incidence;
+
+                }
+
+            });
+
+
+            const x = [];
+
+            const y = [];
+
+
+            weekOrder.forEach(week => {
+
+                if (
+                    dataByWeek[week] !== undefined
+                ) {
+
+                    x.push(
+                        "W" +
+                        week.split("-W")[1]
+                    );
+
+                    y.push(
+                        dataByWeek[week]
+                    );
+
+                }
+
+            });
+
+
+            traces.push({
+
+                x: x,
+
+                y: y,
+
+                mode: "lines+markers",
+
+                name: season,
+
+                connectgaps: false
+
+            });
+
+        }
+    );
+
+
+    Plotly.react(
+
+        "incidenceChart",
+
+        traces,
+
+        {
+
+            title:
+                `Inzidenz – Bundesweit – ${disease}`,
+
+            xaxis: {
+
+                title:
+                    "Kalenderwoche"
+
+            },
+
+            yaxis: {
+
+                title:
+                    "Inzidenz",
+
+                rangemode:
+                    "tozero"
+
+            },
+
+            hovermode:
+                "x unified",
+
+            margin: {
+
+                l: 70,
+
+                r: 30,
+
+                t: 70,
+
+                b: 70
+
+            },
+
+            legend: {
+
+                orientation: "h",
+
+                y: -0.2
+
+            }
+
+        },
+
+        {
+
+            responsive: true,
+
+            displayModeBar: false
+
+        }
+
+    );
+
+}
+
+
+/* =========================================================
+   =========================================================
+   AGE GROUP CHART
+   =========================================================
+   ========================================================= */
+
+let selectedAgeGroups =
+    [DEFAULT_ALTERSGRUPPE];
+
+
+function initializeAgeGroupsChart() {
+
+    const seasonFilter =
+        document.getElementById(
+            "ageSeasonFilter"
+        );
+
+
+    const ageMenu =
+        document.getElementById(
+            "ageGroupMenu"
+        );
+
+
+    const ageButton =
+        document.getElementById(
+            "ageGroupButton"
+        );
+
+
+    const diseaseFilter =
+        document.getElementById(
+            "ageDiseaseFilter"
+        );
+
+
+    /*
+       Seasons
+    */
+
+    const seasons =
+        [...new Set(
+            rows.map(row => row.Saison)
+        )].sort();
+
+
+    seasons.forEach(season => {
+
+        const option =
+            document.createElement(
+                "option"
+            );
+
+
+        option.value =
+            season;
+
+
+        option.textContent =
+            season;
+
+
+        seasonFilter.appendChild(
+            option
+        );
+
+    });
+
+
+    seasonFilter.value =
+        DEFAULT_SEASON;
+
+
+    /*
+       Age groups
+    */
+
+    const ageGroups =
+        [...new Set(
+            rows.map(
+                row => row.Altersgruppe
+            )
+        )];
+
+
+    /*
+       Put 00+ first
+    */
+
+    ageGroups.sort(
+        (a, b) => {
+
+            if (a === "00+") return -1;
+
+            if (b === "00+") return 1;
+
+            return a.localeCompare(
+                b,
+                undefined,
+                {
+                    numeric: true
+                }
+            );
+
+        }
+    );
+
+
+    ageGroups.forEach(ageGroup => {
+
+        const label =
+            document.createElement(
+                "label"
+            );
+
+
+        label.className =
+            "dropdown-option";
+
+
+        const checkbox =
+            document.createElement(
+                "input"
+            );
+
+
+        checkbox.type =
+            "checkbox";
+
+
+        checkbox.value =
+            ageGroup;
+
+
+        checkbox.checked =
+            ageGroup === DEFAULT_ALTERSGRUPPE;
+
+
+        checkbox.addEventListener(
+            "change",
+            function() {
+
+                updateAgeGroupSelection();
+
+                drawAgeGroupsChart();
+
+            }
+        );
+
+
+        label.appendChild(
+            checkbox
+        );
+
+
+        label.appendChild(
+            document.createTextNode(
+                ageGroup
+            )
+        );
+
+
+        ageMenu.appendChild(
+            label
+        );
+
+    });
+
+
+    /*
+       Dropdown
+    */
+
+    ageButton.addEventListener(
+        "click",
+        function(event) {
+
+            event.stopPropagation();
+
+            document
+                .getElementById(
+                    "ageGroupDropdown"
+                )
+                .classList.toggle("open");
+
+        }
+    );
+
+
+    /*
+       Close elsewhere
+    */
+
+    document.addEventListener(
+        "click",
+        function(event) {
+
+            const dropdown =
+                document.getElementById(
+                    "ageGroupDropdown"
+                );
+
+
+            if (
+                !dropdown.contains(
+                    event.target
+                )
+            ) {
+
+                dropdown.classList.remove(
+                    "open"
+                );
+
+            }
+
+        }
+    );
+
+
+    /*
+       Season
+    */
+
+    seasonFilter.addEventListener(
+        "change",
+        drawAgeGroupsChart
+    );
+
+
+    /*
+       Disease
+    */
+
+    diseaseFilter.addEventListener(
+        "change",
+        drawAgeGroupsChart
+    );
+
+
+    updateAgeGroupSelection();
+
+    drawAgeGroupsChart();
+
+}
+
+
+function updateAgeGroupSelection() {
+
+    const checkboxes =
+        document.querySelectorAll(
+            "#ageGroupMenu input[type='checkbox']"
+        );
+
+
+    selectedAgeGroups =
+        Array.from(checkboxes)
+
+            .filter(
+                checkbox =>
+                    checkbox.checked
+            )
+
+            .map(
+                checkbox =>
+                    checkbox.value
+            );
+
+
+    const button =
+        document.getElementById(
+            "ageGroupButton"
+        );
+
+
+    if (
+        selectedAgeGroups.length === 0
+    ) {
+
+        button.textContent =
+            "Select age group";
+
+    } else if (
+        selectedAgeGroups.length === 1
+    ) {
+
+        button.textContent =
+            selectedAgeGroups[0];
+
+    } else {
+
+        button.textContent =
+            selectedAgeGroups.length +
+            " age groups selected";
+
+    }
+
+}
+
+
+function drawAgeGroupsChart() {
+
+    if (
+        selectedAgeGroups.length === 0
+    ) {
+
+        Plotly.react(
+            "ageChart",
+            [],
+            {
+
+                title:
+                    "Please select at least one age group",
+
+                xaxis: {
+                    title: "Kalenderwoche"
+                },
+
+                yaxis: {
+                    title: "Inzidenz"
+                }
+
+            },
+
+            {
+                responsive: true
+            }
+        );
+
+        return;
+
+    }
+
+
+    const season =
+        document.getElementById(
+            "ageSeasonFilter"
+        ).value;
+
+
+    const disease =
+        document.getElementById(
+            "ageDiseaseFilter"
+        ).value;
+
+
+    const traces = [];
+
+
+    selectedAgeGroups.forEach(
+        ageGroup => {
+
+            const filteredRows =
+                rows.filter(row =>
+
+                    row.Saison === season &&
+
+                    row.Altersgruppe ===
+                        ageGroup &&
+
+                    row.Region ===
+                        "Bundesweit" &&
+
+                    row.Erkrankung ===
+                        disease
+
+                );
+
+
+            const weekOrder =
+                getWeeksForSeason(
+                    season
+                );
+
+
+            const dataByWeek = {};
+
+
+            filteredRows.forEach(row => {
+
+                const incidence =
+                    Number(
+                        String(row.Inzidenz)
+                            .replace(",", ".")
+                    );
+
+
+                if (
+                    Number.isFinite(incidence)
+                ) {
+
+                    dataByWeek[
+                        row.Kalenderwoche
+                    ] = incidence;
+
+                }
+
+            });
+
+
+            const x = [];
+
+            const y = [];
+
+
+            weekOrder.forEach(week => {
+
+                if (
+                    dataByWeek[week] !== undefined
+                ) {
+
+                    x.push(
+                        "W" +
+                        week.split("-W")[1]
+                    );
+
+                    y.push(
+                        dataByWeek[week]
+                    );
+
+                }
+
+            });
+
+
+            traces.push({
+
+                x: x,
+
+                y: y,
+
+                mode: "lines+markers",
+
+                name: ageGroup,
+
+                connectgaps: false
+
+            });
+
+        }
+    );
+
+
+    Plotly.react(
+
+        "ageChart",
+
+        traces,
+
+        {
+
+            title:
+                `Inzidenz – Bundesweit – ${disease}`,
+
+            xaxis: {
+
+                title:
+                    "Kalenderwoche"
+
+            },
+
+            yaxis: {
+
+                title:
+                    "Inzidenz",
+
+                rangemode:
+                    "tozero"
+
+            },
+
+            hovermode:
+                "x unified",
+
+            margin: {
+
+                l: 70,
+
+                r: 30,
+
+                t: 70,
+
+                b: 70
+
+            },
+
+            legend: {
+
+                orientation: "h",
+
+                y: -0.2
+
+            }
+
+        },
+
+        {
+
+            responsive: true,
+
+            displayModeBar: false
+
+        }
+
+    );
+
+}
 
 </script>
 
