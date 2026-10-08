@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>GrippeWeb Dashboard</title>
+
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #ffffff;
+        }
+
+        h1 {
+            margin: 20px 30px 5px;
+            font-size: 24px;
+        }
+
+        #subtitle {
+            margin: 0 30px 15px;
+            color: #555;
+        }
+
+        #map {
+            width: 100%;
+            height: 650px;
+        }
+
+        .map-incidence-label {
+            background: transparent;
+            border: none;
+            box-shadow: none;
+            font-size: 14px;
+            font-weight: bold;
+            color: #222;
+            text-align: center;
+        }
+
+        .legend {
+            background: white;
+            padding: 10px;
+            line-height: 18px;
+            border-radius: 4px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.15);
+        }
+
+        .legend-row {
+            display: flex;
+            align-items: center;
+            margin: 2px 0;
+        }
+
+        .legend-color {
+            width: 22px;
+            height: 16px;
+            margin-right: 7px;
+            border: 1px solid #999;
+        }
+
+        .week-control {
+            display: inline-block;
+            width: 350px;
+            vertical-align: middle;
+        }
+
+        #weekFilter {
+            width: 100%;
+        }
+
+        #weekTicks {
+            display: flex;
+            justify-content: space-between;
+            font-size: 9px;
+            margin-top: 2px;
+        }
+
+        .week-tick {
+            width: 1px;
+            height: 5px;
+            background: #777;
+        }
+
+        #diseaseFilter {
+            padding: 2px 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>GrippeWeb – Inzidenz</h1>
+
+<div id="subtitle">
+
+    <label>
+        Saison:
+        <select id="seasonFilter"></select>
+    </label>
+
+    &nbsp; | &nbsp;
+
+    <label>
+        Kalenderwoche:
+        <div class="week-control">
+
+            <input
+                type="range"
+                id="weekFilter"
+                min="0"
+                max="0"
+                step="1"
+                value="0"
+            >
+
+            <div id="weekTicks"></div>
+
+        </div>
+
+        <span id="weekLabel">Week 19</span>
+    </label>
+
+    &nbsp; | &nbsp;
+
+    <label>
+        Erkrankung:
+        <select id="diseaseFilter">
+
+            <option value="ARE" selected>
+                ARE
+            </option>
+
+            <option value="ILI">
+                ILI
+            </option>
+
+        </select>
+    </label>
+
+    &nbsp; | &nbsp;
+
+    Altersgruppe: 00+
+
+</div>
+
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/topojson-client@3"></script>
+
+<script>
+
+const TSV_URL =
+    "https://raw.githubusercontent.com/fadinglight7/grippeweb-dashboard/main/GrippeWeb_Daten_des_Wochenberichts.tsv";
+
+const GEOJSON_URL =
+    "https://raw.githubusercontent.com/fadinglight7/grippeweb-dashboard/main/germany4regionmap.json";
+
+const DEFAULT_SEASON = "2025/26";
+const DEFAULT_WEEK = "2026-W19";
+const DEFAULT_ERKRANKUNG = "ARE";
+const DEFAULT_ALTERSGRUPPE = "00+";
+
+
+// ------------------------------------------------------------
+// TSV PARSER
+// ------------------------------------------------------------
+
+function parseTSV(text) {
+
+    const lines =
+        text.trim().split(/\r?\n/);
+
+    const headers =
+        lines[0].split("\t");
+
+    return lines.slice(1).map(line => {
+
+        const values =
+            line.split("\t");
+
+        const row = {};
+
+        headers.forEach(
+            (header, index) => {
+                row[header] =
+                    values[index] ?? "";
+            }
+        );
+
+        return row;
+    });
+}
+
+
+// ------------------------------------------------------------
+// THRESHOLDS
+// ------------------------------------------------------------
+
+const thresholds = [
+
+    {
+        min: 0,
+        max: 0,
+        color: "#D3D3D3"
+    },
+
+    {
+        min: 1,
+        max: 1500,
+        color: "#FFDFAD"
+    },
+
+    {
+        min: 1500,
+        max: 3000,
+        color: "#FDD291"
+    },
+
+    {
+        min: 3000,
+        max: 4500,
+        color: "#FFBB63"
+    },
+
+    {
+        min: 4500,
+        max: 6000,
+        color: "#FFA037"
+    },
+
+    {
+        min: 6000,
+        max: 7500,
+        color: "#F68511"
+    },
+
+    {
+        min: 7500,
+        max: 9000,
+        color: "#E46F00"
+    },
+
+    {
+        min: 9000,
+        max: 10500,
+        color: "#CB5D00"
+    },
+
+    {
+        min: 10500,
+        max: 12000,
+        color: "#B14C00"
+    },
+
+    {
+        min: 12000,
+        max: 13500,
+        color: "#953D00"
+    },
+
+    {
+        min: 13500,
+        max: 15000,
+        color: "#7A2F00"
+    },
+
+    {
+        min: 15000,
+        max: Infinity,
+        color: "#612300"
+    }
+
+];
+
+
+function getColor(value) {
+
+    if (value === 0) {
+        return "#D3D3D3";
+    }
+
+    for (const threshold of thresholds) {
+
+        if (
+            value >= threshold.min &&
+            value < threshold.max
+        ) {
+            return threshold.color;
+        }
+
+    }
+
+    return "#D3D3D3";
+}
+
+
+// ------------------------------------------------------------
+// MAP
+// ------------------------------------------------------------
+
+const map =
+    L.map("map");
+
+map.setView(
+    [51.2, 10.4],
+    5.5
+);
+
+
+// ------------------------------------------------------------
+// LOAD TSV + GEOJSON
+// ------------------------------------------------------------
+
+Promise.all([
+
+    fetch(TSV_URL)
+        .then(response => {
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Could not load TSV: HTTP " +
+                    response.status
+                );
+
+            }
+
+            return response.text();
+
+        }),
+
+    fetch(GEOJSON_URL)
+        .then(response => {
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Could not load GeoJSON: HTTP " +
+                    response.status
+                );
+
+            }
+
+            return response.json();
+
+        })
+
+])
+
+.then(([tsvText, geojson]) => {
+
+    console.log("TSV loaded");
+    console.log("GeoJSON loaded");
+
+    const rows =
+        parseTSV(tsvText);
+
+
+    // --------------------------------------------------------
+    // SEASON FILTER
+    // --------------------------------------------------------
+
+    const seasonFilter =
+        document.getElementById(
+            "seasonFilter"
+        );
+
+    const seasons = [
+        ...new Set(
+            rows.map(
+                row => row.Saison
+            )
+        )
+    ].sort();
+
+    seasons.forEach(season => {
+
+        const option =
+            document.createElement(
+                "option"
+            );
+
+        option.value =
+            season;
+
+        option.textContent =
+            season;
+
+        seasonFilter.appendChild(
+            option
+        );
+
+    });
+
+    seasonFilter.value =
+        DEFAULT_SEASON;
+
+
+    // --------------------------------------------------------
+    // DISEASE FILTER
+    // --------------------------------------------------------
+
+    const diseaseFilter =
+        document.getElementById(
+            "diseaseFilter"
+        );
+
+    diseaseFilter.value =
+        DEFAULT_ERKRANKUNG;
+
+
+    // --------------------------------------------------------
+    // WEEK FILTER
+    // --------------------------------------------------------
+
+    const weekFilter =
+        document.getElementById(
+            "weekFilter"
+        );
+
+    const weekLabel =
+        document.getElementById(
+            "weekLabel"
+        );
+
+
+    function getWeeksForSeason(
+        season
+    ) {
+
+        const [
+            startYear,
+            endYearShort
+        ] =
+            season
+                .split("/")
+                .map(Number);
+
+        const endYear =
+            Math.floor(
+                startYear / 100
+            ) * 100 +
+            endYearShort;
+
+        const weeks = [];
+
+
+        for (
+            let week = 40;
+            week <= 53;
+            week++
+        ) {
+
+            weeks.push(
+                `${startYear}-W${String(
+                    week
+                ).padStart(2, "0")}`
+            );
+
+        }
+
+
+        for (
+            let week = 1;
+            week <= 39;
+            week++
+        ) {
+
+            weeks.push(
+                `${endYear}-W${String(
+                    week
+                ).padStart(2, "0")}`
+            );
+
+        }
+
+        return weeks;
+    }
+
+
+    let availableWeeks =
+        getWeeksForSeason(
+            DEFAULT_SEASON
+        );
+
+    let selectedWeek =
+        DEFAULT_WEEK;
+
+
+    weekFilter.max =
+        availableWeeks.length - 1;
+
+
+    const weekTicks =
+        document.getElementById(
+            "weekTicks"
+        );
+
+    availableWeeks.forEach(() => {
+
+        const tick =
+            document.createElement(
+                "span"
+            );
+
+        tick.className =
+            "week-tick";
+
+        weekTicks.appendChild(
+            tick
+        );
+
+    });
+
+
+    weekFilter.value =
+        availableWeeks.indexOf(
+            selectedWeek
+        );
+
+    weekLabel.textContent =
+        "Week " +
+        selectedWeek.split("-W")[1];
+
+
+    // --------------------------------------------------------
+    // FILTER
+    // --------------------------------------------------------
+
+    function getRegionValues(
+        season,
+        week
+    ) {
+
+        const selectedDisease =
+            diseaseFilter.value;
+
+
+        const filtered =
+            rows.filter(row =>
+
+                row.Saison === season &&
+
+                row.Kalenderwoche === week &&
+
+                row.Erkrankung ===
+                    selectedDisease &&
+
+                row.Altersgruppe ===
+                    DEFAULT_ALTERSGRUPPE
+
+            );
+
+
+        const regionValues = {};
+
+
+        filtered.forEach(row => {
+
+            const region =
+                row.Region;
+
+            const incidence =
+                Number(
+                    String(row.Inzidenz)
+                        .replace(",", ".")
+                );
+
+
+            if (!regionValues[region]) {
+
+                regionValues[region] =
+                    0;
+
+            }
+
+
+            if (
+                Number.isFinite(
+                    incidence
+                )
+            ) {
+
+                regionValues[region] +=
+                    incidence;
+
+            }
+
+        });
+
+
+        console.log(
+            "Region incidence:",
+            regionValues
+        );
+
+
+        return regionValues;
+    }
+
+
+    let regionValues =
+        getRegionValues(
+            DEFAULT_SEASON,
+            selectedWeek
+        );
+
+
+    // --------------------------------------------------------
+    // INSPECT GEOJSON
+    // --------------------------------------------------------
+
+    console.log(
+        "TopoJSON object names:",
+        Object.keys(
+            geojson.objects
+        )
+    );
+
+
+    const geojsonData =
+        topojson.feature(
+            geojson,
+            geojson.objects
+                .DEUADM1gbOpen
+        );
+
+
+    console.log(
+        "Converted GeoJSON feature count:",
+        geojsonData.features.length
+    );
+
+
+    console.log(
+        "First converted feature:",
+        geojsonData.features[0]
+    );
+
+
+    // --------------------------------------------------------
+    // DRAW MAP
+    // --------------------------------------------------------
+
+    const incidenceLabels =
+        L.layerGroup()
+            .addTo(map);
+
+
+    const mapLayer =
+        L.geoJSON(
+            geojsonData,
+            {
+
+                style: function(feature) {
+
+                    const properties =
+                        feature.properties ||
+                        {};
+
+                    const region =
+                        properties.id;
+
+                    const incidence =
+                        regionValues[
+                            region
+                        ] ?? 0;
+
+
+                    return {
+
+                        fillColor:
+                            getColor(
+                                incidence
+                            ),
+
+                        weight: 1,
+
+                        color: "#555",
+
+                        fillOpacity: 0.85
+
+                    };
+
+                },
+
+
+                onEachFeature:
+                    function(
+                        feature,
+                        layer
+                    ) {
+
+                        const properties =
+                            feature.properties ||
+                            {};
+
+                        const region =
+                            properties.id;
+
+                        const incidence =
+                            regionValues[
+                                region
+                            ] ?? 0;
+
+
+                        layer.bindTooltip(
+
+                            `<strong>
+                                ${region ??
+                                "Unknown region"}
+                             </strong><br>
+                             Inzidenz:
+                             ${Math.round(
+                                incidence
+                             )}`,
+
+                            {
+                                sticky: true
+                            }
+
+                        );
+
+
+                        const label =
+                            L.marker(
+
+                                layer
+                                    .getBounds()
+                                    .getCenter(),
+
+                                {
+                                    region: region,
+
+                                    icon:
+                                        L.divIcon({
+
+                                            className:
+                                                "map-incidence-label",
+
+                                            html:
+                                                `${Math.round(
+                                                    incidence
+                                                )}`,
+
+                                            iconSize:
+                                                null
+
+                                        }),
+
+                                    interactive:
+                                        false
+                                }
+
+                            );
+
+
+                        incidenceLabels
+                            .addLayer(
+                                label
+                            );
+
+
+                        layer.on({
+
+                            mouseover:
+                                function(event) {
+
+                                    event.target
+                                        .setStyle({
+
+                                            weight: 3,
+
+                                            color: "#222"
+
+                                        });
+
+                                    event.target
+                                        .bringToFront();
+
+                                },
+
+
+                            mouseout:
+                                function(event) {
+
+                                    mapLayer
+                                        .resetStyle(
+                                            event.target
+                                        );
+
+                                }
+
+                        });
+
+                    }
+
+            }
+
+        ).addTo(map);
+
+
+    // --------------------------------------------------------
+    // UPDATE LABELS
+    // --------------------------------------------------------
+
+    function updateIncidenceLabels() {
+
+        incidenceLabels.eachLayer(
+            function(label) {
+
+                const region =
+                    label.options.region;
+
+                const incidence =
+                    regionValues[
+                        region
+                    ] ?? 0;
+
+
+                label.setIcon(
+
+                    L.divIcon({
+
+                        className:
+                            "map-incidence-label",
+
+                        html:
+                            `${Math.round(
+                                incidence
+                            )}`,
+
+                        iconSize:
+                            null
+
+                    })
+
+                );
+
+            }
+        );
+
+    }
+
+
+    // --------------------------------------------------------
+    // UPDATE MAP
+    // --------------------------------------------------------
+
+    function updateMap() {
+
+        regionValues =
+            getRegionValues(
+                seasonFilter.value,
+                selectedWeek
+            );
+
+
+        updateIncidenceLabels();
+
+
+        mapLayer.eachLayer(
+            function(layer) {
+
+                const region =
+                    layer.feature
+                        ?.properties?.id;
+
+                const incidence =
+                    regionValues[
+                        region
+                    ] ?? 0;
+
+
+                layer.setStyle({
+
+                    fillColor:
+                        getColor(
+                            incidence
+                        ),
+
+                    weight: 1,
+
+                    color: "#555",
+
+                    fillOpacity: 0.85
+
+                });
+
+
+                layer.setTooltipContent(`
+
+                    <strong>
+                        ${region ??
+                        "Unknown region"}
+                    </strong><br>
+
+                    Inzidenz:
+                    ${Math.round(
+                        incidence
+                    )}
+
+                `);
+
+            }
+        );
+
+    }
+
+
+    // --------------------------------------------------------
+    // WEEK CHANGE
+    // --------------------------------------------------------
+
+    weekFilter.addEventListener(
+        "input",
+        function() {
+
+            const index =
+                Number(this.value);
+
+            selectedWeek =
+                availableWeeks[index];
+
+
+            weekLabel.textContent =
+                "Week " +
+                selectedWeek.split("-W")[1];
+
+
+            updateMap();
+
+        }
+    );
+
+
+    // --------------------------------------------------------
+    // SEASON CHANGE
+    // --------------------------------------------------------
+
+    seasonFilter.addEventListener(
+        "change",
+        function() {
+
+            const selectedSeason =
+                this.value;
+
+
+            const weekNumber =
+                selectedWeek.split(
+                    "-W"
+                )[1];
+
+
+            availableWeeks =
+                getWeeksForSeason(
+                    selectedSeason
+                );
+
+
+            const matchingWeek =
+                availableWeeks.find(
+                    week =>
+                        week.endsWith(
+                            "-W" +
+                            weekNumber
+                        )
+                );
+
+
+            if (matchingWeek) {
+
+                selectedWeek =
+                    matchingWeek;
+
+            } else {
+
+                selectedWeek =
+                    availableWeeks[
+                        availableWeeks.length - 1
+                    ];
+
+            }
+
+
+            weekFilter.max =
+                availableWeeks.length - 1;
+
+            weekFilter.value =
+                availableWeeks.indexOf(
+                    selectedWeek
+                );
+
+
+            weekLabel.textContent =
+                "Week " +
+                selectedWeek.split(
+                    "-W"
+                )[1];
+
+
+            updateMap();
+
+        }
+    );
+
+
+    // --------------------------------------------------------
+    // DISEASE CHANGE
+    // --------------------------------------------------------
+
+    diseaseFilter.addEventListener(
+        "change",
+        function() {
+
+            console.log(
+                "Disease changed to:",
+                this.value
+            );
+
+            updateMap();
+
+        }
+    );
+
+
+    // --------------------------------------------------------
+    // FIT MAP
+    // --------------------------------------------------------
+
+    map.fitBounds(
+        mapLayer.getBounds()
+    );
+
+
+    // --------------------------------------------------------
+    // LEGEND
+    // --------------------------------------------------------
+
+    const legend =
+        L.control({
+            position: "bottomright"
+        });
+
+
+    legend.onAdd =
+        function() {
+
+            const div =
+                L.DomUtil.create(
+                    "div",
+                    "legend"
+                );
+
+
+            div.innerHTML =
+                "<strong>Inzidenz</strong>";
+
+
+            const labels = [
+
+                [
+                    "= 0",
+                    "#D3D3D3"
+                ],
+
+                [
+                    "1 < 1500",
+                    "#FFDFAD"
+                ],
+
+                [
+                    "1500 < 3000",
+                    "#FDD291"
+                ],
+
+                [
+                    "3000 < 4500",
+                    "#FFBB63"
+                ],
+
+                [
+                    "4500 < 6000",
+                    "#FFA037"
+                ],
+
+                [
+                    "6000 < 7500",
+                    "#F68511"
+                ],
+
+                [
+                    "7500 < 9000",
+                    "#E46F00"
+                ],
+
+                [
+                    "9000 < 10500",
+                    "#CB5D00"
+                ],
+
+                [
+                    "10500 < 12000",
+                    "#B14C00"
+                ],
+
+                [
+                    "12000 < 13500",
+                    "#953D00"
+                ],
+
+                [
+                    "13500 < 15000",
+                    "#7A2F00"
+                ],
+
+                [
+                    ">= 15000",
+                    "#612300"
+                ]
+
+            ];
+
+
+            labels.forEach(
+                item => {
+
+                    div.innerHTML += `
+
+                        <div class="legend-row">
+
+                            <span
+                                class="legend-color"
+                                style="
+                                    background:${item[1]}
+                                "
+                            ></span>
+
+                            <span>
+                                ${item[0]}
+                            </span>
+
+                        </div>
+
+                    `;
+
+                }
+            );
+
+
+            return div;
+
+        };
+
+
+    legend.addTo(map);
+
+})
+
+.catch(error => {
+
+    console.error(error);
+
+
+    document.getElementById(
+        "map"
+    ).innerHTML = `
+
+        <div style="
+            padding:30px;
+            font-family:Arial;
+            color:#b00020;
+        ">
+
+            <h2>
+                Could not load dashboard data
+            </h2>
+
+            <p>
+                ${error.message}
+            </p>
+
+            <p>
+                Open the browser developer console
+                (F12) for more information.
+            </p>
+
+        </div>
+
+    `;
+
+});
+
+</script>
+
+</body>
+</html>
