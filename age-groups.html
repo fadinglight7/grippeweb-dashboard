@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>GrippeWeb – Inzidenz</title>
+    <title>GrippeWeb – Altersgruppen</title>
 
     <style>
         body {
@@ -25,108 +25,126 @@
         }
 
         #controls {
-    margin-bottom: 20px;
-}
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
 
-.season-dropdown {
-    position: relative;
-    display: inline-block;
-}
+        .season-dropdown {
+            position: relative;
+            display: inline-block;
+        }
 
-#seasonDropdownButton {
-    min-width: 180px;
-    padding: 8px 12px;
-    background: white;
-    border: 1px solid #999;
-    border-radius: 3px;
-    text-align: left;
-    cursor: pointer;
-}
+        #seasonDropdownButton {
+            min-width: 180px;
+            padding: 8px 12px;
+            background: white;
+            border: 1px solid #999;
+            border-radius: 3px;
+            text-align: left;
+            cursor: pointer;
+        }
 
-.season-dropdown-menu {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    min-width: 180px;
-    max-height: 250px;
-    overflow-y: auto;
-    background: white;
-    border: 1px solid #999;
-    z-index: 1000;
-}
+        .season-dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            min-width: 180px;
+            max-height: 250px;
+            overflow-y: auto;
+            background: white;
+            border: 1px solid #999;
+            z-index: 1000;
+        }
 
-.season-dropdown-menu.show {
-    display: block;
-}
+        .season-dropdown-menu.show {
+            display: block;
+        }
 
-.season-option {
-    display: block;
-    padding: 6px 10px;
-    cursor: pointer;
-}
+        .season-option {
+            display: block;
+            padding: 6px 10px;
+            cursor: pointer;
+        }
 
-.season-option:hover {
-    background: #f0f0f0;
-}
-    .season-label {
-    margin-right: 8px;
-    font-weight: normal;
-}
+        .season-option:hover {
+            background: #f0f0f0;
+        }
 
-.age-dropdown {
-    position: relative;
-    display: inline-block;
-    margin-left: 20px;
-}
+        .season-label {
+            margin-right: 8px;
+            font-weight: normal;
+        }
 
-#ageDropdownButton {
-    min-width: 180px;
-    padding: 8px 12px;
-    background: white;
-    border: 1px solid #999;
-    border-radius: 3px;
-    text-align: left;
-    cursor: pointer;
-}
+        .age-dropdown {
+            position: relative;
+            display: inline-block;
+            margin-left: 20px;
+        }
 
-.age-dropdown-menu {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    min-width: 180px;
-    max-height: 250px;
-    overflow-y: auto;
-    background: white;
-    border: 1px solid #999;
-    z-index: 1000;
-}
+        #ageDropdownButton {
+            min-width: 180px;
+            padding: 8px 12px;
+            background: white;
+            border: 1px solid #999;
+            border-radius: 3px;
+            text-align: left;
+            cursor: pointer;
+        }
 
-.age-dropdown-menu.show {
-    display: block;
-}
+        .age-dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            min-width: 180px;
+            max-height: 250px;
+            overflow-y: auto;
+            background: white;
+            border: 1px solid #999;
+            z-index: 1000;
+        }
 
-.age-option {
-    display: block;
-    padding: 6px 10px;
-    cursor: pointer;
-}
+        .age-dropdown-menu.show {
+            display: block;
+        }
 
-.age-option:hover {
-    background: #f0f0f0;
-}
+        .age-option {
+            display: block;
+            padding: 6px 10px;
+            cursor: pointer;
+        }
 
-.age-label {
-    margin-left: 8px;
-    margin-right: 8px;
-    font-weight: normal;
-}
+        .age-option:hover {
+            background: #f0f0f0;
+        }
 
+        .age-label {
+            margin-left: 8px;
+            margin-right: 8px;
+            font-weight: normal;
+        }
+
+        .disease-label {
+            margin-left: 12px;
+            margin-right: 8px;
+            font-weight: normal;
+        }
+
+        #diseaseSelect {
+            min-width: 120px;
+            padding: 8px 12px;
+            background: white;
+            border: 1px solid #999;
+            border-radius: 3px;
+            cursor: pointer;
+        }
     </style>
 
-<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
-
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
 
 </head>
 
@@ -136,53 +154,63 @@
 
     <div id="controls">
 
-    <label class="season-label">
-        Saison:
-    </label>
+        <label class="season-label">
+            Saison:
+        </label>
 
-    <div class="season-dropdown">
+        <div class="season-dropdown">
 
-        <button
-            type="button"
-            id="seasonDropdownButton"
-        >
-            2025/26
-        </button>
+            <button
+                type="button"
+                id="seasonDropdownButton"
+            >
+                2025/26
+            </button>
 
-        <div
-            id="seasonDropdownMenu"
-            class="season-dropdown-menu"
-        >
+            <div
+                id="seasonDropdownMenu"
+                class="season-dropdown-menu"
+            >
+            </div>
+
         </div>
+
+        <label class="age-label">
+            Altersgruppe:
+        </label>
+
+        <div class="age-dropdown">
+
+            <button
+                type="button"
+                id="ageDropdownButton"
+            >
+                00+
+            </button>
+
+            <div
+                id="ageDropdownMenu"
+                class="age-dropdown-menu"
+            >
+            </div>
+
+        </div>
+
+        <label
+            class="disease-label"
+            for="diseaseSelect"
+        >
+            Erkrankung:
+        </label>
+
+        <select id="diseaseSelect">
+            <option value="ARE" selected>ARE</option>
+            <option value="ILI">ILI</option>
+        </select>
 
     </div>
 
-    <label class="age-label">
-        Altersgruppe:
-    </label>
-
-    <div class="age-dropdown">
-
-        <button
-            type="button"
-            id="ageDropdownButton"
-        >
-            00+
-        </button>
-
-        <div
-            id="ageDropdownMenu"
-            class="age-dropdown-menu"
-        >
-        </div>
-
-    </div>
-
-</div>
-
-<div id="chart"></div>
-
-
+    <div id="chart"></div>
 
 
 <script>
@@ -220,366 +248,490 @@
             console.log("TSV loaded:", rows.length);
             console.log("First row:", rows[0]);
 
+
+            /* =========================
+               SEASON DROPDOWN
+               ========================= */
+
             const seasonDropdownButton =
-    document.getElementById(
-        "seasonDropdownButton"
-    );
+                document.getElementById(
+                    "seasonDropdownButton"
+                );
 
-const seasonDropdownMenu =
-    document.getElementById(
-        "seasonDropdownMenu"
-    );
+            const seasonDropdownMenu =
+                document.getElementById(
+                    "seasonDropdownMenu"
+                );
 
-const seasons = [
-    ...new Set(
-        rows.map(row => row.Saison)
-    )
-].sort();
+            const seasons = [
+                ...new Set(
+                    rows.map(row => row.Saison)
+                )
+            ].sort();
 
-seasons.forEach(season => {
+            seasons.forEach(season => {
 
-    const option =
-        document.createElement("div");
+                const option =
+                    document.createElement("div");
 
-    option.className =
-        "season-option";
+                option.className =
+                    "season-option";
 
-    option.textContent =
-        season;
+                option.textContent =
+                    season;
 
-    option.addEventListener(
-        "click",
-        function() {
+                option.addEventListener(
+                    "click",
+                    function() {
 
-            selectedSeason =
-                season;
+                        selectedSeason =
+                            season;
 
-            seasonDropdownButton.textContent =
-                selectedSeason;
+                        seasonDropdownButton.textContent =
+                            selectedSeason;
 
-            seasonDropdownMenu.classList.remove(
-                "show"
+                        seasonDropdownMenu.classList.remove(
+                            "show"
+                        );
+
+                        drawChart();
+                    }
+                );
+
+                seasonDropdownMenu.appendChild(option);
+            });
+
+            let selectedSeason = "2025/26";
+
+            seasonDropdownButton.addEventListener(
+                "click",
+                function() {
+
+                    seasonDropdownMenu.classList.toggle(
+                        "show"
+                    );
+                }
+            );
+
+            document.addEventListener(
+                "click",
+                function(event) {
+
+                    if (
+                        !event.target.closest(
+                            ".season-dropdown"
+                        )
+                    ) {
+                        seasonDropdownMenu.classList.remove(
+                            "show"
+                        );
+                    }
+                }
+            );
+
+
+            /* =========================
+               AGE GROUP DROPDOWN
+               ========================= */
+
+            const ageDropdownButton =
+                document.getElementById(
+                    "ageDropdownButton"
+                );
+
+            const ageDropdownMenu =
+                document.getElementById(
+                    "ageDropdownMenu"
+                );
+
+            const ageGroups = [
+                ...new Set(
+                    rows.map(row => row.Altersgruppe)
+                )
+            ].sort();
+
+            let selectedAgeGroups = ["00+"];
+
+            ageGroups.forEach(ageGroup => {
+
+                const label =
+                    document.createElement("label");
+
+                label.className =
+                    "age-option";
+
+                const checkbox =
+                    document.createElement("input");
+
+                checkbox.type = "checkbox";
+                checkbox.value = ageGroup;
+
+                if (
+                    selectedAgeGroups.includes(
+                        ageGroup
+                    )
+                ) {
+                    checkbox.checked = true;
+                }
+
+                label.appendChild(checkbox);
+
+                const text =
+                    document.createTextNode(
+                        " " + ageGroup
+                    );
+
+                label.appendChild(text);
+
+                ageDropdownMenu.appendChild(label);
+            });
+
+            function updateAgeButton() {
+
+                if (
+                    selectedAgeGroups.length === 0
+                ) {
+
+                    ageDropdownButton.textContent =
+                        "Select age group";
+
+                } else if (
+                    selectedAgeGroups.length === 1
+                ) {
+
+                    ageDropdownButton.textContent =
+                        selectedAgeGroups[0];
+
+                } else {
+
+                    ageDropdownButton.textContent =
+                        "Multiple age groups";
+                }
+            }
+
+            ageDropdownMenu.addEventListener(
+                "change",
+                function() {
+
+                    selectedAgeGroups = [
+                        ...ageDropdownMenu.querySelectorAll(
+                            'input[type="checkbox"]:checked'
+                        )
+                    ].map(
+                        checkbox => checkbox.value
+                    );
+
+                    updateAgeButton();
+
+                    drawChart();
+                }
+            );
+
+            ageDropdownButton.addEventListener(
+                "click",
+                function() {
+
+                    ageDropdownMenu.classList.toggle(
+                        "show"
+                    );
+                }
+            );
+
+            document.addEventListener(
+                "click",
+                function(event) {
+
+                    if (
+                        !event.target.closest(
+                            ".age-dropdown"
+                        )
+                    ) {
+                        ageDropdownMenu.classList.remove(
+                            "show"
+                        );
+                    }
+                }
+            );
+
+            updateAgeButton();
+
+
+            /* =========================
+               DISEASE FILTER
+               ========================= */
+
+            const diseaseSelect =
+                document.getElementById(
+                    "diseaseSelect"
+                );
+
+            diseaseSelect.addEventListener(
+                "change",
+                function() {
+                    drawChart();
+                }
+            );
+
+
+            /* =========================
+               CHART DATA
+               ========================= */
+
+            function getChartData() {
+
+                const selectedDisease =
+                    diseaseSelect.value;
+
+                const filteredRows =
+                    rows.filter(row =>
+                        row.Saison === selectedSeason &&
+                        selectedAgeGroups.includes(
+                            row.Altersgruppe
+                        ) &&
+                        row.Region === "Bundesweit" &&
+                        row.Erkrankung === selectedDisease
+                    );
+
+                const chartData = {};
+
+                filteredRows.forEach(row => {
+
+                    const ageGroup =
+                        row.Altersgruppe;
+
+                    const week =
+                        row.Kalenderwoche;
+
+                    const incidence =
+                        Number(
+                            String(row.Inzidenz)
+                                .replace(",", ".")
+                        );
+
+                    if (
+                        !Number.isFinite(
+                            incidence
+                        )
+                    ) {
+                        return;
+                    }
+
+                    if (
+                        !chartData[ageGroup]
+                    ) {
+                        chartData[ageGroup] = {};
+                    }
+
+                    if (
+                        !chartData[ageGroup][week]
+                    ) {
+                        chartData[ageGroup][week] = 0;
+                    }
+
+                    chartData[ageGroup][week] +=
+                        incidence;
+                });
+
+                return chartData;
+            }
+
+            console.log(
+                "Chart data:",
+                getChartData()
+            );
+
+
+            /* =========================
+               DRAW CHART
+               ========================= */
+
+            function drawChart() {
+
+                const chartData =
+                    getChartData();
+
+                const weekOrder = [
+                    "W40", "W41", "W42", "W43",
+                    "W44", "W45", "W46", "W47",
+                    "W48", "W49", "W50", "W51",
+                    "W52", "W53",
+                    "W1", "W2", "W3", "W4",
+                    "W5", "W6", "W7", "W8",
+                    "W9", "W10", "W11", "W12",
+                    "W13", "W14", "W15", "W16",
+                    "W17", "W18", "W19", "W20",
+                    "W21", "W22", "W23", "W24",
+                    "W25", "W26", "W27", "W28",
+                    "W29", "W30", "W31", "W32",
+                    "W33", "W34", "W35", "W36",
+                    "W37", "W38", "W39"
+                ];
+
+                const traces = [];
+
+                selectedAgeGroups.forEach(
+                    ageGroup => {
+
+                        const x = [];
+                        const y = [];
+
+                        weekOrder.forEach(
+                            (week, index) => {
+
+                                const fullWeek =
+                                    Object.keys(
+                                        chartData[
+                                            ageGroup
+                                        ] || {}
+                                    ).find(
+                                        value => {
+
+                                            const weekNumber =
+                                                value.split("-W")[1];
+
+                                            return (
+                                                `W${Number(
+                                                    weekNumber
+                                                )}` === week
+                                            );
+                                        }
+                                    );
+
+                                if (
+                                    fullWeek &&
+                                    chartData[
+                                        ageGroup
+                                    ][fullWeek] !==
+                                        undefined
+                                ) {
+
+                                    x.push(index);
+
+                                    y.push(
+                                        chartData[
+                                            ageGroup
+                                        ][fullWeek]
+                                    );
+                                }
+                            }
+                        );
+
+                        traces.push({
+                            x: x,
+                            y: y,
+                            mode: "lines+markers",
+                            name: ageGroup,
+                            connectgaps: false
+                        });
+                    }
+                );
+
+                Plotly.newPlot(
+                    "chart",
+                    traces,
+                    {
+                        title:
+                            `Inzidenz – Bundesweit – ${diseaseSelect.value}`,
+
+                        xaxis: {
+                            title:
+                                "Kalenderwoche",
+
+                            tickmode:
+                                "array",
+
+                            tickvals:
+                                weekOrder.map(
+                                    (_, index) =>
+                                        index
+                                ),
+
+                            ticktext:
+                                weekOrder
+                        },
+
+                        yaxis: {
+                            title:
+                                "Inzidenz",
+
+                            rangemode:
+                                "tozero"
+                        },
+
+                        hovermode:
+                            "x unified"
+                    },
+                    {
+                        responsive: true
+                    }
+                );
+            }
+
+
+            /* =========================
+               SEASON WEEK HELPER
+               ========================= */
+
+            function getWeeksForSeason(
+                season
+            ) {
+
+                const [
+                    startYear,
+                    endYearShort
+                ] =
+                    season
+                        .split("/")
+                        .map(Number);
+
+                const endYear =
+                    Math.floor(
+                        startYear / 100
+                    ) * 100 +
+                    endYearShort;
+
+                const weeks = [];
+
+                for (
+                    let week = 40;
+                    week <= 53;
+                    week++
+                ) {
+
+                    weeks.push(
+                        `${startYear}-W${String(
+                            week
+                        ).padStart(2, "0")}`
+                    );
+                }
+
+                for (
+                    let week = 1;
+                    week <= 39;
+                    week++
+                ) {
+
+                    weeks.push(
+                        `${endYear}-W${String(
+                            week
+                        ).padStart(2, "0")}`
+                    );
+                }
+
+                return weeks;
+            }
+
+
+            console.log(
+                "Seasons:",
+                seasons
             );
 
             drawChart();
-        }
-    );
 
-    seasonDropdownMenu.appendChild(option);
-});
-
-let selectedSeason = "2025/26";
-
-seasonDropdownButton.addEventListener(
-    "click",
-    function() {
-
-        seasonDropdownMenu.classList.toggle(
-            "show"
-        );
-    }
-);
-
-document.addEventListener(
-    "click",
-    function(event) {
-
-        if (
-            !event.target.closest(
-                ".season-dropdown"
-            )
-        ) {
-            seasonDropdownMenu.classList.remove(
-                "show"
-            );
-        }
-    }
-);
-
-
-const ageDropdownButton =
-    document.getElementById(
-        "ageDropdownButton"
-    );
-
-const ageDropdownMenu =
-    document.getElementById(
-        "ageDropdownMenu"
-    );
-
-const ageGroups = [
-    ...new Set(
-        rows.map(row => row.Altersgruppe)
-    )
-].sort();
-
-let selectedAgeGroups = ["00+"];
-
-ageGroups.forEach(ageGroup => {
-
-    const label =
-        document.createElement("label");
-
-    label.className =
-        "age-option";
-
-    const checkbox =
-        document.createElement("input");
-
-    checkbox.type = "checkbox";
-    checkbox.value = ageGroup;
-
-    if (selectedAgeGroups.includes(ageGroup)) {
-        checkbox.checked = true;
-    }
-
-    label.appendChild(checkbox);
-
-    const text =
-        document.createTextNode(
-            " " + ageGroup
-        );
-
-    label.appendChild(text);
-
-    ageDropdownMenu.appendChild(label);
-});
-
-function updateAgeButton() {
-
-    if (selectedAgeGroups.length === 0) {
-
-        ageDropdownButton.textContent =
-            "Select age group";
-
-    } else if (selectedAgeGroups.length === 1) {
-
-        ageDropdownButton.textContent =
-            selectedAgeGroups[0];
-
-    } else {
-
-        ageDropdownButton.textContent =
-            "Multiple age groups";
-    }
-}
-
-ageDropdownMenu.addEventListener(
-    "change",
-    function() {
-
-        selectedAgeGroups = [
-            ...ageDropdownMenu.querySelectorAll(
-                'input[type="checkbox"]:checked'
-            )
-        ].map(
-            checkbox => checkbox.value
-        );
-
-        updateAgeButton();
-
-        drawChart();
-    }
-);
-
-ageDropdownButton.addEventListener(
-    "click",
-    function() {
-
-        ageDropdownMenu.classList.toggle(
-            "show"
-        );
-    }
-);
-
-document.addEventListener(
-    "click",
-    function(event) {
-
-        if (
-            !event.target.closest(
-                ".age-dropdown"
-            )
-        ) {
-            ageDropdownMenu.classList.remove(
-                "show"
-            );
-        }
-    }
-);
-
-updateAgeButton();
-
-function getChartData() {
-
-    const filteredRows = rows.filter(row =>
-        row.Saison === selectedSeason &&
-        selectedAgeGroups.includes(row.Altersgruppe) &&
-        row.Region === "Bundesweit" &&
-        row.Erkrankung === "ARE"
-    );
-
-    const chartData = {};
-
-    filteredRows.forEach(row => {
-
-        const ageGroup = row.Altersgruppe;
-        const week = row.Kalenderwoche;
-
-        const incidence = Number(
-            String(row.Inzidenz)
-                .replace(",", ".")
-        );
-
-        if (!Number.isFinite(incidence)) {
-            return;
-        }
-
-        if (!chartData[ageGroup]) {
-            chartData[ageGroup] = {};
-        }
-
-        if (!chartData[ageGroup][week]) {
-            chartData[ageGroup][week] = 0;
-        }
-
-        chartData[ageGroup][week] += incidence;
-    });
-
-    return chartData;
-}
-
-console.log(
-    "Chart data:",
-    getChartData()
-);
-
-function drawChart() {
-
-    const chartData = getChartData();
-
-    const weekOrder = [
-        "W40", "W41", "W42", "W43",
-        "W44", "W45", "W46", "W47",
-        "W48", "W49", "W50", "W51",
-        "W52", "W53",
-        "W1", "W2", "W3", "W4",
-        "W5", "W6", "W7", "W8",
-        "W9", "W10", "W11", "W12",
-        "W13", "W14", "W15", "W16",
-        "W17", "W18", "W19", "W20",
-        "W21", "W22", "W23", "W24",
-        "W25", "W26", "W27", "W28",
-        "W29", "W30", "W31", "W32",
-        "W33", "W34", "W35", "W36",
-        "W37", "W38", "W39"
-    ];
-
-    const traces = [];
-
-    selectedAgeGroups.forEach(ageGroup => {
-
-        const x = [];
-        const y = [];
-
-        weekOrder.forEach((week, index) => {
-
-            const fullWeek =
-                Object.keys(chartData[ageGroup] || {})
-                    .find(value => {
-
-                        const weekNumber =
-                            value.split("-W")[1];
-
-                        return (
-                            `W${Number(weekNumber)}` === week
-                        );
-                    });
-
-            if (
-                fullWeek &&
-                chartData[ageGroup][fullWeek] !== undefined
-            ) {
-                x.push(index);
-                y.push(
-                    chartData[ageGroup][fullWeek]
-                );
-            }
-        });
-
-        traces.push({
-            x: x,
-            y: y,
-            mode: "lines+markers",
-            name: ageGroup,
-            connectgaps: false
-        });
-    });
-
-    Plotly.newPlot(
-        "chart",
-        traces,
-        {
-            title:
-                "Inzidenz – Bundesweit",
-
-            xaxis: {
-                title: "Kalenderwoche",
-
-                tickmode: "array",
-
-                tickvals:
-                    weekOrder.map(
-                        (_, index) => index
-                    ),
-
-                ticktext: weekOrder
-            },
-
-            yaxis: {
-                title: "Inzidenz",
-                rangemode: "tozero"
-            },
-
-            hovermode: "x unified"
-        },
-        {
-            responsive: true
-        }
-    );
-}
-
-
-function getWeeksForSeason(season) {
-
-    const [startYear, endYearShort] =
-        season.split("/").map(Number);
-
-    const endYear =
-        Math.floor(startYear / 100) * 100 + endYearShort;
-
-    const weeks = [];
-
-    for (let week = 40; week <= 53; week++) {
-        weeks.push(
-            `${startYear}-W${String(week).padStart(2, "0")}`
-        );
-    }
-
-    for (let week = 1; week <= 39; week++) {
-        weeks.push(
-            `${endYear}-W${String(week).padStart(2, "0")}`
-        );
-    }
-
-    return weeks;
-}
-
-
-console.log("Seasons:", seasons);
-drawChart();
         })
         .catch(error => {
+
             console.error(
                 "Error loading TSV:",
                 error
