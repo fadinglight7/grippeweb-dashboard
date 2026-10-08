@@ -258,6 +258,11 @@ document.addEventListener(
 
 updateSeasonButton();
 
+document.getElementById("diseaseSelect")
+    .addEventListener("change", function() {
+        drawChart();
+    });
+
 function getSelectedSeasons() {
 
     return [
@@ -271,12 +276,48 @@ function getSelectedSeasons() {
 
 function getChartData(selectedSeasons) {
 
-    const filteredRows = rows.filter(row =>
-        selectedSeasons.includes(row.Saison) &&
-        row.Region === "Bundesweit" &&
-        row.Erkrankung === "ARE" &&
-        row.Altersgruppe === "00+"
+
+const selectedDisease =
+    document.getElementById("diseaseSelect").value;
+
+const filteredRows = rows.filter(row =>
+    selectedSeasons.includes(row.Saison) &&
+    row.Region === "Bundesweit" &&
+    row.Erkrankung === selectedDisease &&
+    row.Altersgruppe === "00+"
+);
+
+const chartData = {};
+
+filteredRows.forEach(row => {
+
+    const season = row.Saison;
+    const week = row.Kalenderwoche;
+
+    const incidence = Number(
+        String(row.Inzidenz)
+            .replace(",", ".")
     );
+
+    if (!Number.isFinite(incidence)) {
+        return;
+    }
+
+    if (!chartData[season]) {
+        chartData[season] = {};
+    }
+
+    if (!chartData[season][week]) {
+        chartData[season][week] = 0;
+    }
+
+    chartData[season][week] += incidence;
+});
+
+return chartData;
+
+}
+
 
     const chartData = {};
 
