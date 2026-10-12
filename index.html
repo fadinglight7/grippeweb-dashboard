@@ -131,6 +131,19 @@ body {
     font-size: 19px;
 }
 
+.summary-heading-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.summary-heading-row h3 {
+    margin: 0;
+}
+
 .summary-week-label {
     margin: 0 0 15px;
     font-size: 13px;
@@ -491,11 +504,21 @@ select {
 
         <div class="summary-table-container">
 
-            <h3>Weekly Summary</h3>
+            <div class="summary-heading-row">
+    <h3>Latest Calendar Week</h3>
 
-            <p class="summary-week-label" id="summaryWeekLabel">
-                Loading week…
-            </p>
+    <div class="control-group">
+        <label for="summaryDiseaseFilter">Erkrankung:</label>
+        <select id="summaryDiseaseFilter">
+            <option value="ARE" selected>ARE</option>
+            <option value="ILI">ILI</option>
+        </select>
+    </div>
+</div>
+
+<p class="summary-week-label" id="summaryWeekLabel">
+    Loading week…
+</p>
 
             <table class="summary-table">
 
@@ -1222,6 +1245,9 @@ Promise.all([
 
 function initializeWeeklySummary() {
 
+    const diseaseFilter =
+        document.getElementById("summaryDiseaseFilter");
+
     // Find the most recent season in the loaded TSV.
     const availableSeasons = [
         ...new Set(
@@ -1230,12 +1256,8 @@ function initializeWeeklySummary() {
                 .filter(Boolean)
         )
     ].sort((a, b) => {
-
-        const yearA = Number(a.split("/")[0]);
-        const yearB = Number(b.split("/")[0]);
-
-        return yearA - yearB;
-
+        return Number(a.split("/")[0]) -
+               Number(b.split("/")[0]);
     });
 
     if (availableSeasons.length === 0) {
@@ -1247,8 +1269,7 @@ function initializeWeeklySummary() {
     const latestSeason =
         availableSeasons[availableSeasons.length - 1];
 
-    // Preserve the dashboard's epidemiological week order, but only
-    // consider weeks that actually exist in the TSV for this season.
+    // Find the latest week actually present for this season.
     const actualWeeks = new Set(
         rows
             .filter(row => row.Saison === latestSeason)
@@ -1269,13 +1290,16 @@ function initializeWeeklySummary() {
     document.getElementById("summaryWeekLabel").textContent =
         `Season ${latestSeason} · ${getWeekLabel(latestWeek)} (${latestWeek})`;
 
-    // Convert decimal-comma values if present and format whole numbers.
     function parseSummaryNumber(value) {
-        if (value === undefined || value === null || value.trim() === "") {
+        if (
+            value === undefined ||
+            value === null ||
+            String(value).trim() === ""
+        ) {
             return NaN;
         }
 
-        return Number(String(value).replace(",", "."));
+        return Number(String(value).trim().replace(",", "."));
     }
 
     function displaySummaryValue(value) {
@@ -1286,52 +1310,78 @@ function initializeWeeklySummary() {
         return Math.round(value).toLocaleString("en-US");
     }
 
-    // Use a single matching nationwide row for each indicator.
-    // Filtering by disease, age group, region, season, and week avoids
-    // accidentally adding duplicated values across other categories.
-    function findSummaryRow(ageGroup) {
+    function findSummaryRow(ageGroup, disease) {
         return rows.find(row =>
             row.Saison === latestSeason &&
             row.Kalenderwoche === latestWeek &&
-            row.Erkrankung === "ARE" &&
+            row.Erkrankung === disease &&
             row.Altersgruppe === ageGroup &&
             row.Region === "Bundesweit"
         );
     }
 
-    const totalRow = findSummaryRow("00+");
-    const childrenRow = findSummaryRow("0-14");
-    const adultsRow = findSummaryRow("15+");
+    function updateSummaryTable() {
 
-    // Meldungen is the weekly-report count. If the field is not present
-    // in the file, show a dash rather than inventing a value.
-    const reportCount = totalRow
-        ? parseSummaryNumber(totalRow.Meldungen)
-        : NaN;
+        const disease = diseaseFilter.value;
 
-    const totalIncidence = totalRow
-        ? parseSummaryNumber(totalRow.Inzidenz)
-        : NaN;
+        const totalRow =
+            findSummaryRow("00+", disease);
 
-    const childrenIncidence = childrenRow
-        ? parseSummaryNumber(childrenRow.Inzidenz)
-        : NaN;
+        const childrenRow =
+            findSummaryRow("0-14", disease);
 
-    const adultsIncidence = adultsRow
-        ? parseSummaryNumber(adultsRow.Inzidenz)
-        : NaN;
+        const adultsRow =
+            findSummaryRow("15+", disease);
 
-    document.getElementById("summaryReports").textContent =
-        displaySummaryValue(reportCount);
+        const reportCount = totalRow
+            ? parseSummaryNumber(totalRow.Meldungen)
+            : NaN;
 
-    document.getElementById("summaryTotal").textContent =
-        displaySummaryValue(totalIncidence);
+        const totalIncidence = totalRow
+            ? parseSummaryNumber(totalRow.Inzidenz)
+            : NaN;
 
-    document.getElementById("summaryChildren").textContent =
-        displaySummaryValue(childrenIncidence);
+        const childrenIncidence = childrenRow
+            ? parseSummaryNumber(childrenRow.Inzidenz)
+            : NaN;
 
-    document.getElementById("summaryAdults").textContent =
-        displaySummaryValue(adultsIncidence);
+        const adultsIncidence = adultsRow
+            ? parseSummaryNumber(adultsRow.Inzidenz)
+            : NaN;
+
+        document.getElementById("summaryReports").textContent =
+            displaySummaryValue(reportCount);
+
+        document.getElementById("summaryTotal").textContent =
+            displaySummaryValue(totalIncidence);
+
+        document.getElementById("summaryChildren").textContent =
+            displaySummaryValue(childrenIncidence);
+
+        document.getElementById("summaryAdults").textContent =
+            displaySummaryValue(adultsIncidence);
+
+        // Keep the disease name in the incidence row labels.
+        document.getElementById("summaryTotal").closest("tbody")
+            .querySelectorAll("tr")[1].cells[0].textContent =
+                `${disease} Incidence (per 100,000 inhabitants)`;
+
+        document.getElementById("summaryChildren").closest("tbody")
+            .querySelectorAll("tr")[2].cells[0].textContent =
+                `${disease} Incidence — Children (0–14 years)`;
+
+        document.getElementById("summaryAdults").closest("tbody")
+            .querySelectorAll("tr")[3].cells[0].textContent =
+                `${disease} Incidence — Adults (15+ years)`;
+    }
+
+    // Register the listener once and update the table immediately.
+    diseaseFilter.addEventListener(
+        "change",
+        updateSummaryTable
+    );
+
+    updateSummaryTable();
 }
 
 
