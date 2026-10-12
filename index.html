@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -90,7 +91,7 @@ body {
 }
 
 /* =========================================================
-   OVERVIEW
+   INTRODUCTION
    ========================================================= */
 
 .overview-card {
@@ -359,26 +360,26 @@ select {
 <div class="tabs">
 
     <button class="tab-button active" data-tab="overview">
-        Overview
-    </button>
-
-    <button class="tab-button" data-tab="regional-map">
-        Regional Map
+        Introduction
     </button>
 
     <button class="tab-button" data-tab="incidence">
-        Incidence
+        Incidence Over Time
     </button>
 
     <button class="tab-button" data-tab="age-groups">
-        Age Groups
+        Incidence by Age Group
+    </button>
+
+    <button class="tab-button" data-tab="regional-map">
+        Regional Incidence Map
     </button>
 
 </div>
 
 
 <!-- =========================================================
-     OVERVIEW TAB
+     INTRODUCTION TAB
      ========================================================= -->
 
 <div id="overview" class="tab-content active">
@@ -401,25 +402,25 @@ select {
         <ul>
 
             <li>
-                <strong>Regional Map</strong> – explore incidence across
-                German regions by season and calendar week.
+                <strong>Incidence Over Time</strong> – compare nationwide
+                incidence across different seasons.
             </li>
 
             <li>
-                <strong>Incidence</strong> – compare nationwide incidence
-                across different seasons.
+                <strong>Incidence by Age Group</strong> – examine nationwide
+                incidence across five different age groups.
             </li>
 
             <li>
-                <strong>Age Groups</strong> – examine nationwide incidence
-                across different age groups.
+                <strong>Regional Incidence Map</strong> – explore incidence
+                across German regions by season and calendar week.
             </li>
 
         </ul>
 
         <p>
-            The filters can be used to change the disease, season,
-            calendar week, or age group depending on the visualization.
+            Use the available filters to change the disease, season,
+            calendar week, or age group, depending on the visualization.
         </p>
 
     </div>
@@ -512,7 +513,7 @@ select {
 
 
 <!-- =========================================================
-     INCIDENCE TAB
+     INCIDENCE OVER TIME TAB
      ========================================================= -->
 
 <div id="incidence" class="tab-content">
@@ -584,7 +585,7 @@ select {
 
 
 <!-- =========================================================
-     AGE GROUPS TAB
+     INCIDENCE BY AGE GROUP TAB
      ========================================================= -->
 
 <div id="age-groups" class="tab-content">
@@ -705,15 +706,6 @@ const DEFAULT_ALTERSGRUPPE = "00+";
    AGE GROUPS USED BY AGE GROUP CHART
    ========================================================= */
 
-/*
-   The Age Groups chart intentionally uses only
-   these five age groups.
-
-   00+ is NOT included here.
-   The Regional Map and Incidence chart continue
-   using 00+ independently.
-*/
-
 const AGE_GROUPS = [
     "0-4",
     "5-14",
@@ -789,11 +781,6 @@ function getWeeksForSeason(season) {
     const weeks = [];
 
 
-    /*
-       Season begins with weeks 40–53
-       of the first calendar year.
-    */
-
     for (
         let week = 40;
         week <= 53;
@@ -806,10 +793,6 @@ function getWeeksForSeason(season) {
 
     }
 
-
-    /*
-       Then weeks 1–39 of the following year.
-    */
 
     for (
         let week = 1;
@@ -844,27 +827,6 @@ function getWeekLabel(week) {
 /* =========================================================
    CHART WEEK POSITIONS
    ========================================================= */
-
-/*
-   IMPORTANT:
-
-   Plotly categorical axes can reorder W53 when several
-   seasons are plotted together.
-
-   We therefore use numeric positions:
-
-   W40 = 0
-   W41 = 1
-   ...
-   W52 = 12
-   W53 = 13
-   W1  = 14
-   ...
-   W39 = 52
-
-   The numeric positions are converted back into Wxx
-   labels using ticktext.
-*/
 
 const CHART_WEEK_LABELS = [
 
@@ -987,11 +949,6 @@ tabButtons.forEach(button => {
                 .classList.add("active");
 
 
-            /*
-               Leaflet needs a resize after
-               becoming visible.
-            */
-
             if (
                 targetTab === "regional-map"
                 && map
@@ -1014,11 +971,6 @@ tabButtons.forEach(button => {
 
             }
 
-
-            /*
-               Plotly charts need resizing
-               after their container becomes visible.
-            */
 
             if (
                 targetTab === "incidence"
@@ -1162,9 +1114,7 @@ function initializeAllVisualizations() {
 
 
 /* =========================================================
-   =========================================================
-   REGIONAL MAP
-   =========================================================
+   REGIONAL INCIDENCE MAP
    ========================================================= */
 
 let map = null;
@@ -1331,10 +1281,6 @@ function initializeMap() {
         );
 
 
-    /*
-       Seasons
-    */
-
     const seasons =
         [...new Set(
             rows.map(
@@ -1374,10 +1320,6 @@ function initializeMap() {
         DEFAULT_ERKRANKUNG;
 
 
-    /*
-       Weeks
-    */
-
     let availableWeeks =
         getWeeksForSeason(
             DEFAULT_SEASON
@@ -1391,10 +1333,6 @@ function initializeMap() {
     weekFilter.max =
         availableWeeks.length - 1;
 
-
-    /*
-       Tick marks
-    */
 
     const weekTicks =
         document.getElementById(
@@ -1436,10 +1374,6 @@ function initializeMap() {
             selectedMapWeek
         );
 
-
-    /*
-       Regional values
-    */
 
     function getRegionValues(
         season,
@@ -1525,10 +1459,6 @@ function initializeMap() {
         );
 
 
-    /*
-       TopoJSON → GeoJSON
-    */
-
     const geojsonData =
         topojson.feature(
             geojson,
@@ -1536,18 +1466,10 @@ function initializeMap() {
         );
 
 
-    /*
-       Labels
-    */
-
     incidenceLabels =
         L.layerGroup()
             .addTo(map);
 
-
-    /*
-       Map layer
-    */
 
     mapLayer =
         L.geoJSON(
@@ -1630,10 +1552,6 @@ function initializeMap() {
 
                         );
 
-
-                        /*
-                           Direct map label
-                        */
 
                         const label =
                             L.marker(
@@ -1722,10 +1640,6 @@ function initializeMap() {
         ).addTo(map);
 
 
-    /*
-       Update labels
-    */
-
     function updateIncidenceLabels() {
 
         incidenceLabels.eachLayer(
@@ -1765,10 +1679,6 @@ function initializeMap() {
 
     }
 
-
-    /*
-       Update map
-    */
 
     function updateMap() {
 
@@ -1834,10 +1744,6 @@ function initializeMap() {
     }
 
 
-    /*
-       Week slider
-    */
-
     weekFilter.addEventListener(
         "input",
         function() {
@@ -1863,10 +1769,6 @@ function initializeMap() {
         }
     );
 
-
-    /*
-       Season
-    */
 
     seasonFilter.addEventListener(
         "change",
@@ -1928,10 +1830,6 @@ function initializeMap() {
                 );
 
 
-            /*
-               Rebuild ticks
-            */
-
             weekTicks.innerHTML =
                 "";
 
@@ -1963,10 +1861,6 @@ function initializeMap() {
     );
 
 
-    /*
-       Disease
-    */
-
     diseaseFilter.addEventListener(
         "change",
         function() {
@@ -1977,18 +1871,10 @@ function initializeMap() {
     );
 
 
-    /*
-       Initial fit
-    */
-
     map.fitBounds(
         mapLayer.getBounds()
     );
 
-
-    /*
-       Legend
-    */
 
     const legend =
         L.control({
@@ -2013,65 +1899,18 @@ function initializeMap() {
 
             const labels = [
 
-                [
-                    "= 0",
-                    "#D3D3D3"
-                ],
-
-                [
-                    "1 < 1500",
-                    "#FFDFAD"
-                ],
-
-                [
-                    "1500 < 3000",
-                    "#FDD291"
-                ],
-
-                [
-                    "3000 < 4500",
-                    "#FFBB63"
-                ],
-
-                [
-                    "4500 < 6000",
-                    "#FFA037"
-                ],
-
-                [
-                    "6000 < 7500",
-                    "#F68511"
-                ],
-
-                [
-                    "7500 < 9000",
-                    "#E46F00"
-                ],
-
-                [
-                    "9000 < 10500",
-                    "#CB5D00"
-                ],
-
-                [
-                    "10500 < 12000",
-                    "#B14C00"
-                ],
-
-                [
-                    "12000 < 13500",
-                    "#953D00"
-                ],
-
-                [
-                    "13500 < 15000",
-                    "#7A2F00"
-                ],
-
-                [
-                    ">= 15000",
-                    "#612300"
-                ]
+                ["= 0", "#D3D3D3"],
+                ["1 < 1500", "#FFDFAD"],
+                ["1500 < 3000", "#FDD291"],
+                ["3000 < 4500", "#FFBB63"],
+                ["4500 < 6000", "#FFA037"],
+                ["6000 < 7500", "#F68511"],
+                ["7500 < 9000", "#E46F00"],
+                ["9000 < 10500", "#CB5D00"],
+                ["10500 < 12000", "#B14C00"],
+                ["12000 < 13500", "#953D00"],
+                ["13500 < 15000", "#7A2F00"],
+                [">= 15000", "#612300"]
 
             ];
 
@@ -2113,18 +1952,12 @@ function initializeMap() {
 
 
 /* =========================================================
-   =========================================================
-   INCIDENCE CHART
-   =========================================================
+   INCIDENCE OVER TIME CHART
    ========================================================= */
 
 let incidenceSelectedSeasons =
     [DEFAULT_SEASON];
 
-
-/* =========================================================
-   INITIALIZE INCIDENCE CHART
-   ========================================================= */
 
 function initializeIncidenceChart() {
 
@@ -2145,10 +1978,6 @@ function initializeIncidenceChart() {
             "incidenceDiseaseFilter"
         );
 
-
-    /*
-       Seasons
-    */
 
     const seasons =
         [...new Set(
@@ -2222,10 +2051,6 @@ function initializeIncidenceChart() {
     );
 
 
-    /*
-       Dropdown
-    */
-
     button.addEventListener(
         "click",
         function(event) {
@@ -2244,10 +2069,6 @@ function initializeIncidenceChart() {
         }
     );
 
-
-    /*
-       Close dropdown
-    */
 
     document.addEventListener(
         "click",
@@ -2287,10 +2108,6 @@ function initializeIncidenceChart() {
 
 }
 
-
-/* =========================================================
-   UPDATE SEASON SELECTION
-   ========================================================= */
 
 function updateIncidenceSeasonSelection() {
 
@@ -2350,10 +2167,6 @@ function updateIncidenceSeasonSelection() {
 
 }
 
-
-/* =========================================================
-   DRAW INCIDENCE CHART
-   ========================================================= */
 
 function drawIncidenceChart() {
 
@@ -2477,22 +2290,6 @@ function drawIncidenceChart() {
             const y = [];
 
 
-            /*
-               IMPORTANT FIX:
-
-               Use the index from weekOrder
-               instead of "Wxx" as the actual
-               x value.
-
-               This guarantees:
-
-               W40 → W41 → ... → W52 → W53
-               → W1 → ... → W39
-
-               even when multiple seasons are
-               displayed together.
-            */
-
             weekOrder.forEach(
                 (week, index) => {
 
@@ -2544,10 +2341,6 @@ function drawIncidenceChart() {
 
             title:
                 `Inzidenz – Bundesweit – ${disease}`,
-
-            /*
-               Explicit numeric week positions.
-            */
 
             xaxis: {
 
@@ -2618,15 +2411,8 @@ function drawIncidenceChart() {
 
 
 /* =========================================================
-   =========================================================
-   AGE GROUP CHART
-   =========================================================
+   INCIDENCE BY AGE GROUP CHART
    ========================================================= */
-
-/*
-   All five supported age groups are selected
-   by default.
-*/
 
 let selectedAgeGroups = [
     "0-4",
@@ -2636,10 +2422,6 @@ let selectedAgeGroups = [
     "60+"
 ];
 
-
-/* =========================================================
-   INITIALIZE AGE GROUP CHART
-   ========================================================= */
 
 function initializeAgeGroupsChart() {
 
@@ -2666,10 +2448,6 @@ function initializeAgeGroupsChart() {
             "ageDiseaseFilter"
         );
 
-
-    /*
-       Seasons
-    */
 
     const seasons =
         [...new Set(
@@ -2708,17 +2486,6 @@ function initializeAgeGroupsChart() {
         DEFAULT_SEASON;
 
 
-    /*
-       Age groups
-
-       IMPORTANT:
-       Do NOT read every unique age group
-       from the TSV.
-
-       Only the five explicitly supported
-       groups are added to the dropdown.
-    */
-
     AGE_GROUPS.forEach(
         ageGroup => {
 
@@ -2745,11 +2512,6 @@ function initializeAgeGroupsChart() {
             checkbox.value =
                 ageGroup;
 
-
-            /*
-               All five groups are selected
-               by default.
-            */
 
             checkbox.checked =
                 true;
@@ -2787,10 +2549,6 @@ function initializeAgeGroupsChart() {
     );
 
 
-    /*
-       Dropdown
-    */
-
     ageButton.addEventListener(
         "click",
         function(event) {
@@ -2809,10 +2567,6 @@ function initializeAgeGroupsChart() {
         }
     );
 
-
-    /*
-       Close dropdown
-    */
 
     document.addEventListener(
         "click",
@@ -2840,19 +2594,11 @@ function initializeAgeGroupsChart() {
     );
 
 
-    /*
-       Season
-    */
-
     seasonFilter.addEventListener(
         "change",
         drawAgeGroupsChart
     );
 
-
-    /*
-       Disease
-    */
 
     diseaseFilter.addEventListener(
         "change",
@@ -2866,10 +2612,6 @@ function initializeAgeGroupsChart() {
 
 }
 
-
-/* =========================================================
-   UPDATE AGE GROUP SELECTION
-   ========================================================= */
 
 function updateAgeGroupSelection() {
 
@@ -2929,10 +2671,6 @@ function updateAgeGroupSelection() {
 
 }
 
-
-/* =========================================================
-   DRAW AGE GROUPS CHART
-   ========================================================= */
 
 function drawAgeGroupsChart() {
 
@@ -3069,12 +2807,6 @@ function drawAgeGroupsChart() {
 
             const y = [];
 
-
-            /*
-               Use numeric week positions here too,
-               so the chart always follows the
-               correct seasonal order.
-            */
 
             weekOrder.forEach(
                 (week, index) => {
