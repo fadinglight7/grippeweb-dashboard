@@ -618,7 +618,7 @@ select {
                     class="dropdown-button"
                     id="ageGroupButton"
                 >
-                    00+
+                    5 age groups selected
                 </button>
 
                 <div
@@ -699,6 +699,28 @@ const DEFAULT_WEEK = "2026-W19";
 const DEFAULT_ERKRANKUNG = "ARE";
 
 const DEFAULT_ALTERSGRUPPE = "00+";
+
+
+/* =========================================================
+   AGE GROUPS USED BY AGE GROUP CHART
+   ========================================================= */
+
+/*
+   The Age Groups chart intentionally uses only
+   these five age groups.
+
+   00+ is NOT included here.
+   The Regional Map and Incidence chart continue
+   using 00+ independently.
+*/
+
+const AGE_GROUPS = [
+    "0-4",
+    "5-14",
+    "15-34",
+    "35-59",
+    "60+"
+];
 
 
 /* =========================================================
@@ -2601,8 +2623,18 @@ function drawIncidenceChart() {
    =========================================================
    ========================================================= */
 
-let selectedAgeGroups =
-    [DEFAULT_ALTERSGRUPPE];
+/*
+   All five supported age groups are selected
+   by default.
+*/
+
+let selectedAgeGroups = [
+    "0-4",
+    "5-14",
+    "15-34",
+    "35-59",
+    "60+"
+];
 
 
 /* =========================================================
@@ -2678,55 +2710,16 @@ function initializeAgeGroupsChart() {
 
     /*
        Age groups
+
+       IMPORTANT:
+       Do NOT read every unique age group
+       from the TSV.
+
+       Only the five explicitly supported
+       groups are added to the dropdown.
     */
 
-    const ageGroups =
-        [...new Set(
-            rows.map(
-                row =>
-                    row.Altersgruppe
-            )
-        )];
-
-
-    /*
-       Put 00+ first
-    */
-
-    ageGroups.sort(
-        (a, b) => {
-
-            if (
-                a === "00+"
-            ) {
-
-                return -1;
-
-            }
-
-
-            if (
-                b === "00+"
-            ) {
-
-                return 1;
-
-            }
-
-
-            return a.localeCompare(
-                b,
-                undefined,
-                {
-                    numeric: true
-                }
-            );
-
-        }
-    );
-
-
-    ageGroups.forEach(
+    AGE_GROUPS.forEach(
         ageGroup => {
 
             const label =
@@ -2753,9 +2746,13 @@ function initializeAgeGroupsChart() {
                 ageGroup;
 
 
+            /*
+               All five groups are selected
+               by default.
+            */
+
             checkbox.checked =
-                ageGroup ===
-                DEFAULT_ALTERSGRUPPE;
+                true;
 
 
             checkbox.addEventListener(
@@ -2934,7 +2931,7 @@ function updateAgeGroupSelection() {
 
 
 /* =========================================================
-   DRAW AGE GROUP CHART
+   DRAW AGE GROUPS CHART
    ========================================================= */
 
 function drawAgeGroupsChart() {
