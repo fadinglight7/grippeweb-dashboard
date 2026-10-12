@@ -118,6 +118,63 @@ body {
 }
 
 /* =========================================================
+   NEW: WEEKLY SUMMARY TABLE STYLING
+   ========================================================= */
+
+.summary-table-container {
+    margin-top: 28px;
+    overflow-x: auto;
+}
+
+.summary-table-container h3 {
+    margin: 0 0 8px;
+    font-size: 19px;
+}
+
+.summary-week-label {
+    margin: 0 0 15px;
+    font-size: 13px;
+    color: #666;
+}
+
+.summary-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+}
+
+.summary-table th,
+.summary-table td {
+    padding: 12px 10px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.summary-table th {
+    background: #f0f0f0;
+    text-align: left;
+    font-weight: bold;
+}
+
+.summary-table th:last-child,
+.summary-table td:last-child {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.summary-table td:last-child {
+    font-weight: bold;
+    font-variant-numeric: tabular-nums;
+}
+
+.summary-note {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #666;
+}
+
+/* =========================================================
    CONTROLS
    ========================================================= */
 
@@ -331,6 +388,13 @@ select {
     .overview-card {
         padding: 20px;
     }
+
+    /* NEW: Keep the summary readable on narrow screens. */
+    .summary-table th,
+    .summary-table td {
+        padding: 10px 7px;
+        font-size: 12px;
+    }
 }
 
 </style>
@@ -382,7 +446,7 @@ select {
      INTRODUCTION TAB
      ========================================================= -->
 
-<div id="overview" class="tab-content active">
+<div id="overview" class="tab-content">
 
     <div class="overview-card">
 
@@ -422,6 +486,60 @@ select {
             Use the available filters to change the disease, season,
             calendar week, or age group, depending on the visualization.
         </p>
+
+        <!-- NEW: WEEKLY SUMMARY TABLE -->
+
+        <div class="summary-table-container">
+
+            <h3>Weekly Summary</h3>
+
+            <p class="summary-week-label" id="summaryWeekLabel">
+                Loading week…
+            </p>
+
+            <table class="summary-table">
+
+                <thead>
+                    <tr>
+                        <th>Indicator</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <tr>
+                        <td>Number of Weekly Reports</td>
+                        <td id="summaryReports">—</td>
+                    </tr>
+
+                    <tr>
+                        <td>ARE Incidence (per 100,000 inhabitants)</td>
+                        <td id="summaryTotal">—</td>
+                    </tr>
+
+                    <tr>
+                        <td>ARE Incidence — Children (0–14 years)</td>
+                        <td id="summaryChildren">—</td>
+                    </tr>
+
+                    <tr>
+                        <td>ARE Incidence — Adults (15+ years)</td>
+                        <td id="summaryAdults">—</td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+            <p class="summary-note">
+                Values are calculated from the TSV file used by this dashboard.
+                The week shown is the latest week available in that file.
+            </p>
+
+        </div>
+
+        <!-- END NEW: WEEKLY SUMMARY TABLE -->
 
     </div>
 
@@ -1099,10 +1217,132 @@ Promise.all([
 
 
 /* =========================================================
+   NEW: WEEKLY SUMMARY TABLE DATA
+   ========================================================= */
+
+function initializeWeeklySummary() {
+
+    // Find the most recent season in the loaded TSV.
+    const availableSeasons = [
+        ...new Set(
+            rows
+                .map(row => row.Saison)
+                .filter(Boolean)
+        )
+    ].sort((a, b) => {
+
+        const yearA = Number(a.split("/")[0]);
+        const yearB = Number(b.split("/")[0]);
+
+        return yearA - yearB;
+
+    });
+
+    if (availableSeasons.length === 0) {
+        document.getElementById("summaryWeekLabel").textContent =
+            "No season data available";
+        return;
+    }
+
+    const latestSeason =
+        availableSeasons[availableSeasons.length - 1];
+
+    // Preserve the dashboard's epidemiological week order, but only
+    // consider weeks that actually exist in the TSV for this season.
+    const actualWeeks = new Set(
+        rows
+            .filter(row => row.Saison === latestSeason)
+            .map(row => row.Kalenderwoche)
+            .filter(Boolean)
+    );
+
+    const latestWeek = getWeeksForSeason(latestSeason)
+        .filter(week => actualWeeks.has(week))
+        .pop();
+
+    if (!latestWeek) {
+        document.getElementById("summaryWeekLabel").textContent =
+            "No calendar week available";
+        return;
+    }
+
+    document.getElementById("summaryWeekLabel").textContent =
+        `Season ${latestSeason} · ${getWeekLabel(latestWeek)} (${latestWeek})`;
+
+    // Convert decimal-comma values if present and format whole numbers.
+    function parseSummaryNumber(value) {
+        if (value === undefined || value === null || value.trim() === "") {
+            return NaN;
+        }
+
+        return Number(String(value).replace(",", "."));
+    }
+
+    function displaySummaryValue(value) {
+        if (!Number.isFinite(value)) {
+            return "—";
+        }
+
+        return Math.round(value).toLocaleString("en-US");
+    }
+
+    // Use a single matching nationwide row for each indicator.
+    // Filtering by disease, age group, region, season, and week avoids
+    // accidentally adding duplicated values across other categories.
+    function findSummaryRow(ageGroup) {
+        return rows.find(row =>
+            row.Saison === latestSeason &&
+            row.Kalenderwoche === latestWeek &&
+            row.Erkrankung === "ARE" &&
+            row.Altersgruppe === ageGroup &&
+            row.Region === "Bundesweit"
+        );
+    }
+
+    const totalRow = findSummaryRow("00+");
+    const childrenRow = findSummaryRow("0-14");
+    const adultsRow = findSummaryRow("15+");
+
+    // Meldungen is the weekly-report count. If the field is not present
+    // in the file, show a dash rather than inventing a value.
+    const reportCount = totalRow
+        ? parseSummaryNumber(totalRow.Meldungen)
+        : NaN;
+
+    const totalIncidence = totalRow
+        ? parseSummaryNumber(totalRow.Inzidenz)
+        : NaN;
+
+    const childrenIncidence = childrenRow
+        ? parseSummaryNumber(childrenRow.Inzidenz)
+        : NaN;
+
+    const adultsIncidence = adultsRow
+        ? parseSummaryNumber(adultsRow.Inzidenz)
+        : NaN;
+
+    document.getElementById("summaryReports").textContent =
+        displaySummaryValue(reportCount);
+
+    document.getElementById("summaryTotal").textContent =
+        displaySummaryValue(totalIncidence);
+
+    document.getElementById("summaryChildren").textContent =
+        displaySummaryValue(childrenIncidence);
+
+    document.getElementById("summaryAdults").textContent =
+        displaySummaryValue(adultsIncidence);
+}
+
+
+/* =========================================================
    INITIALIZE EVERYTHING
    ========================================================= */
 
 function initializeAllVisualizations() {
+
+    // NEW: Populate the Introduction page from the same loaded TSV.
+    initializeWeeklySummary();
 
     initializeMap();
 
