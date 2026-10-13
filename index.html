@@ -117,6 +117,161 @@ body {
     color: #444;
 }
 
+
+/* =========================================================
+   MILO — INTRODUCTION TAB
+   ========================================================= */
+
+.overview-card {
+    max-width: 1000px;
+    margin: 20px auto;
+    padding: 30px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    background: #fafafa;
+}
+
+.milo-welcome {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 24px;
+    margin-bottom: 28px;
+    background: #eef3ff;
+    border: 1px solid #d8e2fa;
+    border-radius: 12px;
+}
+
+.milo-welcome-image {
+    flex: 0 0 120px;
+    width: 120px;
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.milo-welcome-image img {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.milo-welcome-copy h2 {
+    margin: 0 0 10px;
+    color: #203f80;
+    font-size: 25px;
+}
+
+.milo-welcome-copy p {
+    margin: 0 0 10px;
+    line-height: 1.7;
+    color: #333;
+}
+
+.milo-welcome-copy p:last-child {
+    margin-bottom: 0;
+}
+
+.investigation-heading {
+    margin: 0 0 8px;
+    font-size: 21px;
+}
+
+.investigation-intro {
+    margin: 0 0 18px;
+    line-height: 1.7;
+    color: #444;
+}
+
+.investigation-clues {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin: 20px 0 28px;
+}
+
+.investigation-clue {
+    padding: 18px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 9px;
+}
+
+.investigation-clue h3 {
+    margin: 0 0 9px;
+    font-size: 17px;
+    color: #203f80;
+}
+
+.investigation-clue p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.65;
+    color: #444;
+}
+
+.investigation-clue .clue-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    margin-bottom: 10px;
+    border-radius: 50%;
+    background: #e9efff;
+    color: #203f80;
+    font-weight: bold;
+}
+
+.data-transition {
+    padding: 18px 20px;
+    margin-top: 26px;
+    background: #fff;
+    border-left: 4px solid #526da8;
+    border-radius: 5px;
+}
+
+.data-transition h3 {
+    margin: 0 0 8px;
+    font-size: 19px;
+}
+
+.data-transition p {
+    margin: 0;
+    line-height: 1.7;
+    color: #444;
+}
+
+@media (max-width: 700px) {
+    .overview-card {
+        padding: 18px;
+    }
+
+    .milo-welcome {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 18px;
+    }
+
+    .milo-welcome-image {
+        width: 95px;
+        height: 95px;
+        flex-basis: 95px;
+    }
+
+    .milo-welcome-copy h2 {
+        font-size: 22px;
+    }
+
+    .investigation-clues {
+        grid-template-columns: 1fr;
+    }
+}
+
+
 /* =========================================================
    NEW: WEEKLY SUMMARY TABLE STYLING
    ========================================================= */
@@ -621,66 +776,154 @@ select {
      INTRODUCTION TAB
      ========================================================= -->
 
+
+<!-- =========================================================
+     INTRODUCTION TAB — MILO'S INVESTIGATION
+     ========================================================= -->
+
 <div id="overview" class="tab-content active">
 
     <div class="overview-card">
 
-        <h2>GrippeWeb</h2>
+        <!-- Welcome Milo -->
+        <section class="milo-welcome">
 
-        <p>
-            This dashboard presents incidence estimates from the
-            GrippeWeb surveillance system for respiratory illnesses
-            in Germany.
-        </p>
+            <div class="milo-welcome-image">
+                <img
+                    src="https://raw.githubusercontent.com/fadinglight7/grippeweb-dashboard/main/meddog.png"
+                    alt="Milo the Data Detective"
+                >
+            </div>
 
-        <p>
-            Use the tabs above to explore the data from different
-            perspectives.
-        </p>
+            <div class="milo-welcome-copy">
 
-        <ul>
+                <h2>Meet Milo, the Data Detective!</h2>
 
-            <li>
-                <strong>Incidence Over Time</strong> – compare nationwide
-                incidence across different seasons.
-            </li>
+                <p>
+                    Hello, investigator! I'm Milo. I'll help you explore
+                    the GrippeWeb data and uncover how respiratory illness
+                    incidence changes across Germany.
+                </p>
 
-            <li>
-                <strong>Incidence by Age Group</strong> – examine nationwide
-                incidence across five different age groups.
-            </li>
+                <p>
+                    We'll follow three clues: when incidence changes,
+                    who the patterns affect across age groups, and where
+                    incidence differs between regions.
+                </p>
 
-            <li>
-                <strong>Regional Incidence Map</strong> – explore incidence
-                across German regions by season and calendar week.
-            </li>
+            </div>
 
-        </ul>
+        </section>
 
-        <p>
-            Use the available filters to change the disease, season,
-            calendar week, or age group, depending on the visualization.
-        </p>
 
-        <!-- NEW: WEEKLY SUMMARY TABLE -->
+        <!-- Introduce the investigation -->
+        <section>
+
+            <h2 class="investigation-heading">
+                Your Investigation: Three Clues
+            </h2>
+
+            <p class="investigation-intro">
+                This dashboard presents incidence estimates from the
+                GrippeWeb surveillance system. Use the visualizations
+                to explore the data from three complementary perspectives.
+            </p>
+
+
+            <div class="investigation-clues">
+
+                <article class="investigation-clue">
+
+                    <span class="clue-number">1</span>
+
+                    <h3>When? — Incidence Over Time</h3>
+
+                    <p>
+                        Compare nationwide incidence across seasons.
+                        Look for changes over time, recurring peaks,
+                        and differences between seasons.
+                    </p>
+
+                </article>
+
+
+                <article class="investigation-clue">
+
+                    <span class="clue-number">2</span>
+
+                    <h3>Who? — Incidence by Age Group</h3>
+
+                    <p>
+                        Compare incidence across five age groups.
+                        Explore whether the timing and shape of
+                        patterns differ between groups.
+                    </p>
+
+                </article>
+
+
+                <article class="investigation-clue">
+
+                    <span class="clue-number">3</span>
+
+                    <h3>Where? — Regional Incidence Map</h3>
+
+                    <p>
+                        Explore differences between German regions.
+                        Change the season and week to see how the
+                        regional picture develops over time.
+                    </p>
+
+                </article>
+
+            </div>
+
+        </section>
+
+
+        <!-- Transition into the existing weekly summary -->
+        <section class="data-transition">
+
+            <h3>Before We Begin: The Latest Available Data</h3>
+
+            <p>
+                Let's start with a snapshot of the latest calendar week
+                available in the dashboard's data file. You can switch
+                between ARE and ILI below. Then, use the tabs above to
+                investigate when, who, and where incidence patterns emerge.
+            </p>
+
+        </section>
+
+
+        <!-- EXISTING WEEKLY SUMMARY TABLE — PRESERVED -->
 
         <div class="summary-table-container">
 
             <div class="summary-heading-row">
-    <h3>Latest Calendar Week</h3>
 
-    <div class="control-group">
-        <label for="summaryDiseaseFilter">Erkrankung:</label>
-        <select id="summaryDiseaseFilter">
-            <option value="ARE" selected>ARE</option>
-            <option value="ILI">ILI</option>
-        </select>
-    </div>
-</div>
+                <h3>Latest Calendar Week</h3>
 
-<p class="summary-week-label" id="summaryWeekLabel">
-    Loading week…
-</p>
+                <div class="control-group">
+
+                    <label for="summaryDiseaseFilter">
+                        Erkrankung:
+                    </label>
+
+                    <select id="summaryDiseaseFilter">
+
+                        <option value="ARE" selected>ARE</option>
+                        <option value="ILI">ILI</option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            <p class="summary-week-label" id="summaryWeekLabel">
+                Loading week…
+            </p>
 
             <table class="summary-table">
 
@@ -724,11 +967,10 @@ select {
 
         </div>
 
-        <!-- END NEW: WEEKLY SUMMARY TABLE -->
-
     </div>
 
 </div>
+
 
 
 <!-- =========================================================
