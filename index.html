@@ -355,6 +355,158 @@ select {
     cursor: pointer;
 }
 
+
+/* =========================================================
+   NARRATIVE GUIDE SIDEBAR — ADDITION ONLY
+   ========================================================= */
+
+.tab-content:not(#overview) {
+    position: relative;
+    padding-right: 330px;
+}
+
+.narrative-sidebar {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    width: 270px;
+    padding: 18px;
+    background: #fafafa;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    color: #222;
+    z-index: 5;
+    box-sizing: border-box;
+}
+
+.narrative-sidebar h3 {
+    margin: 0 0 14px;
+    font-size: 18px;
+}
+
+.narrative-character {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px;
+    margin-bottom: 16px;
+    background: #fff;
+    border: 1px solid #e2e2e2;
+    border-radius: 8px;
+}
+
+.narrative-avatar {
+    flex: 0 0 42px;
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #e9efff;
+    font-size: 23px;
+}
+
+.narrative-character strong {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 13px;
+}
+
+.narrative-character p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #444;
+}
+
+.narrative-sidebar details {
+    margin-bottom: 8px;
+    border: 1px solid #e1e1e1;
+    border-radius: 7px;
+    background: #fff;
+}
+
+.narrative-sidebar summary {
+    padding: 11px 10px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.narrative-question-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 0 7px 8px;
+}
+
+.narrative-question {
+    width: 100%;
+    padding: 9px;
+    border: none;
+    border-radius: 5px;
+    background: transparent;
+    color: #333;
+    text-align: left;
+    font-family: inherit;
+    font-size: 12px;
+    line-height: 1.4;
+    cursor: pointer;
+}
+
+.narrative-question:hover {
+    background: #f0f0f0;
+}
+
+.narrative-question.active {
+    background: #e9efff;
+    color: #203f80;
+    font-weight: bold;
+}
+
+.narrative-explanation {
+    margin-top: 14px;
+    padding: 13px;
+    background: #fff;
+    border-left: 3px solid #526da8;
+    border-radius: 4px;
+}
+
+.narrative-explanation h4 {
+    margin: 0 0 8px;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.narrative-explanation p {
+    margin: 0;
+    color: #444;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.narrative-hint {
+    margin: 12px 0 0;
+    color: #666;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+/* Mobile layout */
+@media (max-width: 700px) {
+    .tab-content:not(#overview) {
+        padding-right: 15px;
+    }
+
+    .narrative-sidebar {
+        position: static;
+        width: 100%;
+        margin-bottom: 20px;
+    }
+}
+
+
 /* =========================================================
    RESPONSIVE
    ========================================================= */
@@ -574,6 +726,56 @@ select {
      ========================================================= -->
 
 <div id="regional-map" class="tab-content">
+    
+<aside class="narrative-sidebar" data-guide="where">
+    <h3>Explore: Where?</h3>
+
+    <div class="narrative-character">
+        <div class="narrative-avatar" aria-hidden="true">🔎</div>
+        <div>
+            <strong>Milo the Data Detective</strong>
+            <p data-character-speech>We know when illness changes. Now let's investigate where incidence differs across Germany.</p>
+        </div>
+    </div>
+
+    <details open>
+        <summary>Reading the map</summary>
+        <div class="narrative-question-list">
+            <button class="narrative-question active" type="button"
+                data-title="What do the colours represent?"
+                data-speech="The colours help us compare incidence between regions. Check the legend before drawing conclusions."
+                data-text="Each region is coloured according to its incidence for the selected disease, season, and epidemiological week. Use the legend to interpret the ranges. In general, darker orange and brown shades indicate higher incidence; consult the legend for the exact values.">
+                What do the colours represent?
+            </button>
+            <button class="narrative-question" type="button"
+                data-title="What does the week slider represent?"
+                data-speech="Move through the weeks and watch how the regional picture changes."
+                data-text="The week slider selects the epidemiological week shown on the map. Changing it updates the regional values and colours. The season and disease selections also affect which data is displayed.">
+                What does the week slider represent?
+            </button>
+            <button class="narrative-question" type="button"
+                data-title="What should I look for?"
+                data-speech="Compare regions, then move through time. Are the differences stable or do they change?"
+                data-text="Look for regions with relatively high or low incidence, compare neighbouring regions, and move through the weeks to see how the pattern changes. The map shows where reported incidence differs; it does not explain why.">
+                What should I look for?
+            </button>
+            <button class="narrative-question" type="button"
+                data-title="Putting it all together"
+                data-speech="A detective combines clues. Let's connect when, who, and where."
+                data-text="The time-series chart shows how nationwide incidence changes across seasons. The age-group chart compares patterns between age groups. The map adds a regional perspective. Together they describe different aspects of the data, but they do not establish the causes of observed differences.">
+                Putting it all together
+            </button>
+        </div>
+    </details>
+
+    <div class="narrative-explanation" aria-live="polite">
+        <h4 data-explanation-title>What do the colours represent?</h4>
+        <p data-explanation-text>Each region is coloured according to its incidence for the selected disease, season, and epidemiological week. Use the legend to interpret the ranges. In general, darker orange and brown shades indicate higher incidence; consult the legend for the exact values.</p>
+    </div>
+
+    <p class="narrative-hint">Final chapter: connect When, Who, and Where.</p>
+</aside>
+
 
     <div class="controls">
 
@@ -658,6 +860,50 @@ select {
      ========================================================= -->
 
 <div id="incidence" class="tab-content">
+    
+<aside class="narrative-sidebar" data-guide="when">
+    <h3>Explore: When?</h3>
+
+    <div class="narrative-character">
+        <div class="narrative-avatar" aria-hidden="true">🔎</div>
+        <div>
+            <strong>Milo the Data Detective</strong>
+            <p data-character-speech>Every investigation starts with time. Let's discover how incidence changes across seasons.</p>
+        </div>
+    </div>
+
+    <details open>
+        <summary>Understanding the chart</summary>
+        <div class="narrative-question-list">
+            <button class="narrative-question active" type="button"
+                data-title="What am I looking at?"
+                data-speech="Each line tells us how incidence changed during a season. Let's compare their shapes."
+                data-text="Each line represents a selected season. The horizontal axis shows epidemiological weeks, and the vertical axis shows nationwide incidence for your selected disease and age group. Use the season selector to compare different years.">
+                What am I looking at?
+            </button>
+            <button class="narrative-question" type="button"
+                data-title="Why W40 → W39?"
+                data-speech="A season crosses the calendar-year boundary. Follow it from autumn through the following summer."
+                data-text="The German reporting season runs from week 40 of one calendar year through week 39 of the next. For example, season 2025/26 starts at W40 in 2025 and ends at W39 in 2026.">
+                Why W40 → W39?
+            </button>
+            <button class="narrative-question" type="button"
+                data-title="What should I look for?"
+                data-speech="Look for peaks, rises, and falls. Do different seasons follow similar patterns?"
+                data-text="Compare when the lines rise, when they peak, how high those peaks are, and how quickly incidence falls afterward. Similar patterns may suggest recurring seasonality, but this chart alone cannot explain the causes.">
+                What should I look for?
+            </button>
+        </div>
+    </details>
+
+    <div class="narrative-explanation" aria-live="polite">
+        <h4 data-explanation-title>What am I looking at?</h4>
+        <p data-explanation-text>Each line represents a selected season. The horizontal axis shows epidemiological weeks, and the vertical axis shows nationwide incidence for your selected disease and age group. Use the season selector to compare different years.</p>
+    </div>
+
+    <p class="narrative-hint">Next: Who shows how patterns differ between age groups.</p>
+</aside>
+
 
     <div class="controls">
 
@@ -730,6 +976,50 @@ select {
      ========================================================= -->
 
 <div id="age-groups" class="tab-content">
+    
+<aside class="narrative-sidebar" data-guide="who">
+    <h3>Explore: Who?</h3>
+
+    <div class="narrative-character">
+        <div class="narrative-avatar" aria-hidden="true">🔎</div>
+        <div>
+            <strong>Milo the Data Detective</strong>
+            <p data-character-speech>We have seen when incidence changes. Now let's examine how patterns differ by age group.</p>
+        </div>
+    </div>
+
+    <details open>
+        <summary>Understanding age groups</summary>
+        <div class="narrative-question-list">
+            <button class="narrative-question active" type="button"
+                data-title="What does incidence mean?"
+                data-speech="Remember, incidence is a population-level measure, not simply a count of people."
+                data-text="Incidence here is expressed per 100,000 inhabitants. It helps compare populations of different sizes. It is not the raw number of people who became ill, and it does not tell us an individual's personal risk.">
+                What does incidence mean?
+            </button>
+            <button class="narrative-question" type="button"
+                data-title="What do the age groups mean?"
+                data-speech="Let's compare the age groups carefully. Their patterns may differ over the season."
+                data-text="The chart separates people into five groups: 0–4, 5–14, 15–34, 35–59, and 60+. Use the age-group selector to show or hide groups and compare their incidence patterns. These groups describe age ranges, not the causes of differences.">
+                What do the age groups mean?
+            </button>
+            <button class="narrative-question" type="button"
+                data-title="What should I compare?"
+                data-speech="Which groups peak at the same time? Which have higher or lower incidence?"
+                data-text="Compare the heights and shapes of the lines, the timing of peaks, and whether groups rise or fall together. Differences in incidence do not, by themselves, establish why the differences occur.">
+                What should I compare?
+            </button>
+        </div>
+    </details>
+
+    <div class="narrative-explanation" aria-live="polite">
+        <h4 data-explanation-title>What does incidence mean?</h4>
+        <p data-explanation-text>Incidence here is expressed per 100,000 inhabitants. It helps compare populations of different sizes. It is not the raw number of people who became ill, and it does not tell us an individual's personal risk.</p>
+    </div>
+
+    <p class="narrative-hint">Next: Where do the patterns differ across Germany?</p>
+</aside>
+
 
     <div class="controls">
 
@@ -3216,6 +3506,40 @@ function drawAgeGroupsChart() {
     );
 
 }
+
+
+/* =========================================================
+   NARRATIVE GUIDE INTERACTIONS — ADDITION ONLY
+   ========================================================= */
+
+document.querySelectorAll(".narrative-sidebar").forEach(sidebar => {
+    const questionButtons =
+        sidebar.querySelectorAll(".narrative-question");
+
+    const titleElement =
+        sidebar.querySelector("[data-explanation-title]");
+
+    const textElement =
+        sidebar.querySelector("[data-explanation-text]");
+
+    const speechElement =
+        sidebar.querySelector("[data-character-speech]");
+
+    questionButtons.forEach(button => {
+        button.addEventListener("click", function () {
+            questionButtons.forEach(item => {
+                item.classList.remove("active");
+            });
+
+            this.classList.add("active");
+
+            titleElement.textContent = this.dataset.title;
+            textElement.textContent = this.dataset.text;
+            speechElement.textContent = this.dataset.speech;
+        });
+    });
+});
+
 
 </script>
 
