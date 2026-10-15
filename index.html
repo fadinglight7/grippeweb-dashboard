@@ -196,56 +196,9 @@ body {
     margin-bottom: 0;
 }
 
-.investigation-heading {
-    margin: 0 0 8px;
-    font-size: 21px;
-}
 
-.investigation-intro {
-    margin: 0 0 18px;
-    line-height: 1.7;
-    color: #444;
-}
 
-.investigation-clues {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 14px;
-    margin: 20px 0 28px;
-}
 
-.investigation-clue {
-    padding: 18px;
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 9px;
-}
-
-.investigation-clue h3 {
-    margin: 0 0 9px;
-    font-size: 17px;
-    color: #203f80;
-}
-
-.investigation-clue p {
-    margin: 0;
-    font-size: 14px;
-    line-height: 1.65;
-    color: #444;
-}
-
-.investigation-clue .clue-number {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    margin-bottom: 10px;
-    border-radius: 50%;
-    background: #e9efff;
-    color: #203f80;
-    font-weight: bold;
-}
 
 .data-transition {
     padding: 18px 20px;
@@ -288,9 +241,7 @@ body {
         font-size: 22px;
     }
 
-    .investigation-clues {
-        grid-template-columns: 1fr;
-    }
+    
 }
 
 
@@ -794,10 +745,6 @@ select {
 </div>
 
 
-<!-- =========================================================
-     INTRODUCTION TAB
-     ========================================================= -->
-
 
 
 <!-- =========================================================
@@ -805,175 +752,92 @@ select {
      ========================================================= -->
 
 <div id="overview" class="tab-content active">
-
     <div class="overview-card">
 
         <!-- Original-style dashboard introduction -->
         <section class="original-introduction">
-
             <h2>Welcome to GrippeWeb</h2>
 
             <p>
-                This dashboard presents estimates of respiratory illness
-                incidence in Germany using data from the GrippeWeb
-                surveillance system.
+                This dashboard presents estimates of respiratory illness incidence
+                in Germany using data from the GrippeWeb surveillance system.
+                It allows you to explore how respiratory illness patterns change
+                over time and how they vary across age groups and regions.
             </p>
 
             <p>
-                Explore the dashboard using the tabs above:
+                Use the tabs above to explore the different visualizations.
+                You can compare seasons, examine age-specific patterns, and
+                investigate regional differences using the available filters.
+                The charts and map update according to your selections.
             </p>
-
-            <ul>
-                <li>
-                    <strong>Incidence Over Time:</strong>
-                    Explore changes in nationwide incidence across seasons.
-                </li>
-                <li>
-                    <strong>Incidence by Age Group:</strong>
-                    Compare incidence patterns across five age groups.
-                </li>
-                <li>
-                    <strong>Regional Incidence Map:</strong>
-                    Compare incidence across regions of Germany.
-                </li>
-            </ul>
-
-            <p>
-                Use the available filters to select seasons, weeks,
-                diseases, and age groups where applicable.
-                The visualizations update to reflect your selections.
-            </p>
-
         </section>
 
-
-        <!-- Milo is introduced below the introduction -->
+        <!-- Milo's introduction -->
         <section class="milo-welcome">
-
             <div class="milo-welcome-image">
                 <img
                     src="https://raw.githubusercontent.com/fadinglight7/grippeweb-dashboard/main/meddog.png"
-                    alt="Milo the Data Detective"
+                    alt="Milo, your GrippeWeb data guide"
                 >
             </div>
 
             <div class="milo-welcome-copy">
-
-                <h2>Meet Milo, the Data Detective!</h2>
+                <h2>Let's Explore the Data Together!</h2>
 
                 <p>
-                    Hello, investigator! I'm Milo. I'll help you explore
-                    the GrippeWeb data and uncover how respiratory illness
-                    incidence changes across Germany.
+                    Hi! I'm Milo, your data guide. Now that you know what
+                    GrippeWeb is about, I'm here to help you make sense of
+                    the information presented in this dashboard.
                 </p>
 
                 <p>
-                    We'll follow three clues: when incidence changes,
-                    who the patterns affect across age groups, and where
-                    incidence differs between regions.
+                    Respiratory illness data can reveal interesting patterns,
+                    but knowing where to look is not always easy. I can help
+                    you understand what each visualization shows, how to use
+                    the filters, and what to pay attention to as you explore.
                 </p>
 
-            </div>
+                <p>
+                    You might notice that incidence rises and falls over the
+                    course of a season, that patterns differ between age groups,
+                    or that regions show different levels of incidence during
+                    the same week. Take your time exploring these differences
+                    and comparing what you find.
+                </p>
 
+                <p>
+                    There are no right or wrong observations to make.
+                    Follow your curiosity, try different selections, and use
+                    the data to form your own understanding of respiratory
+                    illness patterns across Germany. I'll be here to help
+                    along the way!
+                </p>
+            </div>
         </section>
 
-
-        <section>
-
-            <h2 class="investigation-heading">
-                Your Investigation: Three Clues
-            </h2>
-
-            <p class="investigation-intro">
-                Explore the data from three complementary perspectives.
-                Compare seasons, age groups, and regions to discover
-                patterns in respiratory illness incidence.
-            </p>
-
-            <div class="investigation-clues">
-
-                <article class="investigation-clue">
-
-                    <span class="clue-number">1</span>
-
-                    <h3>When? — Incidence Over Time</h3>
-
-                    <p>
-                        Compare nationwide incidence across seasons.
-                        Look for changes over time, recurring peaks,
-                        and differences between seasons.
-                    </p>
-
-                </article>
-
-                <article class="investigation-clue">
-
-                    <span class="clue-number">2</span>
-
-                    <h3>Who? — Incidence by Age Group</h3>
-
-                    <p>
-                        Compare incidence across five age groups.
-                        Explore whether the timing and shape of
-                        patterns differ between groups.
-                    </p>
-
-                </article>
-
-                <article class="investigation-clue">
-
-                    <span class="clue-number">3</span>
-
-                    <h3>Where? — Regional Incidence Map</h3>
-
-                    <p>
-                        Explore differences between German regions.
-                        Change the season and week to see how the
-                        regional picture develops over time.
-                    </p>
-
-                </article>
-
-            </div>
-
-        </section>
-
-
-        <!-- Transition into the existing weekly summary -->
+        <!-- Transition to the weekly summary -->
         <section class="data-transition">
-
-            <h3>Before We Begin: The Latest Available Data</h3>
-
+            <h3>Start with the Latest Available Data</h3>
             <p>
-                Start with the weekly summary below, then use the tabs
-                above to investigate when, who, and where incidence
-                patterns emerge.
+                Before exploring the charts and map, take a look at the
+                weekly summary below for a snapshot of the latest data
+                available in this dashboard. You can then explore the
+                visualizations above in more detail.
             </p>
-
         </section>
 
-
-        <!-- EXISTING WEEKLY SUMMARY TABLE — KEEP ITS IDs -->
-
+        <!-- EXISTING WEEKLY SUMMARY TABLE — PRESERVE ALL IDs -->
         <div class="summary-table-container">
-
             <div class="summary-heading-row">
-
                 <h3>Latest Calendar Week</h3>
-
                 <div class="control-group">
-
-                    <label for="summaryDiseaseFilter">
-                        Erkrankung:
-                    </label>
-
+                    <label for="summaryDiseaseFilter">Erkrankung:</label>
                     <select id="summaryDiseaseFilter">
                         <option value="ARE" selected>ARE</option>
                         <option value="ILI">ILI</option>
                     </select>
-
                 </div>
-
             </div>
 
             <p class="summary-week-label" id="summaryWeekLabel">
@@ -981,50 +845,41 @@ select {
             </p>
 
             <table class="summary-table">
-
                 <thead>
                     <tr>
                         <th>Indicator</th>
                         <th>Value</th>
                     </tr>
                 </thead>
-
                 <tbody>
-
                     <tr>
                         <td>Number of Weekly Reports</td>
                         <td id="summaryReports">—</td>
                     </tr>
-
                     <tr>
                         <td>ARE Incidence (per 100,000 inhabitants)</td>
                         <td id="summaryTotal">—</td>
                     </tr>
-
                     <tr>
                         <td>ARE Incidence — Children (0–14 years)</td>
                         <td id="summaryChildren">—</td>
                     </tr>
-
                     <tr>
                         <td>ARE Incidence — Adults (15+ years)</td>
                         <td id="summaryAdults">—</td>
                     </tr>
-
                 </tbody>
-
             </table>
 
             <p class="summary-note">
                 Values are calculated from the TSV file used by this dashboard.
                 The week shown is the latest week available in that file.
             </p>
-
         </div>
 
     </div>
-
 </div>
+
 
 
 
