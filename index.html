@@ -118,6 +118,28 @@ body {
 }
 
 
+.original-introduction {
+    padding-bottom: 22px;
+    margin-bottom: 26px;
+    border-bottom: 1px solid #ddd;
+}
+
+.original-introduction h2 {
+    margin-top: 0;
+}
+
+.original-introduction p,
+.original-introduction li {
+    line-height: 1.7;
+    color: #444;
+}
+
+.original-introduction ul {
+    padding-left: 24px;
+}
+
+
+
 /* =========================================================
    MILO — INTRODUCTION TAB
    ========================================================= */
@@ -777,15 +799,55 @@ select {
      ========================================================= -->
 
 
+
 <!-- =========================================================
-     INTRODUCTION TAB — MILO'S INVESTIGATION
+     INTRODUCTION TAB
      ========================================================= -->
 
 <div id="overview" class="tab-content active">
 
     <div class="overview-card">
 
-        <!-- Welcome Milo -->
+        <!-- Original-style dashboard introduction -->
+        <section class="original-introduction">
+
+            <h2>Welcome to GrippeWeb</h2>
+
+            <p>
+                This dashboard presents estimates of respiratory illness
+                incidence in Germany using data from the GrippeWeb
+                surveillance system.
+            </p>
+
+            <p>
+                Explore the dashboard using the tabs above:
+            </p>
+
+            <ul>
+                <li>
+                    <strong>Incidence Over Time:</strong>
+                    Explore changes in nationwide incidence across seasons.
+                </li>
+                <li>
+                    <strong>Incidence by Age Group:</strong>
+                    Compare incidence patterns across five age groups.
+                </li>
+                <li>
+                    <strong>Regional Incidence Map:</strong>
+                    Compare incidence across regions of Germany.
+                </li>
+            </ul>
+
+            <p>
+                Use the available filters to select seasons, weeks,
+                diseases, and age groups where applicable.
+                The visualizations update to reflect your selections.
+            </p>
+
+        </section>
+
+
+        <!-- Milo is introduced below the introduction -->
         <section class="milo-welcome">
 
             <div class="milo-welcome-image">
@@ -816,7 +878,6 @@ select {
         </section>
 
 
-        <!-- Introduce the investigation -->
         <section>
 
             <h2 class="investigation-heading">
@@ -824,11 +885,10 @@ select {
             </h2>
 
             <p class="investigation-intro">
-                This dashboard presents incidence estimates from the
-                GrippeWeb surveillance system. Use the visualizations
-                to explore the data from three complementary perspectives.
+                Explore the data from three complementary perspectives.
+                Compare seasons, age groups, and regions to discover
+                patterns in respiratory illness incidence.
             </p>
-
 
             <div class="investigation-clues">
 
@@ -846,7 +906,6 @@ select {
 
                 </article>
 
-
                 <article class="investigation-clue">
 
                     <span class="clue-number">2</span>
@@ -860,7 +919,6 @@ select {
                     </p>
 
                 </article>
-
 
                 <article class="investigation-clue">
 
@@ -887,16 +945,15 @@ select {
             <h3>Before We Begin: The Latest Available Data</h3>
 
             <p>
-                Let's start with a snapshot of the latest calendar week
-                available in the dashboard's data file. You can switch
-                between ARE and ILI below. Then, use the tabs above to
-                investigate when, who, and where incidence patterns emerge.
+                Start with the weekly summary below, then use the tabs
+                above to investigate when, who, and where incidence
+                patterns emerge.
             </p>
 
         </section>
 
 
-        <!-- EXISTING WEEKLY SUMMARY TABLE — PRESERVED -->
+        <!-- EXISTING WEEKLY SUMMARY TABLE — KEEP ITS IDs -->
 
         <div class="summary-table-container">
 
@@ -911,10 +968,8 @@ select {
                     </label>
 
                     <select id="summaryDiseaseFilter">
-
                         <option value="ARE" selected>ARE</option>
                         <option value="ILI">ILI</option>
-
                     </select>
 
                 </div>
@@ -970,6 +1025,7 @@ select {
     </div>
 
 </div>
+
 
 
 
