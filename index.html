@@ -219,6 +219,73 @@ body {
     color: #444;
 }
 
+.data-transition {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.data-transition-copy {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+.data-transition-copy h3 {
+    margin-top: 0;
+}
+
+.data-transition-copy p {
+    margin-bottom: 0;
+}
+
+.milo-summary-guide {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 0 0 250px;
+}
+
+.milo-summary-guide img {
+    display: block;
+    width: 76px;
+    height: 76px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.milo-speech {
+    position: relative;
+    padding: 12px 14px;
+    background: #fff;
+    border: 1px solid #d8e2fa;
+    border-radius: 12px;
+}
+
+.milo-speech p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #333;
+}
+
+@media (max-width: 700px) {
+    .data-transition {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .milo-summary-guide {
+        flex: 1 1 auto;
+        justify-content: flex-start;
+    }
+
+    .milo-summary-guide img {
+        width: 65px;
+        height: 65px;
+    }
+}
+
 @media (max-width: 700px) {
     .overview-card {
         padding: 18px;
@@ -798,13 +865,7 @@ select {
                     the filters, and what to pay attention to as you explore.
                 </p>
 
-                <p>
-                    You might notice that incidence rises and falls over the
-                    course of a season, that patterns differ between age groups,
-                    or that regions show different levels of incidence during
-                    the same week. Take your time exploring these differences
-                    and comparing what you find.
-                </p>
+                
 
                 <p>
                     There are no right or wrong observations to make.
@@ -817,15 +878,33 @@ select {
         </section>
 
         <!-- Transition to the weekly summary -->
-        <section class="data-transition">
-            <h3>Start with the Latest Available Data</h3>
+        
+<!-- Milo introduces the weekly summary -->
+<section class="data-transition">
+    <div class="data-transition-copy">
+        <h3>Start with the Latest Available Data</h3>
+        <p>
+            Before exploring the charts and map, take a look at the
+            weekly summary below for a snapshot of the latest data
+            available in this dashboard. You can then explore the
+            visualizations in more detail.
+        </p>
+    </div>
+
+    <div class="milo-summary-guide">
+        <img
+            src="https://raw.githubusercontent.com/fadinglight7/grippeweb-dashboard/main/meddog.png"
+            alt="Milo pointing you towards the weekly summary"
+        >
+        <div class="milo-speech">
             <p>
-                Before exploring the charts and map, take a look at the
-                weekly summary below for a snapshot of the latest data
-                available in this dashboard. You can then explore the
-                visualizations above in more detail.
+                Let's start here! Take a look at the latest numbers,
+                then see what patterns you can discover in the charts.
             </p>
-        </section>
+        </div>
+    </div>
+</section>
+
 
         <!-- EXISTING WEEKLY SUMMARY TABLE — PRESERVE ALL IDs -->
         <div class="summary-table-container">
