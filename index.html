@@ -1107,7 +1107,9 @@ select {
     </div>
 
 
-    <div id="map"></div>
+        <h3 id="mapTitle">ARE Incidence by Calendar Week and Major Region</h3>
+
+        <div id="map"></div>
 
 </div>
 
@@ -2535,6 +2537,9 @@ function initializeMap() {
                 selectedMapWeek
             );
 
+        document.getElementById("mapTitle").textContent =
+            `${diseaseFilter.value} Incidence by Calendar Week and Major Region`;
+
 
         updateIncidenceLabels();
 
@@ -3187,7 +3192,7 @@ function drawIncidenceChart() {
         {
 
             title:
-                `Inzidenz – Bundesweit – ${disease}`,
+                `${disease} Incidence by Calendar Week and Season`,
 
             xaxis: {
 
@@ -3207,11 +3212,11 @@ function drawIncidenceChart() {
 
             yaxis: {
 
-                title:
-                    "Inzidenz",
+                    title:
+                        "Incidence per 100,000 Inhabitants",
 
-                rangemode:
-                    "tozero"
+                    rangemode:
+                        "tozero"
 
             },
 
@@ -3708,7 +3713,7 @@ function drawAgeGroupsChart() {
         {
 
             title:
-                `Inzidenz – Bundesweit – ${disease}`,
+                `${disease} Incidence by Calendar Week and Age Group`,
 
             xaxis: {
 
@@ -3729,7 +3734,7 @@ function drawAgeGroupsChart() {
             yaxis: {
 
                 title:
-                    "Inzidenz",
+                    "Incidence per 100,000 Inhabitants",
 
                 rangemode:
                     "tozero"
