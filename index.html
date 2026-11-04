@@ -201,6 +201,9 @@ body {
 
 
 .data-transition {
+    display: flex;
+    align-items: center;
+    gap: 18px;
     padding: 18px 20px;
     margin-top: 26px;
     background: #fff;
@@ -208,76 +211,44 @@ body {
     border-radius: 5px;
 }
 
-.data-transition h3 {
+.data-transition-copy {
+    flex: 1;
+    min-width: 0;
+}
+
+.data-transition-copy h3 {
     margin: 0 0 8px;
     font-size: 19px;
 }
 
-.data-transition p {
+.data-transition-copy p {
     margin: 0;
     line-height: 1.7;
     color: #444;
 }
 
-.data-transition {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-}
-
-.data-transition-copy {
-    flex: 1 1 0;
-    min-width: 0;
-}
-
-.data-transition-copy h3 {
-    margin-top: 0;
-}
-
-.data-transition-copy p {
-    margin-bottom: 0;
-}
-
 .milo-summary-guide {
+    flex: 0 0 85px;
     display: flex;
     align-items: center;
-    gap: 10px;
-    flex: 0 0 250px;
+    justify-content: center;
 }
 
 .milo-summary-guide img {
     display: block;
-    width: 76px;
-    height: 76px;
+    width: 85px;
+    height: 85px;
     object-fit: contain;
-    flex-shrink: 0;
-}
-
-.milo-speech {
-    position: relative;
-    padding: 12px 14px;
-    background: #fff;
-    border: 1px solid #d8e2fa;
-    border-radius: 12px;
-}
-
-.milo-speech p {
-    margin: 0;
-    font-size: 13px;
-    line-height: 1.5;
-    color: #333;
 }
 
 @media (max-width: 700px) {
     .data-transition {
-        flex-direction: column;
-        align-items: stretch;
+        gap: 12px;
+        padding: 16px;
     }
 
     .milo-summary-guide {
-        flex: 1 1 auto;
-        justify-content: flex-start;
+        flex-basis: 65px;
     }
 
     .milo-summary-guide img {
@@ -881,6 +852,14 @@ select {
         
 <!-- Milo introduces the weekly summary -->
 <section class="data-transition">
+
+    <div class="milo-summary-guide">
+        <img
+            src="https://raw.githubusercontent.com/fadinglight7/grippeweb-dashboard/main/meddog.png"
+            alt="Milo"
+        >
+    </div>
+
     <div class="data-transition-copy">
         <h3>Start with the Latest Available Data</h3>
         <p>
@@ -891,18 +870,6 @@ select {
         </p>
     </div>
 
-    <div class="milo-summary-guide">
-        <img
-            src="https://raw.githubusercontent.com/fadinglight7/grippeweb-dashboard/main/meddog.png"
-            alt="Milo pointing you towards the weekly summary"
-        >
-        <div class="milo-speech">
-            <p>
-                Let's start here! Take a look at the latest numbers,
-                then see what patterns you can discover in the charts.
-            </p>
-        </div>
-    </div>
 </section>
 
 
