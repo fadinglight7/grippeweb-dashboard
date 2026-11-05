@@ -900,6 +900,94 @@ select {
 
 
 /* =========================================================
+   MILO – MAP WEEK SLIDER INTERACTION
+   ========================================================= */
+
+.milo-map-week-guide {
+    position: absolute;
+    z-index: 1100;
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    width: 300px;
+    max-width: calc(100% - 20px);
+    padding: 10px 12px;
+    background: #fff;
+    border: 2px solid #526da8;
+    border-radius: 10px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+}
+
+.milo-map-week-guide[hidden] {
+    display: none !important;
+}
+
+.milo-map-week-guide img {
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+    object-fit: contain;
+}
+
+.milo-map-week-guide-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.milo-map-week-guide h4 {
+    margin: 0 20px 4px 0;
+    color: #203f80;
+    font-size: 13px;
+}
+
+.milo-map-week-guide p {
+    margin: 0;
+    color: #444;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.milo-map-week-guide-close {
+    position: absolute;
+    top: 3px;
+    right: 7px;
+    border: none;
+    background: transparent;
+    color: #666;
+    font-size: 19px;
+    cursor: pointer;
+}
+
+/* Bubble pointer aimed upwards at the slider */
+
+.milo-map-week-guide::before {
+    content: "";
+    position: absolute;
+    top: -9px;
+    left: var(--milo-arrow-left, 50%);
+    width: 14px;
+    height: 14px;
+    background: #fff;
+    border-top: 2px solid #526da8;
+    border-left: 2px solid #526da8;
+    transform: translateX(-50%) rotate(45deg);
+}
+
+@media (max-width: 700px) {
+    .milo-map-week-guide {
+        width: min(300px, calc(100% - 16px));
+        padding: 9px 10px;
+        gap: 7px;
+    }
+
+    .milo-map-week-guide img {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+
+/* =========================================================
    CUSTOM DROPDOWNS
    ========================================================= */
 
@@ -1544,6 +1632,7 @@ select {
                 What do the colours represent?
             </button>
             <button class="narrative-question" type="button"
+                data-map-tour-start="true"
                 data-title="What does the week slider represent?"
                 data-speech="Move through the weeks and watch how the regional picture changes."
                 data-text="The week slider selects the epidemiological week shown on the map. Changing it updates the regional values and colours. The season and disease selections also affect which data is displayed.">
@@ -5013,6 +5102,183 @@ function closeMiloAgeGroupsTour(restoreFocus = true) {
 
 
 /* =========================================================
+   MILO – MAP WEEK SLIDER INTERACTION
+   ========================================================= */
+
+let miloMapWeekGuide = null;
+
+
+/* Create Milo's small speech bubble */
+
+function createMiloMapWeekGuide() {
+
+    if (miloMapWeekGuide) {
+        return;
+    }
+
+    const mapTab =
+        document.getElementById("regional-map");
+
+    if (!mapTab) {
+        return;
+    }
+
+    const guide = document.createElement("div");
+
+    guide.className = "milo-map-week-guide";
+    guide.hidden = true;
+
+    guide.innerHTML = `
+        <img
+            src="https://raw.githubusercontent.com/fadinglight7/grippeweb-dashboard/main/meddog.png"
+            alt="Milo"
+        >
+
+        <div class="milo-map-week-guide-content">
+
+            <button
+                type="button"
+                class="milo-map-week-guide-close"
+                aria-label="Close Milo's explanation"
+            >&times;</button>
+
+            <h4>The week slider</h4>
+
+            <p>
+                This slider lets you move through the epidemiological
+                weeks of the selected season. As you move it, the map
+                updates to show how incidence differs between regions
+                during that particular week. Try moving it to watch
+                the regional picture change!
+            </p>
+
+        </div>
+    `;
+
+    mapTab.appendChild(guide);
+
+    miloMapWeekGuide = guide;
+
+    guide.querySelector(".milo-map-week-guide-close")
+        .addEventListener("click", function() {
+            closeMiloMapWeekGuide();
+        });
+
+}
+
+
+/* Position Milo's bubble directly below the week slider */
+
+function positionMiloMapWeekGuide() {
+
+    if (!miloMapWeekGuide) {
+        return;
+    }
+
+    const mapTab =
+        document.getElementById("regional-map");
+
+    const slider =
+        document.querySelector(
+            "#regional-map .week-control"
+        );
+
+    if (!mapTab || !slider) {
+        return;
+    }
+
+    const tabRect =
+        mapTab.getBoundingClientRect();
+
+    const sliderRect =
+        slider.getBoundingClientRect();
+
+    const tabWidth =
+        mapTab.clientWidth;
+
+    const guideWidth =
+        miloMapWeekGuide.offsetWidth;
+
+    const sliderCenter =
+        sliderRect.left +
+        sliderRect.width / 2 -
+        tabRect.left;
+
+    const left = Math.max(
+        10,
+        Math.min(
+            sliderCenter - guideWidth / 2,
+            tabWidth - guideWidth - 10
+        )
+    );
+
+    miloMapWeekGuide.style.left =
+        `${left}px`;
+
+    miloMapWeekGuide.style.top =
+        `${sliderRect.bottom - tabRect.top + 14}px`;
+
+    const arrowPosition =
+        Math.max(
+            16,
+            Math.min(
+                sliderCenter - left,
+                guideWidth - 16
+            )
+        );
+
+    miloMapWeekGuide.style.setProperty(
+        "--milo-arrow-left",
+        `${arrowPosition}px`
+    );
+
+}
+
+
+/* Open Milo's explanation */
+
+function startMiloMapWeekGuide() {
+
+    const mapTab =
+        document.getElementById("regional-map");
+
+    const slider =
+        document.getElementById("weekFilter");
+
+    if (!mapTab || !slider) {
+        return;
+    }
+
+    createMiloMapWeekGuide();
+
+    if (!miloMapWeekGuide) {
+        return;
+    }
+
+    miloMapWeekGuide.hidden = false;
+
+    positionMiloMapWeekGuide();
+
+}
+
+
+/* Close Milo's explanation */
+
+function closeMiloMapWeekGuide(restoreFocus = true) {
+
+    if (miloMapWeekGuide) {
+        miloMapWeekGuide.hidden = true;
+    }
+
+    if (restoreFocus) {
+        document.querySelector(
+            '#regional-map [data-map-tour-start="true"]'
+        )?.focus();
+    }
+
+}
+
+/* =========================================================
    NARRATIVE GUIDE INTERACTIONS
    ========================================================= */
 
@@ -5092,6 +5358,22 @@ document.querySelectorAll(".narrative-sidebar").forEach(sidebar => {
 
             }
 
+            // Regional map sidebar.
+
+else if (sidebar.dataset.guide === "where") {
+
+    if (this.dataset.mapTourStart === "true") {
+
+        startMiloMapWeekGuide();
+
+    } else {
+
+        closeMiloMapWeekGuide(false);
+
+    }
+
+}
+
             // Other narrative sidebars.
 
             else {
@@ -5121,6 +5403,10 @@ document.querySelectorAll(".tab-button").forEach(button => {
 
         if (this.dataset.tab !== "age-groups") {
             closeMiloAgeGroupsTour(false);
+        }
+
+        if (this.dataset.tab !== "regional-map") {
+            closeMiloMapWeekGuide(false);
         }
 
     });
