@@ -1264,47 +1264,57 @@ select {
 
     <div class="narrative-character">
         <div class="narrative-avatar">
-    <img
-        src="https://raw.githubusercontent.com/fadinglight7/grippeweb-dashboard/main/meddog.png"
-        alt="Milo the Data Detective"
-    >
-</div>
+            <img
+                src="https://raw.githubusercontent.com/fadinglight7/grippeweb-dashboard/main/meddog.png"
+                alt="Milo the Data Detective"
+            >
+        </div>
+
         <div>
             <strong>Milo the Data Detective</strong>
-            <p data-character-speech>Every investigation starts with time. Let's discover how incidence changes across seasons.</p>
+            <p data-character-speech>
+                Let's explore how respiratory illness incidence changes
+                throughout the year and how patterns compare across seasons.
+            </p>
         </div>
     </div>
 
     <details open ontoggle="this.open = true">
         <summary>Understanding the chart</summary>
+
         <div class="narrative-question-list">
-            <button class="narrative-question active" type="button"
-                data-title="What am I looking at?"
-                data-speech="Each line tells us how incidence changed during a season. Let's compare their shapes."
-                data-text="Each line represents a selected season. The horizontal axis shows epidemiological weeks, and the vertical axis shows nationwide incidence for your selected disease and age group. Use the season selector to compare different years.">
-                What am I looking at?
+
+            <button
+                class="narrative-question active"
+                type="button"
+                data-title="What am I looking at, and what should I look for?"
+                data-speech="Each line tells a story about a season. Look for rises, peaks, and falls. Do different seasons follow similar patterns?"
+                data-text="Incidence represents the estimated number of people affected per 100,000 inhabitants. Each line represents one selected season. The horizontal axis shows epidemiological weeks, while the vertical axis shows nationwide incidence for your selected disease. Compare the lines to see when incidence rises, how high it peaks, and how quickly it falls. Notice whether different seasons follow similar patterns or show differences.">
+                What am I looking at, and what should I look for?
             </button>
-            <button class="narrative-question" type="button"
-                data-title="Why W40 → W39?"
-                data-speech="A season crosses the calendar-year boundary. Follow it from autumn through the following summer."
-                data-text="The German reporting season runs from week 40 of one calendar year through week 39 of the next. For example, season 2025/26 starts at W40 in 2025 and ends at W39 in 2026.">
-                Why W40 → W39?
+
+            <button
+                class="narrative-question"
+                type="button"
+                data-title="Why does the season run from W40 to W39?"
+                data-speech="Think of it as one complete yearly cycle, from autumn through the following summer, rather than January to December."
+                data-text="The surveillance season follows a consistent cycle from epidemiological week 40 of one year to week 39 of the next. This groups the autumn, winter, and following summer into one continuous period instead of splitting the seasonal pattern at the calendar-year boundary. For example, season 2023/24 begins at W40 in 2023 and continues through W39 in 2024. This makes it easier to examine and compare respiratory illness patterns across complete seasons.">
+                Why does the season run from W40 to W39?
             </button>
-            <button class="narrative-question" type="button"
-                data-title="What should I look for?"
-                data-speech="Look for peaks, rises, and falls. Do different seasons follow similar patterns?"
-                data-text="Compare when the lines rise, when they peak, how high those peaks are, and how quickly incidence falls afterward. Similar patterns may suggest recurring seasonality, but this chart alone cannot explain the causes.">
-                What should I look for?
-            </button>
+
         </div>
     </details>
 
     <div class="narrative-explanation" aria-live="polite">
-        <h4 data-explanation-title>What am I looking at?</h4>
-        <p data-explanation-text>Each line represents a selected season. The horizontal axis shows epidemiological weeks, and the vertical axis shows nationwide incidence for your selected disease and age group. Use the season selector to compare different years.</p>
+        <h4 data-explanation-title>
+            What am I looking at, and what should I look for?
+        </h4>
+
+        <p data-explanation-text>
+            Incidence represents the estimated number of people affected per 100,000 inhabitants. Each line represents one selected season. The horizontal axis shows epidemiological weeks, while the vertical axis shows nationwide incidence for your selected disease. Compare the lines to see when incidence rises, how high it peaks, and how quickly it falls. Notice whether different seasons follow similar patterns or show differences.
+        </p>
     </div>
 
-    
 </aside>
 
 
