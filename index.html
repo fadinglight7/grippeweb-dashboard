@@ -696,6 +696,14 @@ select {
     }
 }
 
+/* Highlight the season dropdown during Incidence tour step 3 */
+.milo-incidence-control-highlight {
+    outline: 3px solid #526da8 !important;
+    outline-offset: 4px;
+    border-radius: 5px;
+    box-shadow: 0 0 8px rgba(82,109,168,0.35);
+}
+
 /* =========================================================
    MILO – AGE GROUPS GRAPH TOUR
    ========================================================= */
@@ -4624,6 +4632,18 @@ function updateMiloIncidenceTour() {
     overlay.dataset.step =
         miloIncidenceTourStep;
 
+    // Highlight the season dropdown during step 3.
+
+const seasonDropdown =
+    document.getElementById("incidenceSeasonDropdown");
+
+if (seasonDropdown) {
+    seasonDropdown.classList.toggle(
+        "milo-incidence-control-highlight",
+        miloIncidenceTourStep === 2
+    );
+}
+
     overlay.querySelector("h4").textContent =
         step.title;
 
@@ -4657,6 +4677,14 @@ function closeMiloIncidenceTour() {
     if (miloIncidenceTourOverlay) {
         miloIncidenceTourOverlay.hidden = true;
     }
+    const seasonDropdown =
+    document.getElementById("incidenceSeasonDropdown");
+
+if (seasonDropdown) {
+    seasonDropdown.classList.remove(
+        "milo-incidence-control-highlight"
+    );
+}
 
     const explanation =
         document.querySelector(
