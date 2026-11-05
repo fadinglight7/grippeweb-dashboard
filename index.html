@@ -762,11 +762,15 @@ select {
     background: #e2eaff;
 }
 
-.milo-tour {
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    pointer-events: none;
+/* =========================================================
+   MILO — STATIC, ANCHORED GUIDE
+   ========================================================= */
+
+.milo-guide-anchor {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    overflow: visible;
 }
 
 .milo-tour-character {
@@ -774,53 +778,36 @@ select {
     width: 55px;
     height: 55px;
     object-fit: contain;
-    transition:
-        left 0.8s ease,
-        top 0.8s ease;
+    left: -65px;
+    top: 50%;
+    transform: translateY(-50%);
     filter: drop-shadow(0 2px 3px rgba(0,0,0,0.15));
 }
 
 .milo-tour-bubble {
     position: absolute;
+    z-index: 100;
     width: min(280px, calc(100vw - 24px));
+    right: 0;
+    top: calc(100% + 18px);
     padding: 15px;
     background: white;
     border: 2px solid #526da8;
     border-radius: 12px;
     box-shadow: 0 4px 18px rgba(0,0,0,0.18);
-    pointer-events: auto;
-    opacity: 0;
-    transform: translateY(6px);
-    transition:
-        opacity 0.35s ease,
-        transform 0.35s ease;
 }
 
-.milo-tour-bubble.visible {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-/* Speech bubble pointer */
 .milo-tour-bubble::before {
     content: "";
     position: absolute;
     top: -11px;
-    left: 50%;
+    right: 24px;
     width: 18px;
     height: 18px;
     background: white;
     border-top: 2px solid #526da8;
     border-left: 2px solid #526da8;
-    transform: translateX(-50%) rotate(45deg);
-}
-
-.milo-tour-bubble.above::before {
-    top: auto;
-    bottom: -11px;
-    border: none;
-    border-right: 2px solid #526da8;
-    border-bottom: 2px solid #526da8;
+    transform: rotate(45deg);
 }
 
 .milo-tour-bubble h4 {
@@ -845,22 +832,12 @@ select {
     color: #666;
     font-size: 20px;
     cursor: pointer;
-    pointer-events: auto;
 }
 
 .milo-target-highlight {
-    position: relative;
-    z-index: 10;
     outline: 3px solid #526da8;
     outline-offset: 4px;
     border-radius: 4px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .milo-tour-character,
-    .milo-tour-bubble {
-        transition: none;
-    }
 }
 
 </style>
@@ -3927,231 +3904,98 @@ document.querySelectorAll(".narrative-sidebar").forEach(sidebar => {
         return;
     }
 
-    let activeTour = null;
+    let activeGuide = null;
 
-    function closeMiloTour() {
+    function closeMiloGuide() {
 
-        if (!activeTour) {
+        if (!activeGuide) {
             return;
         }
 
-        window.removeEventListener(
-            "scroll",
-            activeTour.reposition
+        const guide = activeGuide;
+
+        target.classList.remove("milo-target-highlight");
+
+        // Restore the dropdown to its original location.
+        guide.originalParent.insertBefore(
+            target,
+            guide.anchor
         );
 
-        window.removeEventListener(
-            "resize",
-            activeTour.reposition
-        );
-
-        target.classList.remove(
-            "milo-target-highlight"
-        );
+        guide.anchor.remove();
 
         originalMilo.style.visibility = "";
 
-        activeTour.element.remove();
-
-        activeTour = null;
-
         question.classList.remove("active");
+
+        activeGuide = null;
     }
 
-    function positionMiloTour(tour) {
+    function openMiloGuide() {
 
-        if (!tour.element.isConnected) {
-            return;
-        }
+        closeMiloGuide();
 
-        const rect =
-            target.getBoundingClientRect();
+        const originalParent = target.parentElement;
 
-        const character =
-            tour.element.querySelector(
-                ".milo-tour-character"
-            );
+        // Create a wrapper directly around the dropdown.
+        const anchor = document.createElement("span");
+        anchor.className = "milo-guide-anchor";
 
-        const bubble =
-            tour.element.querySelector(
-                ".milo-tour-bubble"
-            );
+        originalParent.insertBefore(anchor, target);
+        anchor.appendChild(target);
 
-        // Position Milo beside the dropdown.
-        const characterLeft = Math.max(
-            8,
-            Math.min(
-                rect.left - 62,
-                window.innerWidth - 63
-            )
-        );
+        // Create Milo's icon.
+        const character = document.createElement("img");
+        character.className = "milo-tour-character";
+        character.src = originalMilo.src;
+        character.alt = "Milo";
 
-        const characterTop =
-            rect.top + (rect.height - 55) / 2;
+        // Create the speech bubble.
+        const bubble = document.createElement("div");
+        bubble.className = "milo-tour-bubble";
 
-        character.style.left =
-            `${characterLeft}px`;
+        bubble.innerHTML = `
+            <button
+                type="button"
+                class="milo-tour-close"
+                aria-label="Close explanation"
+            >&times;</button>
 
-        character.style.top =
-            `${characterTop}px`;
+            <h4>What are ARE and ILI?</h4>
 
-        // Centre the speech bubble around the dropdown.
-        const bubbleWidth =
-            Math.min(280, window.innerWidth - 24);
+            <p>
+                ARE stands for acute respiratory diseases.
+                It is a broad category covering acute illnesses
+                affecting the respiratory system.
 
-        const bubbleLeft = Math.max(
-            12,
-            Math.min(
-                rect.left + rect.width / 2 - bubbleWidth / 2,
-                window.innerWidth - bubbleWidth - 12
-            )
-        );
+                ILI stands for influenza-like illness.
+                It describes illnesses with symptoms resembling
+                influenza.
 
-        bubble.style.width =
-            `${bubbleWidth}px`;
-
-        // Initially place the bubble below the dropdown.
-        bubble.classList.remove("above");
-
-        bubble.style.left =
-            `${bubbleLeft}px`;
-
-        bubble.style.top =
-            `${rect.bottom + 18}px`;
-
-        // If there isn't enough room below, place it above.
-        const bubbleHeight =
-            bubble.offsetHeight;
-
-        if (
-            rect.bottom + 18 + bubbleHeight >
-            window.innerHeight - 10
-        ) {
-            bubble.classList.add("above");
-
-            bubble.style.top =
-                `${Math.max(10, rect.top - bubbleHeight - 18)}px`;
-        }
-
-    }
-
-    function openMiloTour() {
-
-        closeMiloTour();
-
-        // Remember Milo's original position.
-        const sourceRect =
-            originalMilo.getBoundingClientRect();
-
-        const tour =
-            document.createElement("div");
-
-        tour.className = "milo-tour";
-
-        tour.innerHTML = `
-            <img
-                class="milo-tour-character"
-                src="${originalMilo.src}"
-                alt="Milo"
-            >
-
-            <div class="milo-tour-bubble">
-                <button
-                    type="button"
-                    class="milo-tour-close"
-                    aria-label="Close explanation"
-                >&times;</button>
-
-                <h4>What are ARE and ILI?</h4>
-
-                <p>
-                    ARE stands for acute respiratory diseases.
-                    It is a broad category covering acute illnesses
-                    affecting the respiratory system.
-
-                    ILI stands for influenza-like illness.
-                    It describes illnesses with symptoms resembling
-                    influenza.
-
-                    Use this dropdown to switch between the two
-                    indicators and see how the weekly summary changes.
-                </p>
-            </div>
+                Use this dropdown to switch between the two
+                indicators and see how the weekly summary changes.
+            </p>
         `;
 
-        document.body.appendChild(tour);
+        anchor.appendChild(character);
+        anchor.appendChild(bubble);
 
-        const character =
-            tour.querySelector(".milo-tour-character");
-
-        const bubble =
-            tour.querySelector(".milo-tour-bubble");
-
-        // Start Milo at his original position.
-        character.style.left =
-            `${sourceRect.left}px`;
-
-        character.style.top =
-            `${sourceRect.top}px`;
-
-        // Hide the original image while its moving copy is active.
+        // Hide the original Milo image in the introduction.
         originalMilo.style.visibility = "hidden";
 
-        target.classList.add(
-            "milo-target-highlight"
-        );
-
+        target.classList.add("milo-target-highlight");
         question.classList.add("active");
 
-        activeTour = {
-            element: tour,
-            reposition: null
+        activeGuide = {
+            anchor: anchor,
+            originalParent: originalParent
         };
 
-        // Scroll the target into view if necessary.
-        target.scrollIntoView({
-            behavior: "smooth",
-            block: "nearest"
-        });
-
-        activeTour.reposition = () => {
-            positionMiloTour(activeTour);
-        };
-
-        window.addEventListener(
-            "scroll",
-            activeTour.reposition
-        );
-
-        window.addEventListener(
-            "resize",
-            activeTour.reposition
-        );
-
-        // Wait for scrolling, then move Milo to the dropdown.
-        setTimeout(() => {
-
-            if (!activeTour || activeTour.element !== tour) {
-                return;
-            }
-
-            positionMiloTour(activeTour);
-
-            requestAnimationFrame(() => {
-                bubble.classList.add("visible");
-            });
-
-        }, 450);
-
-        tour.querySelector(".milo-tour-close")
-            .addEventListener("click", closeMiloTour);
-
+        bubble.querySelector(".milo-tour-close")
+            .addEventListener("click", closeMiloGuide);
     }
 
-    question.addEventListener(
-        "click",
-        openMiloTour
-    );
+    question.addEventListener("click", openMiloGuide);
 
 })();
 
