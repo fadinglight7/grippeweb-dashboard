@@ -1587,52 +1587,70 @@ select {
 
 <div id="age-groups" class="tab-content">
     
-<aside class="narrative-sidebar" data-guide="who">
-    <h3>Explore: Who?</h3>
 
-    <div class="narrative-character">
-        <div class="narrative-avatar">
-    <img
-        src="https://raw.githubusercontent.com/fadinglight7/grippeweb-dashboard/main/meddog.png"
-        alt="Milo the Data Detective"
-    >
-</div>
-        <div>
-            <strong>Milo the Data Detective</strong>
-            <p data-character-speech>We have seen when incidence changes. Now let's examine how patterns differ by age group.</p>
-        </div>
+<aside class="narrative-sidebar" data-guide="who">
+
+    <div class="narrative-sidebar-heading">
+        <h3>Explore: Who?</h3>
+        <img
+            src="https://raw.githubusercontent.com/fadinglight7/grippeweb-dashboard/main/meddog.png"
+            alt="Milo the Data Detective"
+        >
     </div>
 
     <details open ontoggle="this.open = true">
         <summary>Understanding age groups</summary>
+
         <div class="narrative-question-list">
-            <button class="narrative-question active" type="button"
+
+            <button
+                class="narrative-question"
+                type="button"
                 data-title="What does incidence mean?"
                 data-speech="Remember, incidence is a population-level measure, not simply a count of people."
-                data-text="Incidence here is expressed per 100,000 inhabitants. It helps compare populations of different sizes. It is not the raw number of people who became ill, and it does not tell us an individual's personal risk.">
+                data-text="Incidence here is expressed per 100,000 inhabitants. It helps compare populations of different sizes. It is not the raw number of people who became ill, and it does not tell us an individual's personal risk."
+            >
                 What does incidence mean?
             </button>
-            <button class="narrative-question" type="button"
+
+            <button
+                class="narrative-question"
+                type="button"
                 data-title="What do the age groups mean?"
                 data-speech="Let's compare the age groups carefully. Their patterns may differ over the season."
-                data-text="The chart separates people into five groups: 0–4, 5–14, 15–34, 35–59, and 60+. Use the age-group selector to show or hide groups and compare their incidence patterns. These groups describe age ranges, not the causes of differences.">
+                data-text="The chart separates people into five groups: 0–4, 5–14, 15–34, 35–59, and 60+. Use the age-group selector to show or hide groups and compare their incidence patterns. These groups describe age ranges, not the causes of differences."
+            >
                 What do the age groups mean?
             </button>
-            <button class="narrative-question" type="button"
+
+            <button
+                class="narrative-question"
+                type="button"
                 data-title="What should I compare?"
                 data-speech="Which groups peak at the same time? Which have higher or lower incidence?"
-                data-text="Compare the heights and shapes of the lines, the timing of peaks, and whether groups rise or fall together. Differences in incidence do not, by themselves, establish why the differences occur.">
+                data-text="Compare the heights and shapes of the lines, the timing of peaks, and whether groups rise or fall together. Differences in incidence do not, by themselves, establish why the differences occur."
+            >
                 What should I compare?
             </button>
+
         </div>
     </details>
 
     <div class="narrative-explanation" aria-live="polite">
-        <h4 data-explanation-title>What does incidence mean?</h4>
-        <p data-explanation-text>Incidence here is expressed per 100,000 inhabitants. It helps compare populations of different sizes. It is not the raw number of people who became ill, and it does not tell us an individual's personal risk.</p>
+
+        <h4 data-explanation-title>
+            Explore age-group patterns with Milo!
+        </h4>
+
+        <p data-explanation-text>
+            Curious about how respiratory illness affects different
+            age groups? Select one of the questions above to learn
+            how to interpret the chart and compare age-specific
+            incidence patterns.
+        </p>
+
     </div>
 
-    
 </aside>
 
 
