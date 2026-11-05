@@ -724,6 +724,39 @@ select {
     line-height: 1.5;
 }
 
+.narrative-explanation {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.narrative-explanation-milo {
+    width: 58px;
+    height: 58px;
+    flex-shrink: 0;
+    object-fit: contain;
+}
+
+.narrative-explanation-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.narrative-explanation-content h4 {
+    margin-top: 0;
+}
+
+@media (max-width: 500px) {
+    .narrative-explanation {
+        gap: 8px;
+    }
+
+    .narrative-explanation-milo {
+        width: 45px;
+        height: 45px;
+    }
+}
+
 /* Mobile layout */
 @media (max-width: 700px) {
     .tab-content:not(#overview) {
@@ -1262,23 +1295,6 @@ select {
 <aside class="narrative-sidebar" data-guide="when">
     <h3>Explore: When?</h3>
 
-    <div class="narrative-character">
-        <div class="narrative-avatar">
-            <img
-                src="https://raw.githubusercontent.com/fadinglight7/grippeweb-dashboard/main/meddog.png"
-                alt="Milo the Data Detective"
-            >
-        </div>
-
-        <div>
-            <strong>Milo the Data Detective</strong>
-            <p data-character-speech>
-                Let's explore how respiratory illness incidence changes
-                throughout the year and how patterns compare across seasons.
-            </p>
-        </div>
-    </div>
-
     <details open ontoggle="this.open = true">
         <summary>Understanding the chart</summary>
 
@@ -1289,7 +1305,7 @@ select {
                 type="button"
                 data-title="What am I looking at, and what should I look for?"
                 data-speech="Each line tells a story about a season. Look for rises, peaks, and falls. Do different seasons follow similar patterns?"
-                data-text="Incidence represents the estimated number of people affected per 100,000 inhabitants. Each line represents one selected season. The horizontal axis shows epidemiological weeks, while the vertical axis shows nationwide incidence for your selected disease. Compare the lines to see when incidence rises, how high it peaks, and how quickly it falls. Notice whether different seasons follow similar patterns or show differences.">
+                data-text="Incidence represents the estimated rate of illness per 100,000 inhabitants. Each line represents one selected season. The horizontal axis shows epidemiological weeks, while the vertical axis shows nationwide incidence for your selected disease. Compare the lines to see when incidence rises, how high it peaks, and how quickly it falls. Notice whether different seasons follow similar patterns or show differences.">
                 What am I looking at, and what should I look for?
             </button>
 
@@ -1306,15 +1322,29 @@ select {
     </details>
 
     <div class="narrative-explanation" aria-live="polite">
-        <h4 data-explanation-title>
-            What am I looking at, and what should I look for?
-        </h4>
+        <img
+            class="narrative-explanation-milo"
+            src="https://raw.githubusercontent.com/fadinglight7/grippeweb-dashboard/main/meddog.png"
+            alt="Milo the Data Detective"
+        >
 
-        <p data-explanation-text>
-            Incidence represents the estimated number of people affected per 100,000 inhabitants. Each line represents one selected season. The horizontal axis shows epidemiological weeks, while the vertical axis shows nationwide incidence for your selected disease. Compare the lines to see when incidence rises, how high it peaks, and how quickly it falls. Notice whether different seasons follow similar patterns or show differences.
-        </p>
+        <div class="narrative-explanation-content">
+            <h4 data-explanation-title>
+                What am I looking at, and what should I look for?
+            </h4>
+
+            <p data-explanation-text>
+                Incidence represents the estimated rate of illness per
+                100,000 inhabitants. Each line represents one selected
+                season. The horizontal axis shows epidemiological weeks,
+                while the vertical axis shows nationwide incidence for
+                your selected disease. Compare the lines to see when
+                incidence rises, how high it peaks, and how quickly it
+                falls. Notice whether different seasons follow similar
+                patterns or show differences.
+            </p>
+        </div>
     </div>
-
 </aside>
 
 
