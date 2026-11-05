@@ -697,6 +697,209 @@ select {
 }
 
 /* =========================================================
+   MILO – AGE GROUPS GRAPH TOUR
+   ========================================================= */
+
+.milo-age-chart-tour {
+    position: absolute;
+    z-index: 100;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    width: min(350px, calc(100% - 24px));
+    padding: 12px;
+    background: #fff;
+    border: 2px solid #526da8;
+    border-radius: 12px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.18);
+}
+
+.milo-age-chart-tour[hidden] {
+    display: none !important;
+}
+
+.milo-age-chart-tour-character {
+    width: 54px;
+    height: 54px;
+    flex-shrink: 0;
+    object-fit: contain;
+}
+
+.milo-age-chart-tour-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.milo-age-chart-tour-content h4 {
+    margin: 0 24px 6px 0;
+    color: #203f80;
+    font-size: 14px;
+}
+
+.milo-age-chart-tour-content p {
+    margin: 0;
+    color: #444;
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+.milo-age-chart-tour-close {
+    position: absolute;
+    top: 5px;
+    right: 8px;
+    border: none;
+    background: transparent;
+    color: #666;
+    font-size: 21px;
+    cursor: pointer;
+}
+
+.milo-age-chart-tour-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.milo-age-chart-tour-progress {
+    color: #777;
+    font-size: 11px;
+}
+
+.milo-age-chart-tour-buttons {
+    display: flex;
+    gap: 6px;
+}
+
+.milo-age-chart-tour-buttons button {
+    padding: 6px 11px;
+    border: 1px solid #526da8;
+    border-radius: 5px;
+    background: #fff;
+    color: #203f80;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.milo-age-chart-tour-buttons button:last-child {
+    background: #526da8;
+    color: #fff;
+}
+
+.milo-age-chart-tour-buttons button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* Milo's five positions around the Age Groups chart */
+
+.milo-age-chart-tour[data-step="0"] {
+    bottom: 3%;
+    left: 14px;
+}
+
+.milo-age-chart-tour[data-step="1"] {
+    bottom: 18%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.milo-age-chart-tour[data-step="2"] {
+    top: 30%;
+    left: 12px;
+}
+
+.milo-age-chart-tour[data-step="3"] {
+    top: 12%;
+    right: 14px;
+}
+
+.milo-age-chart-tour[data-step="4"] {
+    top: 2%;
+    left: 14px;
+}
+
+/* Speech-bubble pointer */
+
+.milo-age-chart-tour::after {
+    content: "";
+    position: absolute;
+    bottom: -11px;
+    left: 50%;
+    width: 18px;
+    height: 18px;
+    background: #fff;
+    border-right: 2px solid #526da8;
+    border-bottom: 2px solid #526da8;
+    transform: translateX(-50%) rotate(45deg);
+}
+
+.milo-age-chart-tour[data-step="2"]::after {
+    top: 35%;
+    left: -11px;
+    bottom: auto;
+    border: none;
+    border-left: 2px solid #526da8;
+    border-bottom: 2px solid #526da8;
+    transform: rotate(45deg);
+}
+
+/* Highlight the Plotly chart elements and season selector */
+
+.milo-age-tour-highlight {
+    filter: drop-shadow(0 0 5px rgba(82,109,168,0.9));
+}
+
+.milo-age-control-highlight {
+    outline: 3px solid #526da8 !important;
+    outline-offset: 4px;
+    border-radius: 4px;
+}
+
+/* Mobile positioning */
+
+@media (max-width: 700px) {
+    .milo-age-chart-tour {
+        width: min(310px, calc(100% - 16px));
+        padding: 10px;
+        gap: 8px;
+    }
+
+    .milo-age-chart-tour-character {
+        width: 42px;
+        height: 42px;
+    }
+
+    .milo-age-chart-tour[data-step="0"] {
+        bottom: 3%;
+        left: 8px;
+    }
+
+    .milo-age-chart-tour[data-step="1"] {
+        bottom: 18%;
+        left: 8px;
+        transform: none;
+    }
+
+    .milo-age-chart-tour[data-step="2"] {
+        top: 30%;
+        left: 8px;
+    }
+
+    .milo-age-chart-tour[data-step="3"] {
+        top: 8%;
+        right: 8px;
+    }
+
+    .milo-age-chart-tour[data-step="4"] {
+        top: 2%;
+        left: 8px;
+    }
+}
+
+
+/* =========================================================
    CUSTOM DROPDOWNS
    ========================================================= */
 
@@ -1616,7 +1819,16 @@ select {
 
         <div class="narrative-question-list">
 
-            
+            <button
+    class="narrative-question"
+    type="button"
+    data-age-tour-start="true"
+    data-title="How do I read this chart?"
+    data-speech="Let's explore the age-group chart together. I'll show you what each part tells us."
+    data-text="This chart compares nationwide incidence across different age groups during one selected surveillance season. Each coloured line represents an age group. Select this question to take a short guided tour with Milo."
+>
+    How do I read this chart?
+</button>
 
             <button
                 class="narrative-question"
@@ -1663,9 +1875,8 @@ select {
 
         <p data-explanation-text>
             Curious about how respiratory illness affects different
-            age groups? Select one of the questions above to learn
-            how to interpret the chart and compare age-specific
-            incidence patterns.
+    age groups? Select "How do I read this chart?" above
+    and Milo will guide you through the chart.
         </p>
 
     </div>
@@ -4401,7 +4612,434 @@ function closeMiloIncidenceTour() {
 
 
 /* =========================================================
-   NARRATIVE GUIDE INTERACTIONS — ADDITION ONLY
+   MILO – AGE GROUPS GRAPH GUIDED TOUR
+   ========================================================= */
+
+const miloAgeGroupsTourSteps = [
+    {
+        title: "The coloured lines – Different age groups",
+        text: "Each coloured line represents one age group. The legend below the chart identifies them. You can also use the legend to show or hide individual lines."
+    },
+    {
+        title: "The horizontal axis – Epidemiological weeks",
+        text: "This axis follows the epidemiological weeks, from W40 through W39. It lets you see how incidence changes throughout the surveillance season."
+    },
+    {
+        title: "The vertical axis – Incidence",
+        text: "This axis shows the estimated incidence rate per 100,000 inhabitants. Higher values indicate a higher estimated rate of illness, not simply a larger number of people."
+    },
+    {
+        title: "Comparing age groups",
+        text: "Compare the selected lines. Look at how high they rise, when they reach their peaks, and whether they rise and fall around the same time. The chart shows differences in patterns, but does not explain their causes."
+    },
+    {
+        title: "Exploring different seasons",
+        text: "Use the season selector above the chart to choose a different surveillance season. Only one season is displayed at a time. See whether the age-group patterns remain similar or change."
+    }
+];
+
+let miloAgeGroupsTourStep = 0;
+let miloAgeGroupsTourOverlay = null;
+let miloAgeGroupsPreviousExplanationDisplay = "";
+
+
+/* Create Milo's independent Age Groups tour overlay */
+
+function createMiloAgeGroupsTour() {
+
+    if (miloAgeGroupsTourOverlay) {
+        return;
+    }
+
+    const chart =
+        document.getElementById("ageChart");
+
+    if (!chart || !chart.parentElement) {
+        return;
+    }
+
+    const chartContainer = chart.parentElement;
+
+    const overlay = document.createElement("div");
+
+    overlay.className = "milo-age-chart-tour";
+    overlay.hidden = true;
+
+    overlay.innerHTML = `
+        <img
+            class="milo-age-chart-tour-character"
+            src="https://raw.githubusercontent.com/fadinglight7/grippeweb-dashboard/main/meddog.png"
+            alt="Milo"
+        >
+
+        <div class="milo-age-chart-tour-content">
+
+            <button
+                type="button"
+                class="milo-age-chart-tour-close"
+                aria-label="Close Milo's Age Groups graph tour"
+            >&times;</button>
+
+            <h4></h4>
+
+            <p aria-live="polite"></p>
+
+            <div class="milo-age-chart-tour-controls">
+
+                <span class="milo-age-chart-tour-progress"></span>
+
+                <div class="milo-age-chart-tour-buttons">
+
+                    <button
+                        type="button"
+                        class="milo-age-tour-previous"
+                    >
+                        Previous
+                    </button>
+
+                    <button
+                        type="button"
+                        class="milo-age-tour-next"
+                    >
+                        Next
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+    `;
+
+    chartContainer.appendChild(overlay);
+
+    miloAgeGroupsTourOverlay = overlay;
+
+
+    overlay.querySelector(".milo-age-chart-tour-close")
+        .addEventListener(
+            "click",
+            () => closeMiloAgeGroupsTour()
+        );
+
+
+    overlay.querySelector(".milo-age-tour-previous")
+        .addEventListener("click", function() {
+
+            if (miloAgeGroupsTourStep > 0) {
+
+                miloAgeGroupsTourStep--;
+
+                updateMiloAgeGroupsTour();
+
+            }
+
+        });
+
+
+    overlay.querySelector(".milo-age-tour-next")
+        .addEventListener("click", function() {
+
+            if (
+                miloAgeGroupsTourStep
+                < miloAgeGroupsTourSteps.length - 1
+            ) {
+
+                miloAgeGroupsTourStep++;
+
+                updateMiloAgeGroupsTour();
+
+            } else {
+
+                closeMiloAgeGroupsTour();
+
+            }
+
+        });
+
+}
+
+
+/* Highlight the chart element relevant to each step */
+
+function highlightMiloAgeGroupsTourTarget(stepIndex) {
+
+    const chart =
+        document.getElementById("ageChart");
+
+    const seasonFilter =
+        document.getElementById("ageSeasonFilter");
+
+    if (!chart) {
+        return;
+    }
+
+    // Remove highlights left by the previous step.
+
+    chart.querySelectorAll(".milo-age-tour-highlight")
+        .forEach(element => {
+            element.classList.remove("milo-age-tour-highlight");
+        });
+
+    if (seasonFilter) {
+        seasonFilter.classList.remove(
+            "milo-age-control-highlight"
+        );
+    }
+
+    let targets = [];
+
+
+    if (stepIndex === 0) {
+
+        // Plotly legend: identifies the age groups.
+
+        const legend =
+            chart.querySelector(".legend");
+
+        if (legend) {
+            targets = [legend];
+        }
+
+    } else if (stepIndex === 1) {
+
+        // Horizontal axis.
+
+        const xAxis =
+            chart.querySelector(".xaxislayer-above");
+
+        if (xAxis) {
+            targets = [xAxis];
+        }
+
+    } else if (stepIndex === 2) {
+
+        // Vertical axis.
+
+        const yAxis =
+            chart.querySelector(".yaxislayer-above");
+
+        if (yAxis) {
+            targets = [yAxis];
+        }
+
+    } else if (stepIndex === 3) {
+
+        // All currently displayed age-group lines.
+
+        targets = Array.from(
+            chart.querySelectorAll(".scatterlayer .trace")
+        );
+
+    } else if (stepIndex === 4) {
+
+        // Season selector above the chart.
+
+        if (seasonFilter) {
+            seasonFilter.classList.add(
+                "milo-age-control-highlight"
+            );
+        }
+
+    }
+
+
+    targets.forEach(element => {
+        element.classList.add(
+            "milo-age-tour-highlight"
+        );
+    });
+
+}
+
+
+/* Update Milo's speech bubble and chart highlight */
+
+function updateMiloAgeGroupsTour() {
+
+    const overlay =
+        miloAgeGroupsTourOverlay;
+
+    if (!overlay) {
+        return;
+    }
+
+    const step =
+        miloAgeGroupsTourSteps[miloAgeGroupsTourStep];
+
+
+    overlay.dataset.step =
+        miloAgeGroupsTourStep;
+
+
+    overlay.querySelector("h4").textContent =
+        step.title;
+
+
+    overlay.querySelector("p").textContent =
+        step.text;
+
+
+    overlay.querySelector(
+        ".milo-age-chart-tour-progress"
+    ).textContent =
+        `Step ${miloAgeGroupsTourStep + 1} of ${miloAgeGroupsTourSteps.length}`;
+
+
+    const previousButton =
+        overlay.querySelector(".milo-age-tour-previous");
+
+    const nextButton =
+        overlay.querySelector(".milo-age-tour-next");
+
+
+    previousButton.disabled =
+        miloAgeGroupsTourStep === 0;
+
+
+    nextButton.textContent =
+        miloAgeGroupsTourStep
+        === miloAgeGroupsTourSteps.length - 1
+            ? "Finish"
+            : "Next";
+
+
+    highlightMiloAgeGroupsTourTarget(
+        miloAgeGroupsTourStep
+    );
+
+}
+
+
+/* Start the Age Groups tour */
+
+function startMiloAgeGroupsTour() {
+
+    const explanation =
+        document.querySelector(
+            '#age-groups .narrative-explanation'
+        );
+
+    const chart =
+        document.getElementById("ageChart");
+
+
+    if (!explanation || !chart) {
+        return;
+    }
+
+
+    createMiloAgeGroupsTour();
+
+    if (!miloAgeGroupsTourOverlay) {
+        return;
+    }
+
+
+    // Wait until Plotly has finished rendering the chart.
+
+    const waitForChart = () => {
+
+        const plotReady =
+            chart.querySelector(".main-svg") &&
+            chart.querySelector(".cartesianlayer");
+
+
+        if (!plotReady) {
+
+            requestAnimationFrame(waitForChart);
+
+            return;
+
+        }
+
+
+        miloAgeGroupsPreviousExplanationDisplay =
+            explanation.style.display;
+
+        explanation.style.display = "none";
+
+
+        miloAgeGroupsTourStep = 0;
+
+        miloAgeGroupsTourOverlay.hidden = false;
+
+
+        updateMiloAgeGroupsTour();
+
+    };
+
+
+    waitForChart();
+
+}
+
+
+/* Close the Age Groups tour and restore the sidebar */
+
+function closeMiloAgeGroupsTour(restoreFocus = true) {
+
+    if (miloAgeGroupsTourOverlay) {
+        miloAgeGroupsTourOverlay.hidden = true;
+    }
+
+
+    const explanation =
+        document.querySelector(
+            '#age-groups .narrative-explanation'
+        );
+
+
+    if (explanation) {
+
+        explanation.style.display =
+            miloAgeGroupsPreviousExplanationDisplay;
+
+    }
+
+
+    // Remove all chart highlights.
+
+    const chart =
+        document.getElementById("ageChart");
+
+    if (chart) {
+
+        chart.querySelectorAll(".milo-age-tour-highlight")
+            .forEach(element => {
+                element.classList.remove(
+                    "milo-age-tour-highlight"
+                );
+            });
+
+    }
+
+
+    const seasonFilter =
+        document.getElementById("ageSeasonFilter");
+
+    if (seasonFilter) {
+
+        seasonFilter.classList.remove(
+            "milo-age-control-highlight"
+        );
+
+    }
+
+
+    if (restoreFocus) {
+
+        document.querySelector(
+            '#age-groups [data-age-tour-start="true"]'
+        )?.focus();
+
+    }
+
+}
+
+
+/* =========================================================
+   NARRATIVE GUIDE INTERACTIONS
    ========================================================= */
 
 document.querySelectorAll(".narrative-sidebar").forEach(sidebar => {
@@ -4418,9 +5056,10 @@ document.querySelectorAll(".narrative-sidebar").forEach(sidebar => {
     const speechElement =
         sidebar.querySelector("[data-character-speech]");
 
+
     questionButtons.forEach(button => {
 
-        button.addEventListener("click", function () {
+        button.addEventListener("click", function() {
 
             questionButtons.forEach(item => {
                 item.classList.remove("active");
@@ -4428,24 +5067,64 @@ document.querySelectorAll(".narrative-sidebar").forEach(sidebar => {
 
             this.classList.add("active");
 
-            titleElement.textContent =
-                this.dataset.title;
 
-            textElement.textContent =
-                this.dataset.text;
+            if (titleElement) {
+                titleElement.textContent =
+                    this.dataset.title;
+            }
+
+            if (textElement) {
+                textElement.textContent =
+                    this.dataset.text;
+            }
 
             if (speechElement) {
                 speechElement.textContent =
                     this.dataset.speech || "";
             }
 
-            if (this.dataset.tourStart === "true") {
 
-                startMiloIncidenceTour();
+            // Incidence Over Time sidebar.
 
-            } else {
+            if (sidebar.dataset.guide === "when") {
+
+                closeMiloAgeGroupsTour(false);
+
+                if (this.dataset.tourStart === "true") {
+
+                    startMiloIncidenceTour();
+
+                } else {
+
+                    closeMiloIncidenceTour();
+
+                }
+
+            }
+
+            // Incidence by Age Group sidebar.
+
+            else if (sidebar.dataset.guide === "who") {
+
+                if (this.dataset.ageTourStart === "true") {
+
+                    startMiloAgeGroupsTour();
+
+                } else {
+
+                    closeMiloAgeGroupsTour(false);
+
+                }
+
+            }
+
+            // Other narrative sidebars.
+
+            else {
 
                 closeMiloIncidenceTour();
+
+                closeMiloAgeGroupsTour(false);
 
             }
 
@@ -4455,12 +5134,19 @@ document.querySelectorAll(".narrative-sidebar").forEach(sidebar => {
 
 });
 
+
+/* Close the appropriate tour when navigating between tabs */
+
 document.querySelectorAll(".tab-button").forEach(button => {
 
-    button.addEventListener("click", function () {
+    button.addEventListener("click", function() {
 
         if (this.dataset.tab !== "incidence") {
             closeMiloIncidenceTour();
+        }
+
+        if (this.dataset.tab !== "age-groups") {
+            closeMiloAgeGroupsTour(false);
         }
 
     });
