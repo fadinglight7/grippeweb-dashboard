@@ -1552,15 +1552,10 @@ select {
             <button class="narrative-question" type="button"
                 data-title="What should I look for?"
                 data-speech="Compare regions, then move through time. Are the differences stable or do they change?"
-                data-text="Look for regions with relatively high or low incidence, compare neighbouring regions, and move through the weeks to see how the pattern changes. The map shows where reported incidence differs; it does not explain why.">
+                data-text="Look for regions with relatively high or low incidence, compare neighbouring regions, and move through the weeks to see how the pattern changes. The map shows where reported incidence differs.">
                 What should I look for?
             </button>
-            <button class="narrative-question" type="button"
-                data-title="Putting it all together"
-                data-speech="A detective combines clues. Let's connect when, who, and where."
-                data-text="The time-series chart shows how nationwide incidence changes across seasons. The age-group chart compares patterns between age groups. The map adds a regional perspective. Together they describe different aspects of the data, but they do not establish the causes of observed differences.">
-                Putting it all together
-            </button>
+            
         </div>
     </details>
 
@@ -1635,13 +1630,7 @@ select {
         </div>
 
 
-        <div class="control-group">
-
-            <span>
-                Altersgruppe: 00+
-            </span>
-
-        </div>
+        
 
     </div>
 
@@ -1675,7 +1664,7 @@ select {
             <button class="narrative-question" type="button"
     data-title="What does incidence mean?"
     data-speech="Incidence tells us how frequently new illness occurs in a population over a given period. Let's look at what that means in this dashboard."
-    data-text="Incidence describes the occurrence of new illness in a population during a defined period. In this dashboard, it is expressed as an estimated number of illness episodes per 100,000 inhabitants for the selected epidemiological week. It is a rate, not the raw number of people affected.">
+    data-text="Incidence describes the occurrence of new illness in a population during a defined period. In this dashboard, it is expressed as an estimated number of illness episodes per 100,000 inhabitants for the selected week. It is a rate, not the raw number of people affected.">
     What does incidence mean?
 </button>
 
@@ -1685,7 +1674,7 @@ select {
     data-tour-start="true"
     data-title="How do I read this graph?"
     data-speech="Let's explore the graph together. I'll show you what each part tells us."
-    data-text="Incidence represents the estimated rate of illness per 100,000 inhabitants. The horizontal axis shows epidemiological weeks, while the vertical axis shows nationwide incidence. Each coloured line represents a selected season. Look for rises, peaks, and falls to understand how illness activity changes over time."
+    data-text="The horizontal axis shows epidemiological weeks, while the vertical axis shows nationwide incidence. Each coloured line represents a selected season. Look for rises, peaks, and falls to understand how illness activity changes over time."
 >
     How do I read this graph?
 </button>
@@ -1828,7 +1817,7 @@ select {
                 type="button"
                 data-title="What do the age groups mean?"
                 data-speech="Let's compare the age groups carefully. Their patterns may differ over the season."
-                data-text="The chart separates people into five groups: 0–4, 5–14, 15–34, 35–59, and 60+. Use the age-group selector to show or hide groups and compare their incidence patterns. These groups describe age ranges, not the causes of differences."
+                data-text="The chart separates people into five groups: 0–4, 5–14, 15–34, 35–59, and 60+. Use the age-group selector to show or hide groups and compare their incidence patterns."
             >
                 What do the age groups mean?
             </button>
@@ -1840,15 +1829,7 @@ select {
     Why are the age groups divided this way?
 </button>
 
-            <button
-                class="narrative-question"
-                type="button"
-                data-title="What should I look for?"
-                data-speech="Which groups peak at the same time? Which have higher or lower incidence?"
-                data-text="Compare how high the lines go, when they reach their highest points, and whether different age groups rise and fall around the same time. Remember, the chart shows us how the patterns differ, but not what causes those differences."
-            >
-                What should I look for?
-            </button>
+            
 
             <button class="narrative-question" type="button"
     data-title="When are the four seasons in Germany?"
@@ -4380,7 +4361,7 @@ function drawAgeGroupsChart() {
 const miloIncidenceTourSteps = [
     {
         title: "The horizontal axis – Epidemiological weeks",
-        text: "These labels represent epidemiological weeks. Follow the axis from W40 through W39 to see how incidence changes throughout a complete surveillance season.",
+        text: "These labels represent epidemiological weeks. Follow the axis from Week 40 to the end to see how incidence changes throughout a complete surveillance season.",
     },
     {
         title: "The vertical axis – Incidence",
@@ -4388,7 +4369,7 @@ const miloIncidenceTourSteps = [
     },
     {
         title: "The coloured lines – Different seasons",
-        text: "Each coloured line represents one selected season. Use the legend to identify the seasons, then compare their patterns across the same epidemiological weeks.",
+        text: "The season dropdown lets you select multiple seasons. Each selected season is depicted with a unique color line. Use the legend to identify the seasons, then compare their patterns across the same weeks.",
     },
     {
         title: "Peaks and patterns",
@@ -4623,7 +4604,7 @@ const miloAgeGroupsTourSteps = [
     },
     {
         title: "Comparing age groups",
-        text: "Compare the selected lines. Look at how high they rise, when they reach their peaks, and whether they rise and fall around the same time. The chart shows differences in patterns, but does not explain their causes."
+        text: "Compare the selected lines. Look at how high they rise, when they reach their peaks, and whether they rise and fall around the same time."
     },
     {
         title: "Exploring different seasons",
