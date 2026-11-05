@@ -1200,6 +1200,43 @@ select {
     line-height: 1.6;
 }
 
+/* Regional map – federal states reference card */
+
+.regional-reference-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.regional-reference-card[hidden] {
+    display: none !important;
+}
+
+.regional-reference-item {
+    padding-bottom: 9px;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.regional-reference-item:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.regional-reference-item h5 {
+    margin: 0 0 3px;
+    color: #203f80;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.regional-reference-item p {
+    margin: 0;
+    color: #444;
+    font-size: 11.5px;
+    line-height: 1.5;
+}
+
 .narrative-hint {
     margin: 12px 0 0;
     color: #666;
@@ -1647,19 +1684,10 @@ select {
                 What does the week slider represent?
             </button>
             <button class="narrative-question" type="button"
+    data-region-reference="true"
     data-title="Which federal states belong to each region?"
-    data-speech="Germany is divided into four reporting regions in this map. Let's see which federal states belong to each one."
-    data-text="NORDEN (WEST)
-Bremen, Hamburg, Niedersachsen, Schleswig-Holstein
-
-OSTEN
-Berlin, Brandenburg, Mecklenburg-Vorpommern, Sachsen, Sachsen-Anhalt, Thüringen
-
-SÜDEN
-Baden-Württemberg, Bayern
-
-MITTE (WEST)
-Hessen, Nordrhein-Westfalen, Rheinland-Pfalz, Saarland.">
+    data-speech="Germany is divided into four reporting regions in this map. Here's which federal states belong to each one."
+    data-text="The four reporting regions and their federal states are listed below.">
     Which federal states belong to each region?
 </button>
             <button class="narrative-question" type="button"
@@ -1673,9 +1701,44 @@ Hessen, Nordrhein-Westfalen, Rheinland-Pfalz, Saarland.">
     </details>
 
     <div class="narrative-explanation" aria-live="polite">
-        <h4 data-explanation-title>What do the colours represent?</h4>
-        <p data-explanation-text>Each region is coloured according to its incidence for the selected disease, season, and epidemiological week. Use the legend to interpret the ranges. In general, darker orange and brown shades indicate higher incidence; consult the legend for the exact values.</p>
+
+    <h4 data-explanation-title>
+        What do the colours represent?
+    </h4>
+
+    <p data-explanation-text>
+        Each region is coloured according to its incidence for
+        the selected disease, season, and epidemiological week.
+        Use the legend to interpret the ranges. In general,
+        darker orange and brown shades indicate higher incidence;
+        consult the legend for the exact values.
+    </p>
+
+    <div class="regional-reference-card" hidden>
+
+        <div class="regional-reference-item">
+            <h5>Norden (West)</h5>
+            <p>Bremen, Hamburg, Niedersachsen, Schleswig-Holstein</p>
+        </div>
+
+        <div class="regional-reference-item">
+            <h5>Osten</h5>
+            <p>Berlin, Brandenburg, Mecklenburg-Vorpommern, Sachsen, Sachsen-Anhalt, Thüringen</p>
+        </div>
+
+        <div class="regional-reference-item">
+            <h5>Süden</h5>
+            <p>Baden-Württemberg, Bayern</p>
+        </div>
+
+        <div class="regional-reference-item">
+            <h5>Mitte (West)</h5>
+            <p>Hessen, Nordrhein-Westfalen, Rheinland-Pfalz, Saarland</p>
+        </div>
+
     </div>
+
+</div>
 
     
 </aside>
@@ -5363,6 +5426,26 @@ document.querySelectorAll(".narrative-sidebar").forEach(sidebar => {
                 textElement.textContent =
                     this.dataset.text;
             }
+
+            // Show the structured regional reference only on the map page.
+
+if (sidebar.dataset.guide === "where") {
+
+    const regionalReferenceCard =
+        sidebar.querySelector(".regional-reference-card");
+
+    const isRegionalReference =
+        this.dataset.regionReference === "true";
+
+    if (textElement) {
+        textElement.hidden = isRegionalReference;
+    }
+
+    if (regionalReferenceCard) {
+        regionalReferenceCard.hidden = !isRegionalReference;
+    }
+
+}
 
             if (speechElement) {
                 speechElement.textContent =
