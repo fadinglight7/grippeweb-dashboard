@@ -1038,7 +1038,7 @@ select {
 
         <p>
             The weekly summary lets you switch between two
-            respiratory illness indicators: ARE and ILI.
+            respiratory illness indicators: ARE and ILI, using the dropdown on the right.
             Not sure what these terms mean? Milo can explain!
         </p>
     </div>
@@ -4037,17 +4037,23 @@ document.querySelectorAll(".narrative-sidebar").forEach(sidebar => {
             <h4>What are ARE and ILI?</h4>
 
             <p>
-                ARE stands for acute respiratory diseases.
-                It is a broad category covering acute illnesses
-                affecting the respiratory system.
+    <strong>ARE</strong> (acute respiratory infections) is the
+    broader indicator. It captures a wide range of respiratory
+    illnesses, including mild infections such as the common cold.
 
-                ILI stands for influenza-like illness.
-                It describes illnesses with symptoms resembling
-                influenza.
+    <br><br>
 
-                Use this dropdown to switch between the two
-                indicators and see how the weekly summary changes.
-            </p>
+    <strong>ILI</strong> (influenza-like illness) is more specific.
+    It identifies illnesses with a combination of fever and
+    respiratory symptoms, making it useful for tracking
+    flu-like illness activity in the community.
+
+    <br><br>
+
+    In short, ARE shows the broader picture of respiratory
+    illness, while ILI helps highlight increases in
+    flu-like symptoms.
+</p>
         `;
 
         anchor.appendChild(character);
