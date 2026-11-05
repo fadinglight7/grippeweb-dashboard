@@ -282,6 +282,61 @@ body {
     
 }
 
+/* =========================================================
+   MILO — ARE / ILI INTRODUCTORY PROMPT
+   ========================================================= */
+
+.milo-indicator-prompt {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin: 18px 0 22px;
+    padding: 17px 20px;
+    background: #f5f7fc;
+    border: 1px solid #dce3f1;
+    border-radius: 7px;
+}
+
+.milo-indicator-prompt-copy {
+    flex: 1;
+    min-width: 0;
+}
+
+.milo-indicator-prompt-copy h3 {
+    margin: 0 0 6px;
+    color: #203f80;
+    font-size: 16px;
+}
+
+.milo-indicator-prompt-copy p {
+    margin: 0;
+    color: #444;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.milo-indicator-prompt .milo-guide-question {
+    width: auto;
+    flex-shrink: 0;
+    margin: 0;
+    white-space: nowrap;
+}
+
+@media (max-width: 700px) {
+    .milo-indicator-prompt {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+        padding: 16px;
+    }
+
+    .milo-indicator-prompt .milo-guide-question {
+        width: 100%;
+        white-space: normal;
+    }
+}
+
 
 /* =========================================================
    NEW: WEEKLY SUMMARY TABLE STYLING
@@ -974,16 +1029,33 @@ select {
 
 </section>
 
+<!-- MILO — ARE / ILI INTRODUCTION -->
+<div class="milo-indicator-prompt">
+
+    <div class="milo-indicator-prompt-copy">
+        <h3>A quick note before you begin</h3>
+
+        <p>
+            The weekly summary lets you switch between two
+            respiratory illness indicators: ARE and ILI.
+            Not sure what these terms mean? Milo can explain!
+        </p>
+    </div>
+
+    <button
+        type="button"
+        class="milo-guide-question"
+        id="miloAreIliQuestion"
+    >
+        What are ARE and ILI?
+    </button>
+
+</div>
+
 
         <!-- EXISTING WEEKLY SUMMARY TABLE — PRESERVE ALL IDs -->
         <div class="summary-table-container">
-            <button
-                type="button"
-                class="milo-guide-question"
-                id="miloAreIliQuestion"
-            >
-                What is ARE and ILI?
-            </button>
+            
             <div class="summary-heading-row">
                 <h3>Latest Calendar Week</h3>
                 <div class="control-group">
