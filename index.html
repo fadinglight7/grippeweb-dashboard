@@ -503,6 +503,7 @@ select {
    ========================================================= */
 
 .chart-container {
+    position: relative;
     width: 100%;
     min-height: 550px;
 }
@@ -510,6 +511,189 @@ select {
 .chart {
     width: 100%;
     height: 600px;
+}
+
+/* =========================================================
+   MILO – INCIDENCE GRAPH TOUR
+   ========================================================= */
+
+.milo-chart-tour {
+    position: absolute;
+    z-index: 100;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    width: min(350px, calc(100% - 24px));
+    padding: 12px;
+    background: #fff;
+    border: 2px solid #526da8;
+    border-radius: 12px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.18);
+}
+
+.milo-chart-tour[hidden] {
+    display: none !important;
+}
+
+.milo-chart-tour-character {
+    width: 54px;
+    height: 54px;
+    flex-shrink: 0;
+    object-fit: contain;
+}
+
+.milo-chart-tour-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.milo-chart-tour-content h4 {
+    margin: 0 24px 6px 0;
+    color: #203f80;
+    font-size: 14px;
+}
+
+.milo-chart-tour-content p {
+    margin: 0;
+    color: #444;
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+.milo-chart-tour-close {
+    position: absolute;
+    top: 5px;
+    right: 8px;
+    border: none;
+    background: transparent;
+    color: #666;
+    font-size: 21px;
+    cursor: pointer;
+}
+
+.milo-chart-tour-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.milo-chart-tour-progress {
+    color: #777;
+    font-size: 11px;
+}
+
+.milo-chart-tour-buttons {
+    display: flex;
+    gap: 6px;
+}
+
+.milo-chart-tour-buttons button {
+    padding: 6px 11px;
+    border: 1px solid #526da8;
+    border-radius: 5px;
+    background: #fff;
+    color: #203f80;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.milo-chart-tour-buttons button:last-child {
+    background: #526da8;
+    color: #fff;
+}
+
+.milo-chart-tour-buttons button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* Milo's four positions around the graph */
+
+/* Step 1: Horizontal axis */
+.milo-chart-tour[data-step="0"] {
+    bottom: 13%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* Step 2: Vertical axis */
+.milo-chart-tour[data-step="1"] {
+    top: 38%;
+    left: 80px;
+}
+
+/* Step 3: Season lines and legend */
+.milo-chart-tour[data-step="2"] {
+    top: 10%;
+    right: 14px;
+}
+
+/* Step 4: Peaks and patterns */
+.milo-chart-tour[data-step="3"] {
+    top: 38%;
+    right: 14px;
+}
+
+/* Speech bubble pointer */
+.milo-chart-tour::after {
+    content: "";
+    position: absolute;
+    bottom: -11px;
+    left: 50%;
+    width: 18px;
+    height: 18px;
+    background: #fff;
+    border-right: 2px solid #526da8;
+    border-bottom: 2px solid #526da8;
+    transform: translateX(-50%) rotate(45deg);
+}
+
+/* Vertical-axis pointer */
+.milo-chart-tour[data-step="1"]::after {
+    top: 35%;
+    left: -11px;
+    bottom: auto;
+    border: none;
+    border-left: 2px solid #526da8;
+    border-bottom: 2px solid #526da8;
+    transform: rotate(45deg);
+}
+
+/* Mobile positioning */
+@media (max-width: 700px) {
+    .milo-chart-tour {
+        width: min(310px, calc(100% - 16px));
+        padding: 10px;
+        gap: 8px;
+    }
+
+    .milo-chart-tour-character {
+        width: 42px;
+        height: 42px;
+    }
+
+    .milo-chart-tour[data-step="0"] {
+        bottom: 15%;
+        left: 8px;
+        transform: none;
+    }
+
+    .milo-chart-tour[data-step="1"] {
+        top: 32%;
+        left: 8px;
+    }
+
+    .milo-chart-tour[data-step="2"] {
+        top: 8%;
+        right: 8px;
+    }
+
+    .milo-chart-tour[data-step="3"] {
+        top: 42%;
+        right: 8px;
+    }
 }
 
 /* =========================================================
@@ -1294,13 +1478,15 @@ select {
         <div class="narrative-question-list">
 
             <button
-                class="narrative-question active"
-                type="button"
-                data-title="What am I looking at, and what should I look for?"
-                data-speech="Each line tells a story about a season. Look for rises, peaks, and falls. Do different seasons follow similar patterns?"
-                data-text="Incidence represents the estimated rate of illness per 100,000 inhabitants. Each line represents one selected season. The horizontal axis shows epidemiological weeks, while the vertical axis shows nationwide incidence for your selected disease. Compare the lines to see when incidence rises, how high it peaks, and how quickly it falls. Notice whether different seasons follow similar patterns or show differences.">
-                What am I looking at, and what should I look for?
-            </button>
+    class="narrative-question active"
+    type="button"
+    data-tour-start="true"
+    data-title="How do I read this graph?"
+    data-speech="Let's explore the graph together. I'll show you what each part tells us."
+    data-text="Incidence represents the estimated rate of illness per 100,000 inhabitants. The horizontal axis shows epidemiological weeks, while the vertical axis shows nationwide incidence. Each coloured line represents a selected season. Look for rises, peaks, and falls to understand how illness activity changes over time."
+>
+    How do I read this graph?
+</button>
 
             <button
                 class="narrative-question"
@@ -1316,7 +1502,7 @@ select {
 
     <div class="narrative-explanation" aria-live="polite">
             <h4 data-explanation-title>
-                What am I looking at, and what should I look for?
+                How do I read this graph?
             </h4>
 
             <p data-explanation-text>
@@ -3951,10 +4137,242 @@ function drawAgeGroupsChart() {
 
 
 /* =========================================================
+   MILO – INCIDENCE GRAPH GUIDED TOUR
+   ========================================================= */
+
+const miloIncidenceTourSteps = [
+    {
+        title: "The horizontal axis – Epidemiological weeks",
+        text: "These labels represent epidemiological weeks. Follow the axis from W40 through W39 to see how incidence changes throughout a complete surveillance season.",
+    },
+    {
+        title: "The vertical axis – Incidence",
+        text: "This axis shows the estimated incidence rate per 100,000 inhabitants. Higher values indicate a higher estimated rate of illness in the population.",
+    },
+    {
+        title: "The coloured lines – Different seasons",
+        text: "Each coloured line represents one selected season. Use the legend to identify the seasons, then compare their patterns across the same epidemiological weeks.",
+    },
+    {
+        title: "Peaks and patterns",
+        text: "Look for the highest points on each line. These are peaks in incidence. Compare when they occur, how high they reach, and how quickly incidence falls afterwards.",
+    }
+];
+
+let miloIncidenceTourStep = 0;
+let miloIncidenceTourOverlay = null;
+let miloPreviousExplanationDisplay = "";
+
+
+function createMiloIncidenceTour() {
+
+    if (miloIncidenceTourOverlay) {
+        return;
+    }
+
+    const chart =
+        document.getElementById("incidenceChart");
+
+    if (!chart || !chart.parentElement) {
+        return;
+    }
+
+    const chartContainer = chart.parentElement;
+
+    const overlay = document.createElement("div");
+
+    overlay.className = "milo-chart-tour";
+    overlay.hidden = true;
+
+    overlay.innerHTML = `
+        <img
+            class="milo-chart-tour-character"
+            src="https://raw.githubusercontent.com/fadinglight7/grippeweb-dashboard/main/meddog.png"
+            alt="Milo"
+        >
+
+        <div class="milo-chart-tour-content">
+
+            <button
+                type="button"
+                class="milo-chart-tour-close"
+                aria-label="Close Milo's graph tour"
+            >&times;</button>
+
+            <h4></h4>
+
+            <p aria-live="polite"></p>
+
+            <div class="milo-chart-tour-controls">
+
+                <span class="milo-chart-tour-progress"></span>
+
+                <div class="milo-chart-tour-buttons">
+
+                    <button
+                        type="button"
+                        class="milo-tour-previous"
+                    >
+                        Previous
+                    </button>
+
+                    <button
+                        type="button"
+                        class="milo-tour-next"
+                    >
+                        Next
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+    `;
+
+    chartContainer.appendChild(overlay);
+
+    miloIncidenceTourOverlay = overlay;
+
+    overlay.querySelector(".milo-chart-tour-close")
+        .addEventListener("click", closeMiloIncidenceTour);
+
+    overlay.querySelector(".milo-tour-previous")
+        .addEventListener("click", function () {
+
+            if (miloIncidenceTourStep > 0) {
+                miloIncidenceTourStep--;
+                updateMiloIncidenceTour();
+            }
+
+        });
+
+    overlay.querySelector(".milo-tour-next")
+        .addEventListener("click", function () {
+
+            if (
+                miloIncidenceTourStep
+                < miloIncidenceTourSteps.length - 1
+            ) {
+                miloIncidenceTourStep++;
+                updateMiloIncidenceTour();
+            } else {
+                closeMiloIncidenceTour();
+            }
+
+        });
+
+}
+
+
+function startMiloIncidenceTour() {
+    const explanation = document.querySelector(
+        '#incidence .narrative-explanation'
+    );
+
+    const chart = document.getElementById("incidenceChart");
+
+    if (!explanation || !chart) return;
+
+    createMiloIncidenceTour();
+
+    if (!miloIncidenceTourOverlay) return;
+
+    // Wait until Plotly has finished rendering the chart.
+    const waitForChart = () => {
+        const plotReady =
+            chart.querySelector(".main-svg") &&
+            chart.querySelector(".cartesianlayer");
+
+        if (!plotReady) {
+            requestAnimationFrame(waitForChart);
+            return;
+        }
+
+        // Show the tour only after the chart is ready.
+        miloPreviousExplanationDisplay = explanation.style.display;
+        explanation.style.display = "none";
+
+        miloIncidenceTourStep = 0;
+        miloIncidenceTourOverlay.hidden = false;
+
+        updateMiloIncidenceTour();
+    };
+
+    waitForChart();
+}
+
+
+function updateMiloIncidenceTour() {
+
+    const overlay = miloIncidenceTourOverlay;
+
+    if (!overlay) {
+        return;
+    }
+
+    const step =
+        miloIncidenceTourSteps[miloIncidenceTourStep];
+
+    overlay.dataset.step =
+        miloIncidenceTourStep;
+
+    overlay.querySelector("h4").textContent =
+        step.title;
+
+    overlay.querySelector("p").textContent =
+        step.text;
+
+    overlay.querySelector(
+        ".milo-chart-tour-progress"
+    ).textContent =
+        `Step ${miloIncidenceTourStep + 1} of ${miloIncidenceTourSteps.length}`;
+
+    const previousButton =
+        overlay.querySelector(".milo-tour-previous");
+
+    const nextButton =
+        overlay.querySelector(".milo-tour-next");
+
+    previousButton.disabled =
+        miloIncidenceTourStep === 0;
+
+    nextButton.textContent =
+        miloIncidenceTourStep
+        === miloIncidenceTourSteps.length - 1
+            ? "Finish"
+            : "Next";
+}
+
+
+function closeMiloIncidenceTour() {
+
+    if (miloIncidenceTourOverlay) {
+        miloIncidenceTourOverlay.hidden = true;
+    }
+
+    const explanation =
+        document.querySelector(
+            '#incidence .narrative-explanation'
+        );
+
+    if (explanation) {
+        explanation.style.display =
+            miloPreviousExplanationDisplay;
+    }
+    document.querySelector(
+    '#incidence [data-tour-start="true"]'
+)?.focus();
+
+}
+
+
+/* =========================================================
    NARRATIVE GUIDE INTERACTIONS — ADDITION ONLY
    ========================================================= */
 
 document.querySelectorAll(".narrative-sidebar").forEach(sidebar => {
+
     const questionButtons =
         sidebar.querySelectorAll(".narrative-question");
 
@@ -3968,18 +4386,52 @@ document.querySelectorAll(".narrative-sidebar").forEach(sidebar => {
         sidebar.querySelector("[data-character-speech]");
 
     questionButtons.forEach(button => {
+
         button.addEventListener("click", function () {
+
             questionButtons.forEach(item => {
                 item.classList.remove("active");
             });
 
             this.classList.add("active");
 
-            titleElement.textContent = this.dataset.title;
-            textElement.textContent = this.dataset.text;
-            speechElement.textContent = this.dataset.speech;
+            titleElement.textContent =
+                this.dataset.title;
+
+            textElement.textContent =
+                this.dataset.text;
+
+            if (speechElement) {
+                speechElement.textContent =
+                    this.dataset.speech || "";
+            }
+
+            if (this.dataset.tourStart === "true") {
+
+                startMiloIncidenceTour();
+
+            } else {
+
+                closeMiloIncidenceTour();
+
+            }
+
         });
+
     });
+
+});
+
+document.querySelectorAll(".tab-button").forEach(button => {
+
+    button.addEventListener("click", function () {
+
+        if (this.dataset.tab !== "incidence") {
+            closeMiloIncidenceTour();
+        }
+
+    });
+
 });
 
 
