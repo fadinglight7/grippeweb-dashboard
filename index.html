@@ -724,38 +724,25 @@ select {
     line-height: 1.5;
 }
 
-.narrative-explanation {
+.narrative-sidebar-heading {
     display: flex;
-    align-items: flex-start;
-    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
 }
 
-.narrative-explanation-milo {
-    width: 58px;
-    height: 58px;
-    flex-shrink: 0;
+.narrative-sidebar-heading h3 {
+    margin: 0;
+}
+
+.narrative-sidebar-heading img {
+    width: 48px;
+    height: 48px;
     object-fit: contain;
+    flex-shrink: 0;
 }
 
-.narrative-explanation-content {
-    flex: 1;
-    min-width: 0;
-}
 
-.narrative-explanation-content h4 {
-    margin-top: 0;
-}
-
-@media (max-width: 500px) {
-    .narrative-explanation {
-        gap: 8px;
-    }
-
-    .narrative-explanation-milo {
-        width: 45px;
-        height: 45px;
-    }
-}
 
 /* Mobile layout */
 @media (max-width: 700px) {
@@ -1293,7 +1280,13 @@ select {
 <div id="incidence" class="tab-content">
     
 <aside class="narrative-sidebar" data-guide="when">
+    <div class="narrative-sidebar-heading">
     <h3>Explore: When?</h3>
+    <img
+        src="https://raw.githubusercontent.com/fadinglight7/grippeweb-dashboard/main/meddog.png"
+        alt="Milo the Data Detective"
+    >
+</div>
 
     <details open ontoggle="this.open = true">
         <summary>Understanding the chart</summary>
@@ -1322,13 +1315,6 @@ select {
     </details>
 
     <div class="narrative-explanation" aria-live="polite">
-        <img
-            class="narrative-explanation-milo"
-            src="https://raw.githubusercontent.com/fadinglight7/grippeweb-dashboard/main/meddog.png"
-            alt="Milo the Data Detective"
-        >
-
-        <div class="narrative-explanation-content">
             <h4 data-explanation-title>
                 What am I looking at, and what should I look for?
             </h4>
@@ -1343,7 +1329,6 @@ select {
                 falls. Notice whether different seasons follow similar
                 patterns or show differences.
             </p>
-        </div>
     </div>
 </aside>
 
